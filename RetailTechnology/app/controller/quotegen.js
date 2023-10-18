@@ -1,0 +1,678 @@
+define(['app/view/quotegen/quotegen', 'app/store/construction', 'app/store/combined', 'app/store/user', 'dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-min.css', 'app/utility/sp-utility'], function (proforma, construction, combined, user, mainCss, pureCss, spUtility) {
+    var me = {
+        storeData: {}       //this is so other controllers can pass in some data before this controller is hit - right now just POS amounts
+    };
+
+    function GetQueryStringParams(sParam) {
+        var sPageURL = window.location.search.substring(1);
+        var sURLVariables = sPageURL.split('&');
+        for (var i = 0; i < sURLVariables.length; i++) {
+            var sParameterName = sURLVariables[i].split('=');
+            if (sParameterName[0] == sParam) {
+                return sParameterName[1];
+            }
+        }
+    }
+
+    String.prototype.replaceAll = function (search, replacement) {
+        var target = this;
+        return target.replace(new RegExp(search, 'g'), replacement);
+    };
+
+    function buildPdf(view, callback) {
+        //Make the date input plain html
+        //view.html.find('#po-delivery').closest('td').html(view.html.find('#po-delivery').val());
+
+        //Format html/remove UI elements
+        var html = $(".proforma").html();
+
+        //html.find('#po-buttons').remove();
+        //html.css('margin', '100px');
+        //Inline css and make it a string
+        html = "<style>" + pureCss + " " + mainCss + "</style>" + html.replaceAll("<button ", "<button style='display:none;' ").replaceAll("<select ", "<select style='display:none;' ");
+        //Build request
+
+
+        //Setup event handler for callback
+        //req.onload = function (event) {
+        //    var reader = new FileReader();
+
+        //    reader.addEventListener("loadend", function () {
+        //        //Save resulting base 64 string to sharepoint
+
+        //            //Build filename
+
+
+
+        //            //Upload to SharePoint
+        //            purchaseOrderStore.uploadDocument(view.purchaseOrder, reader.result.replace('data:application/pdf;base64,', ''), 'test.pdf', callback);
+
+        //    });
+
+        //    reader.readAsDataURL(req.response);
+        //};
+
+        //create PDF
+        //req.open("POST", "https://api.html2pdfrocket.com/pdf");
+        //req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        //req.responseType = "blob";
+        //req.send("MarginLeft=1&MarginRight=1&MarginTop=1&MarginBottom=1&apikey=dca86da0-12d0-4620-a58b-eb7e1936df7c&value=" + encodeURIComponent(html));
+        //pdfUploadComplete();
+        var storeNumberHash = window.location.hash.substr(1);
+        storeNumberHash = storeNumberHash.substr(9, 4);
+
+        var data = {
+            filename: storeNumberHash + '-Install Quote Gen',
+            html: html,
+            title: storeNumberHash
+        };
+
+        $.ajax({
+            url: '/public/PDF/html2pdfEmailInstallQuoteGen.aspx',
+            type: 'POST',
+            data: data,
+            success: function (result) {
+                //TODO - Do I need to notify the headless browser that I'm done?
+                pdfUploadComplete(result);
+            }
+        });
+
+    }
+
+    function pdfUploadComplete(result) {
+
+        var filePath = result.substring(0, result.indexOf(";"));
+        var fileName = result.substring(result.indexOf(";") + 1);
+
+
+        var storeNumberHash = window.location.hash.substr(1);
+        storeNumberHash = storeNumberHash.substr(9, 4);
+
+        require(['app/view/workflow/email'], function (form) {
+            //mask.html('Loading Store Data');
+            construction.loadData({ combinedQuery: "<Query>" + new CamlBuilder().Where().TextField('Title').EqualTo(storeNumberHash).ToString() + "</Query>" }, function (stores) {
+                var store = stores[0];
+                //Close the modal
+                $.modal.close();
+
+                //var sendTo = "";
+                //if (store.Pos.toUpperCase().indexOf('MICROS') > -1)
+                //    sendTo = "cory.cartier@oracle.com; dave.p.williams@oracle.com; carol.crory@oracle.com; blake.webb@oracle.com; myra.rock@oracle.com; Erin.Mckay@oracle.com; michael.ingersoll@oracle.com;";
+                //else if (store.Pos.toUpperCase().indexOf('INFOR') > -1)
+                //    sendTo = "doug.gilbert@infor.com; joel.schuler@infor.com; James.Ferguson@infor.com;";
+
+                var installDate = moment(store.InstallDate).format('l');
+                if (installDate.toUpperCase().indexOf("INVALID") > -1)
+                    installDate = "NO INSTALL DATE ENTERED";
+
+                var bodyMessage = "Hello all - We need technology installation service at this location. Please provide initial quote to designated POC and the SONIC Project Manager within two business days. Installation will begin on <b>" + installDate + "</b> with tentative go-live of <b>" + moment(store.GoLiveDate).format('l') + "</b>. Please respond to the SONIC Project Manager listed below to verify that you can meet this date or with any issues that we might have. Thanks!<br /><br />";
+
+                bodyMessage += "Respectfully,<br /><br />" + store.ProjectManager + "<br />New Store Team<br />";
+
+                if (store.ProjectManager.toUpperCase().indexOf('JASON') !== -1) {
+
+                    bodyMessage += '918.269.1657<br />';
+                    bodyMessage += 'Jason.Srader@sonicdrivein.com';
+
+                } else if (store.ProjectManager.toUpperCase().indexOf('LIZ') !== -1) {
+
+                    bodyMessage += '405-641-2374<br />';
+                    bodyMessage += 'Elizabeth.Sannes@sonicdrivein.com';
+
+                } else if (store.ProjectManager.toUpperCase().indexOf('KATIGAN') !== -1) {
+
+                    bodyMessage += '405-919-6342<br />';
+                    bodyMessage += 'Russell.Katigan@Sonicdrivein.com';
+
+                }
+
+                else if (store.ProjectManager.toUpperCase().indexOf('BARRETT') !== -1) {
+
+                    bodyMessage += '918.760.8023<br />';
+                    bodyMessage += 'Barrett.Seal@Sonicdrivein.com';
+
+                }
+
+                else if (store.ProjectManager.toUpperCase().indexOf('DYLAN') !== -1) {
+
+                    bodyMessage += '303-437-8623<br />';
+                    bodyMessage += 'Dylan.Gehlbach@Sonicdrivein.com';
+
+                }
+
+                else if (store.ProjectManager.toUpperCase().indexOf('REGINA') !== -1) {
+
+                    bodyMessage += '405-201-1235<br />';
+                    bodyMessage += 'Regina.Pannell@Sonicdrivein.com';
+
+                }
+
+                else if (store.ProjectManager.toUpperCase().indexOf('BJ') !== -1) {
+
+                    bodyMessage += '405-202-2965<br />';
+                    bodyMessage += 'BJ.Bryant@Sonicdrivein.com';
+
+                }
+
+                var CC = "NewStoreTechnologyInstallations@Sonicdrivein.com; " + store.PrimaryEmail + ";";
+                if (store.Installer.toUpperCase().indexOf('RH TECH') > -1)
+                    CC += "charlie@rhtechservices.com;mary@rhtechservices.com;shane@rhtechservices.com;";
+                else if (store.Installer.toUpperCase().indexOf('MIRA') > -1)
+                    CC += "rachael@miraenterprises.net;zachary@miraenterprises.net;";
+                else if (store.Installer.toUpperCase().indexOf('ATI') > -1)
+                    CC += "brfc0316@gmail.com";
+                else if (store.Installer.toUpperCase().indexOf('AVA') > -1)
+                    CC += "rickcrenshaw7777@gmail.com";
+                else if (store.Installer.toUpperCase().indexOf('AVIT') > -1)
+                    CC += "skalisek@avitprousa.com";
+
+
+
+                //Show the quote
+                form.render({
+                    subject: 'Sonic #' + store.StoreNumber + ' Technology Installation Quote Request',
+                    to: CC,
+                    body: bodyMessage,
+                    button: 'Send Email',
+                    title: 'Technology Installation Quote',
+                    callback: function (mailView) {
+
+                        //Add a link to the attachment
+                        $('span[widgetid="submit-button"]').after("Attachment: <a href='" + encodeURI(filePath) + "'>" + fileName + "</a>");
+
+                        //Add event handler for click
+                        mailView.submit.on('click', function () {
+                            //Disable the button
+                            mailView.submit.setDisabled(true);
+
+                            //////////////send email:
+
+
+                            var subject = spUtility.escapeXml($("#subject").val());
+                            var to = spUtility.escapeXml($("#to").val());
+                            var cc = spUtility.escapeXml($("#cc").val());
+
+                            //Find the template id - this is a long story but a problem with the template id changing everytime a workflow is updated
+                            $().SPServices({
+                                operation: "GetTemplatesForItem",
+                                item: "http://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/InstallQuoteGen/1_.000",
+                                async: true,
+                                completefunc: function (xData, Status) {
+                                    $(xData.responseXML).find("WorkflowTemplates > WorkflowTemplate").each(function (i, e) {
+                                        if ($(this).attr("Name") == "InstallQuoteGen Email") {
+                                            var guid = $(this).find("WorkflowTemplateIdSet").attr("TemplateId");
+                                            if (guid != null) {
+                                                //Fire the workflow on the construction list
+                                                $().SPServices({
+                                                    operation: "StartWorkflow",
+                                                    item: "http://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/InstallQuoteGen/1_.000",
+                                                    templateId: "{" + guid + "}",
+                                                    workflowParameters: "<Data>" +
+                                                    "<eTo>" + spUtility.escapeXml(mailView.to.getValue()) + "</eTo>" +
+                                                    "<eCC>" + spUtility.escapeXml(mailView.cc.getValue()) + "</eCC>" +
+                                                    "<eFrom>spadmin@Sonicdrivein.com</eFrom>" +
+                                                    "<eSubject>" + spUtility.escapeXml(mailView.subject.getValue()) + "</eSubject>" +
+                                                    "<eFilename>" + fileName + ".pdf</eFilename>" +
+                                                    "<eFileURL>" + filePath + "</eFileURL>" +
+                                                    "<eBody>" + spUtility.escapeXml(mailView.message.getData()) + "</eBody>" +
+                                                    "</Data>",
+                                                    completefunc: function () {
+                                                        alert('Email Sent');
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            return;
+
+                            //self.sendUpdatedPurchaseOrder(purchaseOrder, mailView.message.getData(), mailView.subject.getValue(), mailView.to.getValue(), mailView.cc.getValue(), lastDocument.FilePath, lastDocument.FileName, function () {
+                            //    if (purchaseOrder.PoType === 'FabCon - DT POPS') {
+                            //        construction.changeValue('DtPopsBaseStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
+                            //            //Hide the view & go back to the summary
+                            //            mailView.dialog.hide();
+                            //            location.hash = 'summary/' + store.StoreNumber;
+                            //        });
+                            //    } else if (store.ProjectType === 'POS Conversion') {
+                            //        //Hide the view & go back to the summary
+                            //        mailView.dialog.hide();
+                            //        location.hash = 'summary/' + store.StoreNumber;
+                            //    } else {
+                            //        //Update the status to requested today
+                            //        construction.changeValue('PopsStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
+                            //            //Hide the view & go back to the summary
+                            //            mailView.dialog.hide();
+                            //            location.hash = 'summary/' + store.StoreNumber;
+                            //        });
+                            //    }
+                            //});
+                        });
+                    }
+                });
+            });
+        });
+    }
+
+
+
+    function afterRender(view) {
+
+
+
+        view.onSendClick = function () {
+            //Mask to prevent re-clicking
+            var mask = $('<div>Preparing PDF</div>'),
+              fileName;
+            mask.modal({
+                escapeClose: false,
+                clickClose: false,
+                showClose: false
+            });
+            buildPdf(view, pdfUploadComplete);
+        }
+
+        view.onDeletePoItemClick = function (row) {
+
+            $(row).closest('tr').remove();
+            //get ID of this td / tr
+            //view.proformas.
+            //console.log("POSTotal: " + view.proformas.POSTotal.get());
+            //need to update totals of items remaining
+            _.each(view.proformas, function (proforma, index) {
+                //Hide the Support Document for new stores
+                //if (proforma.store.ProjectType === 'New') {
+                //    $($('.funding')[index]).hide()
+                //}
+                _.each(proforma.invoiceItems, function (item, i) {
+
+                    var itemData = proforma.store.invoiceItems[i];
+                    console.log("qty:" + itemData.Quantity);
+
+                });
+            });
+
+
+        }
+
+        view.AddItemClick = function (row) {
+
+            if ($('#po-add-item').val() > 0) {
+                var rowText = jQuery("#po-add-item option:selected").text();
+                $(".proforma-items tr:last").after('<tr><td><span data-dojo-attach-point="editNode" role="presentation" class="dijitReset dijitInline dijitOffScreen" id="dijit__InlineEditor_1" tabindex="0" widgetid="dijit__InlineEditor_1" style="margin: 0px; position: static; left: auto; top: auto; right: auto; bottom: auto; float: none; clear: none; display: block; visibility: hidden;"><div class="dijit dijitReset dijitInline dijitLeft dijitTextBox" id="widget_dijit_form_TextBox_0" role="presentation" widgetid="dijit_form_TextBox_0" style="line-height: normal; font-weight: 700; font-family: Arial, Helvetica, sans-serif; font-size: 12.8px; font-style: normal; width: 100%;"><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" data-dojo-attach-point="textbox,focusNode" autocomplete="off" type="text" tabindex="0" id="dijit_form_TextBox_0" value=""></div></div></span><div role="button" tabindex="0" class="dijitInlineEditBoxDisplayMode" id="dijit_InlineEditBox_64" widgetid="dijit_InlineEditBox_64">' + rowText + '</div></td><td><span data-dojo-attach-point="editNode" role="presentation" class="dijitReset dijitInline dijitOffScreen" id="dijit__InlineEditor_0" lang="en-us" tabindex="0" widgetid="dijit__InlineEditor_0" style="margin: 0px; position: static; left: auto; top: auto; right: auto; bottom: auto; float: none; clear: none; display: block; visibility: hidden;"><div class="dijit dijitReset dijitInline dijitLeft dijitTextBox dijitCurrencyTextBox dijitValidationTextBox" id="widget_dijit_form_CurrencyTextBox_0" role="presentation" lang="en-us" widgetid="dijit_form_CurrencyTextBox_0" style="line-height: normal; font-weight: 700; font-family: Arial, Helvetica, sans-serif; font-size: 12.8px; font-style: normal; width: 100%;"><div class="dijitReset dijitValidationContainer"><input class="dijitReset dijitInputField dijitValidationIcon dijitValidationInner" value="? " type="text" tabindex="-1" readonly="readonly" role="presentation"></div><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" data-dojo-attach-point="textbox,focusNode" autocomplete="off" type="text" tabindex="0" id="dijit_form_CurrencyTextBox_0" value="" aria-invalid="false"><input type="hidden" value="1"></div></div></span><div role="button" tabindex="0" class="dijitInlineEditBoxDisplayMode" id="dijit_InlineEditBox_66" lang="en-us" widgetid="dijit_InlineEditBox_66">1.00</div></td><td><div role="button" tabindex="0" class="dijitInlineEditBoxDisplayMode" id="dijit_InlineEditBox_67" widgetid="dijit_InlineEditBox_67">1</div></td><td><div>1.00</div></td><td><div role="button" tabindex="0" class="dijitInlineEditBoxDisplayMode" id="dijit_InlineEditBox_65" widgetid="dijit_InlineEditBox_65"></div></td><td style="text-align:right;padding:6px 12px;" id="store-3673-Delete" data-display="Delete"><i id="poItemId-3673" class="po-delete-item fa fa-times-circle" aria-hidden="true" style="font-size:21px;cursor: pointer;"></i></td></tr>');
+                $('#po-add-item option[value="0"]').prop('selected', true);
+            }
+
+        }
+
+
+
+        //Register handlers for each line item
+        _.each(view.proformas, function (proforma, index) {
+            //Hide the Support Document for new stores
+            //if (proforma.store.ProjectType === 'New') {
+            //    $($('.funding')[index]).hide()
+            //}
+            _.each(proforma.invoiceItems, function (item, i) {
+                item.Quantity.on('change', function () {
+                    var itemData = proforma.store.invoiceItems[i];
+                    itemData.Quantity = new Big(item.Quantity.get('value').replace(',', ''));
+                    item.Total.update();
+                    //Update install if it's an update to the pops amount
+                    if (itemData.ProductCode === "POPS") {
+                        _.each(proforma.invoiceItems, function (it, x) {
+                            if (it.ProductCode.get('value') === "EXTRA INSTALL") {
+                                //TODO update the quantity if over 15 or to 0 then update the total and other totals
+                                if (itemData.Quantity > 15) {
+                                    it.Quantity.set('value', itemData.Quantity.minus("15").toString());
+                                    proforma.store.invoiceItems[x].Quantity = itemData.Quantity.minus("15");
+                                }
+                            }
+                        });
+                    }
+                    //Update Totals
+                    proforma.POSTotal.update();
+                    proforma.AudioTotal.update();
+                    proforma.POPSTotal.update();
+                    proforma.PermitFeeTotal.update();
+                    proforma.SonicRadioTotal.update();
+                    proforma.PAYSTotal.update();
+                    proforma.DigitalMenuBoardsTotal.update();
+                    proforma.MiscellaneousLaborTotal.update();
+                    proforma.TravelTotal.update();
+                    proforma.SubTotal.update();
+
+                    proforma.Total.update();
+                    proforma.InstallerQuoteTotal.update();
+
+                    //Hide/Show dollar signs
+                    if (itemData.Quantity == new Big(0) && itemData.Price == new Big(0)) {
+                        item.Dollars.hide();
+                    } else {
+                        item.Dollars.show();
+                    }
+                });
+                item.Price.on('change', function () {
+                    var itemData = proforma.store.invoiceItems[i];
+                    //Fix the formatting of negatives by removing parenthesis and adding a negative
+                    if (item.Price.get('value').indexOf('(') !== -1) {
+                        item.Price.set('value', '-' + item.Price.get('value').replace('(', '').replace(')', ''));
+                    }
+                    //Update Item
+                    itemData.Price = new Big(item.Price.get('value').replace(',', ''));
+                    item.Total.update();
+                    //Update Totals
+                    proforma.POSTotal.update();
+                    proforma.AudioTotal.update();
+                    proforma.POPSTotal.update();
+                    proforma.PermitFeeTotal.update();
+                    proforma.SonicRadioTotal.update();
+                    proforma.PAYSTotal.update();
+                    proforma.DigitalMenuBoardsTotal.update();
+                    proforma.MiscellaneousLaborTotal.update();
+                    proforma.TravelTotal.update();
+                    proforma.SubTotal.update();
+
+                    proforma.Total.update();
+                    proforma.InstallerQuoteTotal.update();
+
+                    //Hide/Show dollar signs
+                    if (itemData.Quantity == new Big(0) && itemData.Price == new Big(0)) {
+                        item.Dollars.hide();
+                    } else {
+                        item.Dollars.show();
+                    }
+                });
+            });
+        });
+
+
+    }
+
+    me.show = function (target, storeNumbers, routeCheck) {
+        //Look up the stores
+        //TODO check the search controller for data after making an all stores search
+        //Build associative array, grab id, and build CAML Query
+        var constructionSearchBlocks = [],
+            combinedSearchBlocks = [];
+        _.forEach(storeNumbers, function (storeNumber, i) {
+            //Add to the caml query
+            constructionSearchBlocks.push(CamlBuilder.Expression().TextField('Store_x0020_Number').Contains(storeNumber));
+            combinedSearchBlocks.push(CamlBuilder.Expression().TextField('Title').Contains(storeNumber));
+        });
+
+        var constructionQuery = new CamlBuilder().Where().Any.apply(CamlBuilder.Expression(), constructionSearchBlocks);
+        constructionQuery = "<Query><Where>" + constructionQuery.ToString() + "</Where></Query>";
+        var combinedQuery = new CamlBuilder().Where().Any.apply(CamlBuilder.Expression(), combinedSearchBlocks);
+        combinedQuery = "<Query><Where>" + combinedQuery.ToString() + "</Where></Query>";
+
+        construction.loadData({ constructionQuery: constructionQuery, combinedQuery: combinedQuery }, function (stores) {
+            //Make a construction query
+            var searchBlocks = [];
+            _.forEach(storeNumbers, function (storeNumber, i) {
+                //Add to the caml query
+                searchBlocks.push(CamlBuilder.Expression().TextField('Store_x0020_Number').Contains(storeNumber));
+            });
+
+            var combinedQuery = new CamlBuilder().Where().Any.apply(CamlBuilder.Expression(), searchBlocks);
+            combinedQuery = "<Query><Where>" + combinedQuery.ToString() + "</Where></Query>";
+            //Create the line items for each invoice item
+            _.each(stores, function (store, index) {
+                //Shared Items
+                var items = [];
+
+                var microsQty = 0;
+                var inforQty = 0;
+                var DTPOPSQty = 0;
+                var DriveThruFormatQty = 0;
+                var POSDiscountQty = 0;
+                var ConstPOPSBaseQty = 0;
+                var ConstPOPSStallOver15Qty = 0;
+                var POPSDiscountQty = 0;
+                var IncludesSonicRadioQty = 0;
+                var PAYSMasterRadioInstallQty = 0;
+                var PAYSInstallationNonDTQty = 0;
+                var PAYSInstallDTQty = 0;
+                var HMEBaseQty = 0;
+                var HMEPriceStallOver15Qty = 0;
+                var HMEAudioSpeakersFeltQty = 0;
+                var MicrosAudioBaseQty = 0;
+                var MicrosPriceStallOver15Qty = 0;
+                var DigitalMenuBoardInstallationQty = 0;
+                var DiningRoomTVQty = 0;
+                var SonicAudioNotRequiredStatus = 0;
+                var DMBNotRequiredStatus = 0;
+                var SonicRadioNotRequiredStatus = 0;
+
+                //You can write the script to assume if HME is selected as audio then you will have the same amount of quantity as stalls for HME speakers and felt
+
+                if (store.AudioStatus.toUpperCase().indexOf('NOT REQUIRED') > -1)
+                    SonicAudioNotRequiredStatus = 1;
+
+                if (store.DmbTvStatus.toUpperCase().indexOf('NOT REQUIRED') > -1)
+                    DMBNotRequiredStatus = 1;
+
+                if (store.SonicRadioStatus.toUpperCase().indexOf('NOT REQUIRED') > -1)
+                    SonicRadioNotRequiredStatus = 1;
+
+                if (store.Pos.toUpperCase().indexOf('MICROS') > -1)
+                    microsQty = 1;
+
+                if (store.Pos.toUpperCase().indexOf('INFOR') > -1)
+                    inforQty = 1;
+
+                if (parseInt(store.DtPopsQuantity) > 0)
+                    DTPOPSQty = 1;
+
+                if (parseInt(store.DtPopsQuantity) > 0) {
+                    if (store.DriveThruFormat.toUpperCase().indexOf('SINGLE') > -1)
+                        DriveThruFormatQty = 1;
+                    if (store.DriveThruFormat.toUpperCase().indexOf('DOUBLE') > -1)
+                        DriveThruFormatQty = 2;
+                }
+
+                if (parseInt(store.TotalStalls) > 0 && (microsQty > 0 || inforQty > 0)) {
+                    POSDiscountQty = 1;
+                    POPSDiscountQty = 1;
+                }
+
+                if (parseInt(store.TotalStalls) > 0)
+                    ConstPOPSBaseQty = 1;
+
+                if (parseInt(store.TotalStalls) > 0 && ConstPOPSBaseQty > 0)
+                    ConstPOPSStallOver15Qty = store.TotalStalls - (ConstPOPSBaseQty * 15);
+
+                var outdoorSpeakers = (store.SonicRadioOutdoorSpeakerCount !== '' ? parseInt(store.SonicRadioOutdoorSpeakerCount.replace(/[^0-9]+/g, '')) : 0),
+                        ceilingSpeakers = (store.SonicRadioCeilingSpeakerCount !== '' ? parseInt(store.SonicRadioCeilingSpeakerCount.replace(/[^0-9]+/g, '')) : 0),
+                        zoneControls = (store.SonicRadioZoneCount !== '' ? parseInt(store.SonicRadioZoneCount.replace(/[^0-9]+/g, '')) : 0);
+
+                if (outdoorSpeakers > 0 || ceilingSpeakers > 0 || zoneControls > 0)
+                    IncludesSonicRadioQty = 1;
+
+                if (parseInt(store.PaysEnclosureDriveThru) > 0 || parseInt(store.PaysEnclosureIndoor) > 0 || parseInt(store.Pays45Enclosure) > 0 || parseInt(store.Pays90Enclosure) > 0)
+                    PAYSMasterRadioInstallQty = 1;
+
+                if (parseInt(store.PaysEnclosureIndoor) > 0 || parseInt(store.Pays45Enclosure) > 0 || parseInt(store.Pays90Enclosure) > 0) //non-drive thru PAYS only:
+                    PAYSInstallationNonDTQty = parseInt(store.PaysEnclosureIndoor) + parseInt(store.Pays45Enclosure) + parseInt(store.Pays90Enclosure);
+
+                if (parseInt(store.PaysEnclosureDriveThru) > 0)
+                    PAYSInstallDTQty = parseInt(store.PaysEnclosureDriveThru);
+
+                if (store.AudioType.toUpperCase().indexOf('HME') > -1)
+                    HMEBaseQty = 1;
+
+                if (HMEBaseQty > 0 && parseInt(store.TotalStalls) > 15)
+                    HMEPriceStallOver15Qty = parseInt(store.TotalStalls) - 15;
+                //You can write the script to assume if HME is selected as audio then you will have the same amount of quantity as stalls for HME speakers and felt
+                if (HMEBaseQty > 0)
+                    HMEAudioSpeakersFeltQty = parseInt(store.TotalStalls);
+
+                if (store.AudioType.toUpperCase().indexOf('MICROS') > -1)
+                    MicrosAudioBaseQty = 1;
+
+                if (MicrosAudioBaseQty > 0 && parseInt(store.TotalStalls) > 15)
+                    MicrosPriceStallOver15Qty = parseInt(store.TotalStalls) - 15;
+
+                if (parseInt(store.DmbQuantity) > 0)
+                    DigitalMenuBoardInstallationQty = 1;
+
+                if (parseInt(store.TvQuantity) > 0)
+                    DiningRoomTVQty = parseInt(store.TvQuantity);
+
+                if (microsQty > 1) {
+                    items.push({
+                        Description: 'POS Pre-Cable',
+                        Price: 1775,
+                        Quantity: microsQty,
+                        Notes: ''
+                    });
+
+                    items.push({
+                        Description: 'POS Install',
+                        Price: 2675,
+                        Quantity: microsQty,
+                        Notes: ''
+                    });
+                }
+                items.push({
+                    Description: 'Order Confirmation',
+                    Price: 395,
+                    Quantity: DriveThruFormatQty,
+                    Notes: ''
+                });
+                items.push({
+                    Description: 'POS Discount',
+                    Price: -250,
+                    Quantity: POSDiscountQty,
+                    Notes: ''
+                });
+                items.push({
+                    Description: 'Construction POPS Base',
+                    Price: 2880,
+                    Quantity: ConstPOPSBaseQty,
+                    Notes: ''
+                });
+                items.push({
+                    Description: 'Construction POPS/Stall over 15',
+                    Price: 70,
+                    Quantity: ConstPOPSStallOver15Qty,
+                    Notes: 'Accounts for Drive-Thru as one item'
+                });
+                items.push({
+                    Description: 'POPS Discount',
+                    Price: -250,
+                    Quantity: POPSDiscountQty,
+                    Notes: 'If POPS & POS back to back - $250 discount will be given'
+                });
+                items.push({
+                    Description: 'Permit FEE',
+                    Price: 125,
+                    Quantity: 0,
+                    Notes: ''
+                });
+                if (SonicRadioNotRequiredStatus == 0) {
+                    items.push({
+                        Description: 'Sonic Radio Installation',
+                        Price: 1000,
+                        Quantity: IncludesSonicRadioQty,
+                        Notes: 'Amp, 6 Speakers, Wire, Zone Control Installation'
+                    });
+                }
+                items.push({
+                    Description: 'PAYS Master Radio Installation',
+                    Price: 35,
+                    Quantity: PAYSMasterRadioInstallQty,
+                    Notes: 'Amp, 6 Speakers, Wire, Zone Control Installation'
+                });
+                items.push({
+                    Description: 'PAYS Installation (non-drive thru)',
+                    Price: 55,
+                    Quantity: PAYSInstallationNonDTQty,
+                    Notes: ''
+                });
+                items.push({
+                    Description: 'PAYS Installation (drive thru)',
+                    Price: 95,
+                    Quantity: PAYSInstallDTQty,
+                    Notes: ''
+                });
+
+                if (HMEBaseQty > 0 && SonicAudioNotRequiredStatus == 0) {
+                    items.push({
+                        Description: 'HME Base',
+                        Price: 3655,
+                        Quantity: HMEBaseQty,
+                        Notes: ''
+                    });
+                    items.push({
+                        Description: 'HME Price/Stall over 15',
+                        Price: 105,
+                        Quantity: HMEPriceStallOver15Qty,
+                        Notes: ''
+                    });
+                    items.push({
+                        Description: 'HME Audio Speakers & Felt',
+                        Price: 30,
+                        Quantity: HMEAudioSpeakersFeltQty,
+                        Notes: ''
+                    });
+                }
+
+                if (MicrosAudioBaseQty > 0 && SonicAudioNotRequiredStatus == 0) {
+                    items.push({
+                        Description: 'Micros Audio Base',
+                        Price: 3950,
+                        Quantity: MicrosAudioBaseQty,
+                        Notes: ''
+                    });
+                }
+                items.push({
+                    Description: 'Micros Price/Stall over 15',
+                    Price: 95,
+                    Quantity: MicrosPriceStallOver15Qty,
+                    Notes: ''
+                });
+                if (DMBNotRequiredStatus == 0) {
+                    items.push({
+                        Description: 'Digital Menu Board Installation',
+                        Price: 1250,
+                        Quantity: DigitalMenuBoardInstallationQty,
+                        Notes: 'Includes 4 displays, cabling, switch, configuration, and troubleshooting'
+                    });
+                }
+                items.push({
+                    Description: 'Dining Room Televisions',
+                    Price: 90,
+                    Quantity: DiningRoomTVQty,
+                    Notes: ''
+                });
+                items.push({
+                    Description: 'Miscellaneous Labor',
+                    Price: 0,
+                    Quantity: 1,
+                    Notes: ''
+                });
+                items.push({
+                    Description: 'Travel',
+                    Price: 0,
+                    Quantity: 1,
+                    Notes: ''
+                });
+
+                store.invoiceItems = items;
+            });
+
+            //Show summary
+            proforma.render({
+                stores: stores,
+                showPosDisclaimer: true,
+                user: user.loadData(),
+                target: target,
+                routeCheck: routeCheck,
+                callback: afterRender
+            });
+        });
+    };
+
+    return me;
+});

@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <!--Styles-->
+    <link rel="stylesheet" type="text/css" href="resources/style/main.css" />
+    <link rel="stylesheet" type="text/css" href="resources/style/pure-min.css" />
+    <link rel="stylesheet" type="text/css" href="resources/lib/dijit/themes/claro/claro.css" />
+    <!--<link rel="stylesheet" type="text/css" href="resources/lib/jquery-ui/jquery-ui.min.css" />-->
+    <!--<link rel="stylesheet" type="text/css" href="resources/lib/DataTables/datatables.min.css" />-->
+    <link rel="stylesheet" type="text/css" href="resources/lib/date-picker/datepicker.min.css" />
+    <link rel="stylesheet" type="text/css" href="resources/lib/jquery-modal/jquery.modal.min.css" />
+    <link rel="stylesheet" type="text/css" href="resources/style/font-awesome-4.6.2/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="resources/lib/jstree/themes/default/style.min.css" />
+    <!--Search-->
+    <link rel="search" href="opensearch.xml" type="application/opensearchdescription+xml" title="Sonic Search" />
+    <!--SP Librarires-->
+    <script type="text/javascript">
+        // <![CDATA[
+        document.write('<script src="/_layouts/microsoftajax.js?rev=eqznzjhJ%2BYgBjdBzGq%2Fy5Q%3D%3D"></' + 'script>');
+        document.write('<script src="/_layouts/1033/init.js?rev=wgiyW1GQqDQZTITaawvYoA%3D%3D"></' + 'script>');
+        document.write('<script src="/_layouts/sp.core.js?rev=7ByNlH%2BvcgRJg%2BRCctdC0w%3D%3D"></' + 'script>');
+        // ]]>
+    </script>
+
+    <!--Libraries-->
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery-1.11.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery.SPServices-2014.01.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery-modal/jquery.modal.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/date-picker/datepicker.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/moment.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/lodash.compat.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/camljs.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/ckeditor/ckeditor.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery.parse.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/papaparse.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/xlsx.core.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/Blob.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/FileSaver.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/tableexport.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/jstree/jstree.min.js"></script>
+    <script language="javascript" type="text/javascript" src="app/utility/asyncLoop.js"></script>
+    <!--<script language="javascript" type="text/javascript" src="resources/lib/FileSaver.min.js"></script>-->
+    <!--<script language="javascript" type="text/javascript" src="resources/lib/jspdf.min.js"></script>-->
+    <!--<script language="javascript" type="text/javascript" src="resources/lib/jspdf.plugin.autotable.js"></script>-->
+    <!--<script language="javascript" type="text/javascript" src="resources/lib/table2CSV.js"></script>-->
+    <script language="javascript" type="text/javascript" src="resources/lib/big.min.js"></script>
+
+</head>
+<body class="claro">
+    <div id="main">
+        <div style="float: left;">
+            <h1 id="title" style="margin: 5px 0 0 0;">Retail Technology - Development Projects</h1>
+            <span id="sub-title">Search/Reports</span> - <span id="current-date"></span>
+        </div>
+        <div style="width: 300px; float:right; text-align:right; font-weight:bold; font-size: .8em;">
+            <a href="#index"><img style="float:right; margin: 5px;" src="resources/images/Logo.png" alt="Sonic Logo" /></a>
+            Sonic Corporate<br />
+            300 Johnny Bench Drive<br />
+            Oklahoma City, OK 73104<br />
+            405-225-5000
+        </div>
+        <!--Search Box-->
+        <div id="search-container" style="display:block !important;">Search Stores:<input id='search' style="display: inline-block; margin-left: 10px; width: 385px;" name="search" type="text" title="Search" /><div id="search-type"></div></div>
+
+    </div>
+    <script>
+        var searchTimeoutId = null;
+
+        function GetQueryStringParams(sParam) {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++) {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam) {
+                    return sParameterName[1];
+                }
+            }
+        }
+
+        if (GetQueryStringParams("search")) {
+            window.location = "index.aspx#search/" + GetQueryStringParams("search");
+        }
+
+        $('#current-date').html(moment().format('dddd, MMMM Do YYYY - h:mm A'));
+
+
+        //Create a change event handler to store the type in local storage and re-search
+        $("#search").on('change', function () {
+
+            //Set the hash value to initiate search and enable forward/back
+            //TODO this is a hack!!! - probably need a re-route function on the router, or need to get the route check function public so I can call another search directly here
+            var val = $('#search').val();
+            if (val !== '') {
+                //parent.window.location = "index.aspx#search/" + val;
+                parent.window.location = "storeSearch.html?search=" + val;
+
+            }
+        });
+
+        $('#search').keyup(function (evt) {
+            //Ignore if blank and not on search
+
+
+            //And ignore if it's the tab or shift key
+            if (evt.keyCode == '9' || evt.keyCode == '16') {
+                return;
+            }
+
+            //Clear timeout if exists
+            if (searchTimeoutId !== null) {
+                clearTimeout(searchTimeoutId);
+            }
+
+            //Set new timeout to search
+            searchTimeoutId = setTimeout(function () {
+                //Set the hash value to initiate search and enable forward/back
+                var val = $('#search').val();
+                if (val === '') {
+                    //Show search box
+
+                } else {
+                    //Search for results
+
+
+                    parent.window.location = "storeSearch.html?search=" + val;
+
+                }
+            }, 350);
+
+
+
+        });
+
+    </script>
+</body>
+</html>

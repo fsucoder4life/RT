@@ -1,0 +1,3331 @@
+var storeCombinedId = 0;
+
+function currReplace(value) {
+    if (value === '' || typeof value === 'undefined')
+        value = "0";
+    else
+        value = value.replace(",", "").replace("$", "");
+    return value;
+}
+
+function formatMoney(money) {
+    if (money instanceof Big) {
+        return dojo.number.format(money.toString(), { places: 2, locale: 'en-us' });
+    } else {
+        return dojo.number.format(money, { places: 2, locale: 'en-us' });
+    }
+}
+
+function UpdateField(listName, recordID, fieldName, fieldValue) {
+    try {
+        $().SPServices({
+            operation: "UpdateListItems",
+            async: false,
+            batchCmd: "Update",
+            listName: listName,
+            ID: recordID,
+            valuepairs: [[fieldName, formatMoney(fieldValue)]],
+            completefunc: function (xData, Status) {
+            }
+        });
+    }
+    catch (err) {
+        console.log("UpdateField - Total Cost - Addition Error:" + err.message);
+    }
+}
+
+function UploadFile(location) {
+    $("#" + location).trigger('click');
+}
+
+function OpenCostfiles(location) {
+    if ($("#" + location + "Div").css("display") === "none") {
+        $("#" + location + "Arrow").attr("src", "resources/images/downarrow.png");
+        $("#" + location + "Div").css("display", "");
+        
+        $().SPServices({
+            async: false,
+            operation: "GetAttachmentCollection",
+            listName: "Combined Schedule",
+            ID: storeCombinedId,
+            completefunc: function (xData, Status) {
+                var fileOutput = "";
+                $(xData.responseXML).find("Attachments > Attachment").each(function (i, el) {
+                    var $node = $(this),
+                            filePath = $node.text(),
+                            arrString = filePath.split("/"),
+                            fileName = arrString[arrString.length - 1];
+                    if (fileName.indexOf(location + "file-") > -1)
+                        fileOutput += "<li><a target='_blank' href='" + filePath + "'>" + fileName.substring(fileName.indexOf("-")+1) + "</a></li>";
+                    
+                });
+                $("#" + location + "Span").html("<ul>" + fileOutput + "</ul>");
+            }
+        });
+
+
+    }
+    else {
+        $("#" + location + "Arrow").attr("src", "resources/images/uparrow2.png");
+        $("#" + location + "Div").css("display", "none");
+    }
+}
+
+define([
+  'app/store/construction',
+  'app/store/combined',
+  'app/store/combinedconstructionextend',
+  'app/store/issues',
+  'app/store/notes',
+  'app/store/updates',
+  'dojo/text!app/view/summary/construction-summary.html',
+  'dojo/text!app/view/summary/conversion-summary.html',
+  'dojo/text!app/view/summary/OTI-summary.html',
+  'dojo/text!app/view/summary/notes.html',
+  'dojo/text!app/view/summary/issues.html',
+  'dojo/text!app/view/summary/rename-dialog.html',
+  'dojo/text!app/view/summary/delete-dialog.html',
+  'app/controller/search',
+  'app/widget/dropdown',
+  'app/widget/datepicker',
+  'app/widget/textfield',
+  'app/widget/widgetHelper',
+  'app/router',
+  'dijit/form/DropDownButton',
+  'dijit/form/Button',
+  "dijit/form/Select",
+  'dijit/DropDownMenu',
+  'dijit/Dialog',
+  'dojox/uuid/generateTimeBasedUuid',
+  'dijit/registry',
+  'app/store/purchaseOrders'
+], function (construction, combined, combinedconstructionextend, issues, notes, updateStore, constructionSummaryTemplate, conversionSummaryTemplate, OTISummaryTemplate, notesTemplate, issuesTemplate, renameTemplate, deleteTemplate, searchController, dropdown, datePicker, textfield, widgetHelper, router,
+             DropDownButton, Button, Select, DropDownMenu, Dialog, uuid, registry, purchaseOrderStore) {
+    function typeCheck(options) {
+        var query = new CamlBuilder().Where().TextField('Title').EqualTo(options.storeNumber);
+        query = "<Query>" + query.ToString() + "</Query>";
+
+        var opt = {
+            query: query
+        };
+        combined.loadData(opt, function (data) {
+            //Grab the first object property as the store
+            var store = data[_.keys(data)[0]];
+
+            //spservices to see if store exists in combinedconstructionextend table.
+            //if not, create it
+
+
+            var cceID = 0;
+            storeCombinedId = store.CombinedId;
+
+            $().SPServices({
+                operation: "GetListItems",
+                listName: "Combined Construction Extend",
+                CAMLViewFields: "<ViewFields><FieldRef Name='ID' /></ViewFields>",
+                CAMLQuery: "<Query><Where><Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Lookup'>" + store.StoreNumber + "</Value></Eq></Where></Query>",
+                CAMLRowLimit: 0,
+                async: false,
+                completefunc: function (xData, Status) {
+                    $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                        cceID = $(this).attr("ows_ID");
+                    });
+                }
+            });
+
+            if (cceID == 0) // create record in CCE
+            {
+                //get combined store ID
+                $().SPServices({
+                    operation: "UpdateListItems",
+                    async: false,
+                    batchCmd: "New",
+                    listName: "Combined Construction Extend",
+                    valuepairs: [["Store_x0020_Number", store.CombinedId + ";#" + store.StoreNumber]],
+                    completefunc: function (xData, Status) {
+                    }
+                });
+            }
+
+            //see if store exists in Construction Calls:
+
+
+
+            var ccID = 0;
+
+
+            $().SPServices({
+                operation: "GetListItems",
+                listName: "Construction_Calls",
+                CAMLViewFields: "<ViewFields><FieldRef Name='ID' /></ViewFields>",
+                CAMLQuery: "<Query><Where><Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Lookup'>" + store.StoreNumber + "</Value></Eq></Where></Query>",
+                CAMLRowLimit: 0,
+                async: false,
+                completefunc: function (xData, Status) {
+                    $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                        ccID = $(this).attr("ows_ID");
+                    });
+                }
+            });
+
+            if (ccID == 0) // create record in CC
+            {
+                //get combined store ID
+                $().SPServices({
+                    operation: "UpdateListItems",
+                    async: false,
+                    batchCmd: "New",
+                    listName: "Construction_Calls",
+                    valuepairs: [["Store_x0020_Number", store.CombinedId + ";#" + store.StoreNumber]],
+                    completefunc: function (xData, Status) {
+                    }
+                });
+            }
+
+
+
+
+
+            if (store.ProjectType === 'POS Conversion') {
+
+                var opt = {
+                    constructionQuery: options.query || "<Query><Where>" +
+                    "<Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Text'>" + options.storeNumber + "</Value></Eq>" +
+                    "</Where></Query>"
+                };
+                combinedconstructionextend.loadData(opt, function (data) {
+                    //Grab the first object property as the store
+
+                    var store = data[_.keys(data)[0]];
+
+
+
+                    //get construction calls data:
+                    $().SPServices({
+                        operation: "GetListItems",
+                        listName: "Construction_Calls",
+                        CAMLViewFields: "<ViewFields><FieldRef Name='InstallerForWindows10Upgrade' /><FieldRef Name='OracleServerUpgradePM' /><FieldRef Name='Infor_x0020_Terminal_x0020_Upgra' /><FieldRef Name='Infor_x0020_Terminal_x0020_Upgra0' /><FieldRef Name='Infor_x0020_Terminal_x0020_Upgra1' /><FieldRef Name='Infor_x0020_Terminal_x0020_Upgra2' /><FieldRef Name='Infor_x0020_Terminal_x0020_Upgra3' /><FieldRef Name='Infor_x0020_Terminal_x0020_Upgra4' /><FieldRef Name='Oracle_x0020_Server_x0020_Upgrad' /><FieldRef Name='Oracle_x0020_Server_x0020_Upgrad0' /><FieldRef Name='Oracle_x0020_Server_x0020_Upgrad1' /><FieldRef Name='Oracle_x0020_Server_x0020_Upgrad2' /><FieldRef Name='Oracle_x0020_Server_x0020_Upgrad3' /><FieldRef Name='Oracle_x0020_Server_x0020_Upgrad4' /><FieldRef Name='Oracle_x0020_Server_x0020_Upgrad5' /><FieldRef Name='Oracle_x0020_Server_x0020_Upgrad6' /><FieldRef Name='Oracle_x0020_Server_x0020_Upgrad7' /><FieldRef Name='Hughes_x0020_Switch_x0020_Upgrad' /><FieldRef Name='Hughes_x0020_Switch_x0020_Upgrad0' /><FieldRef Name='Hughes_x0020_Switch_x0020_Upgrad1' /><FieldRef Name='Hughes_x0020_Switch_x0020_Upgrad2' /><FieldRef Name='Hughes_x0020_Switch_x0020_Upgrad3' /><FieldRef Name='OracleServer_x002d_Warranty_x002' /><FieldRef Name='OracleServer_x002d_Contract_x002' /><FieldRef Name='OracleServer_x002d_Contract_x0020' /><FieldRef Name='OracleServer_x002d_Schedule_x002' /><FieldRef Name='OracleServer_x002d_Logistics_x00' /><FieldRef Name='OracleServer_x002d_Upgrade_x0020' /><FieldRef Name='OracleServer_x002d_Upgrade_x00200' /><FieldRef Name='OracleServer_x002d_Source_x0020_' /><FieldRef Name='OracleServer_x002d_First_x0020_D' /><FieldRef Name='OracleServer_x002d_Reason_x0020_' /><FieldRef Name='OracleServer_x002d_RFC' /><FieldRef Name='OracleServer_x002d_Opened_x0020_' /></ViewFields>",
+                        CAMLQuery: "<Query><Where><Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Lookup'>" + store.StoreNumber + "</Value></Eq></Where></Query>",
+                        CAMLRowLimit: 0,
+                        async: false,
+                        completefunc: function (xData, Status) {
+                            $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                                store.InforTerminalUpgradesNumOfTerminals = $(this).attr("ows_Infor_x0020_Terminal_x0020_Upgra");
+                                store.InforTerminalUpgradesNumUpgraded = $(this).attr("ows_Infor_x0020_Terminal_x0020_Upgra0");
+                                store.InforTerminalUpgradesOrdered = $(this).attr("ows_Infor_x0020_Terminal_x0020_Upgra1");
+                                store.InforTerminalUpgradesDelivery = $(this).attr("ows_Infor_x0020_Terminal_x0020_Upgra2");
+                                store.InforTerminalUpgradesGoLive = $(this).attr("ows_Infor_x0020_Terminal_x0020_Upgra3");
+                                store.OracleServerUpgradeServerType = $(this).attr("ows_Oracle_x0020_Server_x0020_Upgrad");
+                                store.OracleServerUpgradeOrdered = $(this).attr("ows_Oracle_x0020_Server_x0020_Upgrad0");
+                                store.OracleServerUpgradeDelivery = $(this).attr("ows_Oracle_x0020_Server_x0020_Upgrad1");
+                                store.OracleServerUpgradeGoLive = $(this).attr("ows_Oracle_x0020_Server_x0020_Upgrad2");
+                                store.OracleServerUpgradeInstaller = $(this).attr("ows_Oracle_x0020_Server_x0020_Upgrad3");
+                                store.OracleServerUpgradeSerialNum = $(this).attr("ows_Oracle_x0020_Server_x0020_Upgrad4");
+                                store.OracleServerUpgradeWindowsUpgrade = $(this).attr("ows_Oracle_x0020_Server_x0020_Upgrad5");
+                                store.OracleServerUpgradeGoLive2 = $(this).attr("ows_Oracle_x0020_Server_x0020_Upgrad6");
+                                store.OracleServerUpgradePM = $(this).attr("ows_Oracle_x0020_Server_x0020_Upgrad7");
+                                store.InstallerForWindows10Upgrade = $(this).attr("ows_InstallerForWindows10Upgrade");
+                                store.InforTerminalUpgradesProjectManager = $(this).attr("ows_Infor_x0020_Terminal_x0020_Upgra4");
+                                store.HughesSwitchUpgradeOrdered = $(this).attr("ows_Hughes_x0020_Switch_x0020_Upgrad");
+                                store.HughesSwitchUpgradeDelivered = $(this).attr("ows_Hughes_x0020_Switch_x0020_Upgrad0");
+                                store.HughesSwitchUpgradeGoLive = $(this).attr("ows_Hughes_x0020_Switch_x0020_Upgrad1");
+                                store.HughesSwitchUpgradeInstaller = $(this).attr("ows_Hughes_x0020_Switch_x0020_Upgrad2");
+                                store.HughesSwitchUpgradePM = $(this).attr("ows_Hughes_x0020_Switch_x0020_Upgrad3");
+
+                                store.OracleServerWarrantyExpDate = $(this).attr("ows_OracleServer_x002d_Warranty_x002");
+                                store.OracleServerContractStatus = $(this).attr("ows_OracleServer_x002d_Contract_x002");
+                                store.OracleServerContractSubStatus = $(this).attr("ows_OracleServer_x002d_Contract_x0020");
+                                store.OracleServerScheduleStatus = $(this).attr("ows_OracleServer_x002d_Schedule_x002");
+                                store.OracleServerLogisticsStatus = $(this).attr("ows_OracleServer_x002d_Logistics_x00");
+                                store.OracleServerUpgradeNightlyStatus = $(this).attr("ows_OracleServer_x002d_Upgrade_x0020");
+                                store.OracleServerUpgradeFinalStatus = $(this).attr("ows_OracleServer_x002d_Upgrade_x00200");
+                                store.OracleServerSourceOfUpgrade = $(this).attr("ows_OracleServer_x002d_Source_x0020_");
+                                store.OracleServerFirstDateScheduled = $(this).attr("ows_OracleServer_x002d_First_x0020_D");
+                                store.OracleServerReasonForScheduleChange = $(this).attr("ows_OracleServer_x002d_Reason_x0020_");
+                                store.OracleServerRFC = $(this).attr("ows_OracleServer_x002d_RFC");
+                                store.OracleServerOpenedOnTime = $(this).attr("ows_OracleServer_x002d_Opened_x0020_");
+                            });
+                        }
+                    });
+
+
+
+
+
+
+
+
+                    var updateQuery = "<Query>" + new CamlBuilder().Where().TextField('Store_x0020_Number').Contains(store.StoreNumber).ToString() + "</Query>";
+
+                    updateStore.loadData({ query: updateQuery }, function (updateItems) {
+                        if (updateItems.length > 0) {
+                            var updateItem = updateItems[0];
+                            updateStore.getDocuments(updateItem, function (updateItem) {
+                                store.DailyUpdate = updateItem;
+                                renderConversion(store, options);
+                            });
+                        } else {
+                            renderConversion(store, options);
+                        }
+                    });
+                });
+            }
+                //if (store.ProjectType === 'POS Conversion') {
+                //{
+                //    //Get the update items if present
+                //    var updateQuery = "<Query>" + new CamlBuilder().Where().TextField('Store_x0020_Number').Contains(store.StoreNumber).ToString() + "</Query>";
+                //    updateStore.loadData({ query: updateQuery }, function (updateItems) {
+                //        if (updateItems.length > 0) {
+                //            var updateItem = updateItems[0];
+                //            updateStore.getDocuments(updateItem, function (updateItem) {
+                //                store.DailyUpdate = updateItem;
+                //                renderConversion(store, options);
+                //            });
+                //        } else {
+                //            renderConversion(store, options);
+                //        }
+                //    });
+                //}
+            else if (store.ProjectType === 'OTI') {
+                //Load construction data and show
+                var opt = {
+                    constructionQuery: options.query || "<Query><Where>" +
+                    "<Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Text'>" + options.storeNumber + "</Value></Eq>" +
+                    "</Where></Query>"
+                };
+                construction.loadData(opt, function (data) {
+                    //Grab the first object property as the store
+                    var store = data[_.keys(data)[0]];
+
+                    //Get the update items if present
+                    var updateQuery = "<Query>" + new CamlBuilder().Where().TextField('Store_x0020_Number').Contains(store.StoreNumber).ToString() + "</Query>";
+                    updateStore.loadData({ query: updateQuery }, function (updateItems) {
+                        if (updateItems.length > 0) {
+                            var updateItem = updateItems[0];
+                            updateStore.getDocuments(updateItem, function (updateItem) {
+                                store.DailyUpdate = updateItem;
+                                renderOTI(store, options);
+                            });
+                        } else {
+                            renderOTI(store, options);
+                        }
+                    });
+                });
+            }
+
+            else {
+                //Load construction data and show
+                var opt = {
+                    constructionQuery: options.query || "<Query><Where>" +
+                    "<Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Text'>" + options.storeNumber + "</Value></Eq>" +
+                    "</Where></Query>"
+                };
+                construction.loadData(opt, function (data) {
+                    //Grab the first object property as the store
+                    var store = data[_.keys(data)[0]];
+
+                    //Get the update items if present
+                    var updateQuery = "<Query>" + new CamlBuilder().Where().TextField('Store_x0020_Number').Contains(store.StoreNumber).ToString() + "</Query>";
+                    updateStore.loadData({ query: updateQuery }, function (updateItems) {
+                        if (updateItems.length > 0) {
+                            var updateItem = updateItems[0];
+                            updateStore.getDocuments(updateItem, function (updateItem) {
+                                store.DailyUpdate = updateItem;
+                                renderConstruction(store, options);
+                            });
+                        } else {
+                            renderConstruction(store, options);
+                        }
+                    });
+                });
+            }
+        });
+    }
+
+    function renderNotes(store, target, options) {
+        //First sort the notes into issue related notes and regular notes
+        var noteTypes = {};
+        _.each(store.Notes, function (note, noteIndex) {
+            if (typeof note.IssueId === 'undefined' || note.IssueId === '') {
+                noteTypes[note.NoteType] = noteTypes[note.NoteType] || [];
+                noteTypes[note.NoteType].push(note);
+            }
+        });
+
+        //Add a general note if the notes exist
+        if (typeof store.OldNotes !== 'undefined') {
+            noteTypes['Project Review'] = noteTypes['Project Review'] || [];
+            var date = moment().toISOString();
+            noteTypes['Project Review'].push({
+                Note: store.OldNotes,
+                CreatedBy: 'System',
+                CreatedOn: date,
+                ModifiedBy: 'System',
+                ModifiedOn: date,
+                Source: 'Review Notes'
+            });
+        }
+
+        var me = {
+            updateNotes: updateNotes,
+            items: {},
+            noteTypes: {}
+        };
+
+        var rows = '';
+        //Add the review row if it's there:
+        if (typeof noteTypes['Project Review'] !== 'undefined') {
+            _.each(noteTypes, function (notes, noteType) {
+                if (noteType !== 'Project Review') {
+                    return;
+                }
+                //Add a row with issue information
+                rows +=
+                  "<tr class='note-row'>" +
+                  "<td><button style='width: 30px;' class='note-expander-button' id='" + uuid() + "' type='button'>+</button></td>" +
+                  "<td>" + noteType + "</td>" +
+                  "</tr>";
+                //Add another row with the description and any notes
+                rows += "<tr class='note-body'><td colspan='7'><div>";
+
+                //Add a div for each note
+                _.each(notes, function (note, noteIndex) {
+                    rows += "<div class='note-note' id='note-" + note.NoteId + "'>" +
+                      (note.Source === 'Review Notes' ?
+                          "<div class='note-note-note' data-editable='OldNotes'>" + note.Note + "</div>" :
+                          "<span class='note-note-note'>" + note.Note + "</span>"
+                      ) +
+                      "<span class='note-note-created'>" + note.CreatedBy + " - " + moment(note.CreatedOn).format('l') + (note.CreatedOn !== note.ModifiedOn ? ' (modified ' + moment(note.ModifiedOn).format('l') + ')' : '') + "</span>" +
+                      "<span class='note-note-source'>Source: " + note.Source + "</span>" +
+                      (note.Source === 'Review Notes' ? '' : "<div class='note-note-controls'><a href='#' class='note-note-edit'>edit</a> - <a href='#' class='note-note-delete'>delete</a></div>") +
+                      "</div>";
+
+                    //Store the note
+                    me.items[note.NoteId] = {
+                        Data: note
+                    };
+                });
+
+                //Close the row
+                rows += "</div></td></tr>";
+            });
+        }
+
+        //Go through each issue and create a row
+        _.each(noteTypes, function (notes, noteType) {
+            if (noteType === 'Project Review') {
+                return;
+            }
+            //Add a row with issue information
+            rows +=
+              "<tr class='note-row'>" +
+              "<td><button style='width: 30px;' class='note-expander-button' id='" + uuid() + "' type='button'>+</button></td>" +
+              "<td>" + noteType + "</td>" +
+              "</tr>";
+            //Add another row with the description and any notes
+            rows += "<tr class='note-body'><td colspan='7'><div>";
+
+            //Add a div for each note
+            _.each(notes, function (note, noteIndex) {
+                rows += "<div class='note-note' id='note-" + note.NoteId + "'>" +
+                  (note.Source === 'Review Notes' ?
+                      "<div class='note-note-note' data-editable='OldNotes'>" + note.Note + "</div>" :
+                      "<span class='note-note-note'>" + note.Note + "</span>"
+                  ) +
+                  "<span class='note-note-created'>" + note.CreatedBy + " - " + moment(note.CreatedOn).format('l') + (note.CreatedOn !== note.ModifiedOn ? ' (modified ' + moment(note.ModifiedOn).format('l') + ')' : '') + "</span>" +
+                  "<span class='note-note-source'>Source: " + note.Source + "</span>" +
+                  (note.Source === 'Review Notes' ? '' : "<div class='note-note-controls'><a href='#' class='note-note-edit'>edit</a> - <a href='#' class='note-note-delete'>delete</a></div>") +
+                  "</div>";
+
+                //Store the note
+                me.items[note.NoteId] = {
+                    Data: note
+                };
+            });
+
+            //Close the row
+            rows += "</div></td></tr>";
+        });
+
+        //Add to the dom
+        target = $($(target));
+        var nt = $(notesTemplate);
+        nt.find('tbody').append(rows);
+        target.html('');
+        target.append(nt);
+
+        //Add view to callback for value changes
+        function beforeChange(key, newValue, revertBackground, oldValue, el) {
+            //If function is passed, call on each value change and return the value in this callback - allows business logic before field change
+            if (options.beforeChange) return options.beforeChange({ el: nt }, key, newValue, revertBackground, oldValue, el);
+        }
+
+        //Add view to callback for value changes
+        function afterChange(key, value, store, revertBackground, response) {
+            //If function is passed, call on each value change and return the value in this callback - allows business logic after field change/save
+            if (options.afterChange) return options.afterChange({ el: nt }, key, value, store, revertBackground, response);
+            else revertBackground();
+        }
+
+        //Activate all the fields marked as display or editable
+        widgetHelper.activate(nt, store, beforeChange, afterChange);
+
+        //Create all the expander and edit buttons as dojo objects
+        target.find('.note-row').each(function () {
+            var noteType = $(this).find('td:nth-child(2)').html();
+            // Create an expander button
+            var button = new Button({
+                label: "-",
+                onClick: function () {
+                    //Find my parent row
+                    var next = $(this.domNode).closest('tr').next('tr');
+                    //Slide the row up or down
+                    if (button.get('label') === '+') {
+                        next.show();
+                        next.find('div:first()').slideDown('300', 'linear');
+                        button.set('label', '-');
+                    } else {
+                        next.find('div:first()').slideUp('300', 'linear', function () {
+                            next.hide();
+                        });
+                        button.set('label', '+');
+                    }
+                }
+            }, $(this).find('.note-expander-button')[0]);
+            button.startup();
+            $(button.domNode).find('span:first()').css('width', '20px');
+            me.noteTypes[noteType] = me.noteTypes[noteType] || {};
+            me.noteTypes[noteType].Expander = button;
+        });
+
+        //Store a reference to all the link dom nodes for edit and delete
+        target.find('.note-note').each(function () {
+            var noteId = $(this).attr('id').split('-')[1];
+            var dom = $($(this));
+            me.items[noteId].EditNote = $(this).find('.note-note-edit')[0];
+            me.items[noteId].DeleteNote = $(this).find('.note-note-delete')[0];
+            me.items[noteId].updateNote = function (note) {
+                //Update the dom
+                dom.find('.note-note-note').html(note.Note);
+                dom.find('.note-note-source').html(note.Source);
+                dom.find('.note-note-created').html(note.CreatedBy + " - " + moment(note.CreatedOn).format('l') + (note.CreatedOn !== note.ModifiedOn ? ' (modified ' + moment(note.ModifiedOn).format('l') + ')' : ''));
+            };
+            me.items[noteId].deleteNote = function () {
+                dom.remove();
+            };
+            me.items[noteId].warnDelete = function (callback, hide) {
+                //Create the dialog box
+                var dialog = new Dialog({
+                    title: 'Delete Note?',
+                    content: '<div>Are you sure you want to delete this note?</div><button id="delete-note-button" type="button"></button>',
+                    style: "width: 350px",
+                    hide: function () {
+                        button.destroy();
+                        dialog.destroy();
+                        if (hide) hide();
+                    }
+                });
+
+                //Show the dialog box
+                dialog.show();
+
+                //Create the button
+                if (registry.byId('delete-note-button')) registry.byId('delete-note-button').destroy();
+                var button = new Button({
+                    label: "Delete Note",
+                    style: {
+                        display: 'inline'
+                    },
+                    onClick: function () {
+                        callback(dialog);
+                    }
+                }, 'delete-note-button');
+                $(button.domNode).find('.dijitButtonNode').css({
+                    display: 'block',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                    width: '150px'
+                });
+                button.startup();
+            };
+        });
+
+        //Create a dijit button for the create button
+        if (registry.byId('create-note')) registry.byId('create-note').destroy();
+        me.Create = new Button({
+            label: "Create",
+            style: {
+                'float': 'left',
+                margin: '0'
+            }
+        }, target.find('#create-note')[0]);
+        me.Create.startup();
+        $(me.Create.domNode).find('span:first()').css('padding', '2px');
+
+        return me;
+    }
+
+    function updateNotes(store) {
+        return renderNotes(store, $('#notes').html(''));
+    }
+
+    function buildIssueNote(note) {
+        var noteId = note.NoteId,
+          me = {};
+
+        //Create the element
+        var row = "<div class='issue-note' id='note-" + note.NoteId + "'>" +
+          "<span class='issue-note-note'>" + note.Note + "</span>" +
+          "<span class='issue-note-created'>" + note.CreatedBy + " - " + moment(note.CreatedOn).format('l') + (note.CreatedOn !== note.ModifiedOn ? ' (modified ' + moment(note.ModifiedOn).format('l') + ')' : '') + "</span>" +
+          "<span class='issue-note-source'>Source: " + note.Source + "</span>" +
+          "<div class='issue-note-controls'><a href='#' class='issue-note-edit'>edit</a> - <a href='#' class='issue-note-delete'>delete</a></div>" +
+          "</div>";
+
+        var dom = $(row);
+
+        me.dom = dom;
+        me.Data = note;
+        me.EditNote = $(dom).find('.issue-note-edit')[0];
+        me.DeleteNote = $(dom).find('.issue-note-delete')[0];
+        me.updateNote = function (note) {
+            $(dom).find('.issue-note-note').html(note.Note);
+            $(dom).find('.issue-note-source').html(note.Source);
+            $(dom).find('.issue-note-created').html(note.CreatedBy + " - " + moment(note.CreatedOn).format('l') + (note.CreatedOn !== note.ModifiedOn ? ' (modified ' + moment(note.ModifiedOn).format('l') + ')' : ''));
+
+            me.Data = note;
+        };
+        me.deleteNote = function () {
+            $(dom).remove();
+        };
+        me.warnDelete = function (callback, hide) {
+            //Create the dialog box
+            var dialog = new Dialog({
+                title: 'Delete Note?',
+                content: '<div>Are you sure you want to delete this note?</div><button id="delete-note-button" type="button"></button>',
+                style: "width: 350px",
+                hide: function () {
+                    button.destroy();
+                    dialog.destroy();
+                    if (hide) hide();
+                }
+            });
+
+            //Show the dialog box
+            dialog.show();
+
+            //Create the button
+            if (registry.byId('delete-note-button')) registry.byId('delete-note-button').destroy();
+            var button = new Button({
+                label: "Delete Note",
+                style: {
+                    display: 'inline'
+                },
+                onClick: function () {
+                    callback(dialog);
+                }
+            }, 'delete-note-button');
+            $(button.domNode).find('.dijitButtonNode').css({
+                display: 'block',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                width: '150px'
+            });
+            button.startup();
+        };
+
+        return me;
+    }
+
+    function renderIssues(store, status, target) {
+        //First sort the notes into issue related notes and regular notes
+        var issueNotes = {};
+        _.each(store.Notes, function (note, noteIndex) {
+            if (typeof note.IssueId !== 'undefined' && note.IssueId !== '') {
+                issueNotes[note.IssueId] = issueNotes[note.IssueId] || [];
+                issueNotes[note.IssueId].push(note);
+            }
+        });
+
+        var issues = $($(issuesTemplate)),
+          rows = '',
+          me = {
+              updateIssues: updateIssues,
+              items: {}
+          };
+        //Go through each issue and create a row
+        _.each(store.Issues, function (issue, issueIndex) {
+            if (status !== 'All' && status !== issue.Status) return;
+
+            //Add a row with issue information
+            rows +=
+              "<tr class='issue-row' id='issue-" + issue.IssueId + "'>" +
+              "<td><button style='width: 30px;' class='issue-expander-button' id='" + uuid() + "' type='button'>+</button></td>" +
+              "<td>" + issue.IssueType + "</td>" +
+              "<td>" + issue.Severity + "</td>" +
+              "<td>" + issue.Title + "</td>" +
+              "<td>" + issue.Assigned + "</td>" +
+              "<td>" + issue.WaitingOn + "</td>" +
+              "<td>" + issue.Status + "</td>" +
+              "<td><button class='issue-edit-button' type='button' id='" + uuid() + "'>Edit</button></td>" +
+              "</tr>";
+            //Add another row with the description and any notes
+            rows += "<tr class='issue-body' id='issue-body-" + issue.IssueId + "' style='display: none;'><td colspan='7'><div style='display: none;'>";
+
+            //Add a div with the note
+            rows += "<div class='issue-description'>" + issue.Description + "</div>";
+
+            //Add a div for each note
+            _.each(issueNotes[issue.IssueId], function (note, noteIndex) {
+                rows += "<div class='issue-note' id='note-" + note.NoteId + "'>" +
+                  "<span class='issue-note-note'>" + note.Note + "</span>" +
+                  "<span class='issue-note-created'>" + note.CreatedBy + " - " + moment(note.CreatedOn).format('l') + (note.CreatedOn !== note.ModifiedOn ? ' (modified ' + moment(note.ModifiedOn).format('l') + ')' : '') + "</span>" +
+                  "<span class='issue-note-source'>Source: " + note.Source + "</span>" +
+                  "<div class='issue-note-controls'><a href='#' class='issue-note-edit'>edit</a> - <a href='#' class='issue-note-delete'>delete</a></div>" +
+                  "</div>";
+            });
+
+            //Close the row
+            rows += "</div></td></tr>";
+
+            me.items[issue.IssueId] = {
+                Data: issue
+            };
+        });
+        issues.find('tbody').append(rows);
+        target = $($(target));
+        target.html(issues);
+
+        //Create action and expand buttons
+        target.find('.issue-row').each(function () {
+            var issueId = $(this).attr('id').split('-')[1];
+
+            // Create an expander button
+            var button = new Button({
+                label: "+",
+                onClick: function () {
+                    //Find my parent row
+                    var next = $(this.domNode).closest('tr').next('tr');
+                    //Slide the row up or down
+                    if (button.get('label') === '+') {
+                        next.show();
+                        next.find('div:first()').slideDown('300', 'linear');
+                        button.set('label', '-');
+                    } else {
+                        next.find('div:first()').slideUp('300', 'linear', function () {
+                            next.hide();
+                        });
+                        button.set('label', '+');
+                    }
+                }
+            }, $(this).find('.issue-expander-button')[0]);
+            button.startup();
+            //Fix width
+            $(button.domNode).find('span:first()').css('width', '20px');
+            //Store
+            me.items[issueId].Expander = button;
+
+            //Create edit menu
+            if (registry.byId('issue-edit' + issueId)) registry.byId('issue-edit' + issueId).destroy();
+            if (registry.byId('issue-new-note' + issueId)) registry.byId('issue-new-note' + issueId).destroy();
+            if (registry.byId('issue-close' + issueId)) registry.byId('issue-close' + issueId).destroy();
+            if (registry.byId('issue-delete' + issueId)) registry.byId('issue-delete' + issueId).destroy();
+            var issueEditMenu = new DropDownMenu();
+            issueEditMenu.addChild(new dijit.MenuItem({ label: "Edit", id: 'issue-edit' + issueId }));
+            issueEditMenu.addChild(new dijit.MenuItem({ label: "New Note", id: 'issue-new-note' + issueId }));
+            issueEditMenu.addChild(new dijit.MenuItem({ label: "Close", id: 'issue-close' + issueId }));
+            issueEditMenu.addChild(new dijit.MenuItem({ label: "Delete", id: 'issue-delete' + issueId }));
+
+            me.items[issueId].warnDelete = function (callback) {
+                //Create the dialog box
+                var dialog = new Dialog({
+                    title: 'Delete Issue?',
+                    content: '<div>Are you sure you want to delete this issue?</div><button id="delete-issue-button" type="button"></button>',
+                    style: "width: 350px",
+                    hide: function () {
+                        button.destroy();
+                        dialog.destroy();
+                    }
+                });
+
+                //Show the dialog box
+                dialog.show();
+
+                //Create the button
+                if (registry.byId('delete-issue-button')) registry.byId('delete-issue-button').destroy();
+                var button = new Button({
+                    label: "Delete Issue",
+                    style: {
+                        display: 'inline'
+                    },
+                    onClick: function () {
+                        callback(dialog);
+                    }
+                }, 'delete-issue-button');
+                $(button.domNode).find('.dijitButtonNode').css({
+                    display: 'block',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                    width: '150px'
+                });
+                button.startup();
+            };
+
+            //Create an edit/close/delete option
+            me.items[issueId].Edit = new DropDownButton({
+                label: "Actions",
+                dropDown: issueEditMenu
+            }, $(this).find('.issue-edit-button')[0]);
+
+            var dom = $(this);
+            me.items[issueId].updateIssue = function (issue) {
+                $(dom).find('td:nth-child(2)').html(issue.IssueType);
+                $(dom).find('td:nth-child(3)').html(issue.Severity);
+                $(dom).find('td:nth-child(4)').html(issue.Title);
+                $(dom).find('td:nth-child(5)').html(issue.Assigned);
+                $(dom).find('td:nth-child(6)').html(issue.WaitingOn);
+                $(dom).find('td:nth-child(7)').html(issue.Status);
+                $(dom).next().find('.issue-description').html(issue.Description);
+                //Check the status, show/hide as applicable
+                if (me.Type.get('value') !== 'All' && me.Type.get('value') !== issue.Status) {
+                    $(dom).next().remove();
+                    $(dom).remove();
+                }
+            }
+        });
+
+        target.find('.issue-body').each(function () {
+            var issueId = $(this).attr('id').split('-')[2],
+              issue = _.find(store.Issues, { IssueId: issueId });
+            dom = $($(this));
+
+            //Store references to the edit/delete links
+            me.items[issueId].notes = {};
+            $(this).find('.issue-note').each(function () {
+                //TODO - build this all in dom elements instead of as a string and use buildIssueNote function
+                var noteId = $(this).attr('id').split('-')[1],
+                  dom = $($(this));
+                me.items[issueId].notes[noteId] = {};
+                me.items[issueId].notes[noteId].Data = _.find(store.Notes, { NoteId: noteId });
+                me.items[issueId].notes[noteId].EditNote = $(this).find('.issue-note-edit')[0];
+                me.items[issueId].notes[noteId].DeleteNote = $(this).find('.issue-note-delete')[0];
+                me.items[issueId].notes[noteId].updateNote = function (note) {
+                    dom.find('.issue-note-note').html(note.Note);
+                    dom.find('.issue-note-source').html(note.Source);
+                    dom.find('.issue-note-created').html(note.CreatedBy + " - " + moment(note.CreatedOn).format('l') + (note.CreatedOn !== note.ModifiedOn ? ' (modified ' + moment(note.ModifiedOn).format('l') + ')' : ''));
+                };
+                me.items[issueId].notes[noteId].deleteNote = function () {
+                    dom.remove();
+                };
+                me.items[issueId].notes[noteId].warnDelete = function (callback, hide) {
+                    //Create the dialog box
+                    var dialog = new Dialog({
+                        title: 'Delete Note?',
+                        content: '<div>Are you sure you want to delete this note?</div><button id="delete-note-button" type="button"></button>',
+                        style: "width: 350px",
+                        hide: function () {
+                            button.destroy();
+                            dialog.destroy();
+                            if (hide) hide();
+                        }
+                    });
+
+                    //Show the dialog box
+                    dialog.show();
+
+                    //Create the button
+                    if (registry.byId('delete-note-button')) registry.byId('delete-note-button').destroy();
+                    var button = new Button({
+                        label: "Delete Note",
+                        style: {
+                            display: 'inline'
+                        },
+                        onClick: function () {
+                            callback(dialog);
+                        }
+                    }, 'delete-note-button');
+                    $(button.domNode).find('.dijitButtonNode').css({
+                        display: 'block',
+                        marginLeft: 'auto',
+                        marginRight: 'auto',
+                        width: '150px'
+                    });
+                    button.startup();
+                };
+            });
+
+            //Create an add note function
+            me.items[issueId].addNote = function (note) {
+                //Build the object
+                note = buildIssueNote(note);
+                //Add it to the dom
+                $('#issue-body-' + issueId + ' > td > div').append(note.dom);
+                return note;
+            };
+        });
+
+        //Create a dijit button for the create button
+        if (registry.byId('create-issue')) registry.byId('create-issue').destroy();
+        me.Create = new Button({
+            label: "Create",
+            style: {
+                'float': 'left',
+                margin: '0'
+            }
+        }, target.find('#create-issue')[0]);
+        me.Create.startup();
+        $(me.Create.domNode).find('span:first()').css('padding', '2px');
+
+        //Create a dijit combo button for the issues to view
+        if (registry.byId('issue-type')) registry.byId('issue-type').destroy();
+
+        me.Type = new Select({
+            options: [
+              { label: "Open", value: "Open", selected: status === "Open" },
+              { label: "Closed", value: "Closed", selected: status === "Closed" },
+              { label: "All", value: "All", selected: status === "All" }
+            ],
+            style: {
+                'float': 'right',
+                width: '100px'
+            }
+        }, target.find('#issue-type')[0]);
+        me.Type.startup();
+
+        return me;
+    }
+
+    function updateIssues(store) {
+        var type = registry.byId('issue-type').get('value');
+        return renderIssues(store, type, $('#issues').html(''));
+    }
+
+    function buildDocumentTree(store) {
+        var rootNode = {
+            id: 'root',
+            type: 'root',
+            text: store.City + ", " + store.State + ' #' + store.StoreNumber,
+            state: { 'opened': true },
+            children: []
+        };
+
+        //Add the purchase orders if there are any
+        if (typeof store.PurchaseOrders !== 'undefined' && store.PurchaseOrders.length > 0) {
+            var purchaseOrderFolderNode = {
+                id: 'purchase-order-folder',
+                text: 'Purchase Orders',
+                // state: { 'opened' : true},
+                type: 'undeletableFolder',
+                children: []
+            };
+            rootNode.children.push(purchaseOrderFolderNode);
+
+            _.each(store.PurchaseOrders, function (po) {
+                //Add PO
+                var POURL = "#purchase-order/" + po.PurchaseOrderId;
+                if (po.PoType.indexOf("IDTech") > -1)
+                    POURL = "#idtech-purchase-order/" + po.PurchaseOrderId;
+                var poNode = {
+                    id: 'po-' + po.PurchaseOrderId,
+                    text: po.PoType + " PO#" + po.PurchaseOrderId + " (Click to Edit)",
+                    type: 'purchaseOrder',
+                    url: POURL,
+                    // state: { 'opened' : true},
+                    children: []
+                };
+                purchaseOrderFolderNode.children.push(poNode);
+
+                //Add PO PDFs
+                if (po.Documents && po.Documents.length > 0) {
+                    //Sort
+                    po.Documents = _.sortBy(po.Documents, function (doc) {
+                        if (doc.FileName.indexOf('revision') === -1) return 0;
+                        return parseInt(doc.FileName.replace('Purchase Order - ' + po.PurchaseOrderId, '').replace('- revision ', '').split('.')[0]);
+                    });
+                    //Display
+                    _.each(po.Documents, function (poDoc) {
+                        poNode.children.push({
+                            id: 'po-' + poDoc.FileName,
+                            text: poDoc.FileName,
+                            url: encodeURI(poDoc.FilePath),
+                            type: 'file'
+                        });
+                    });
+                }
+            });
+        }
+
+        //Add the signoff documents if there are any
+        if (typeof store.DailyUpdate !== 'undefined' && store.DailyUpdate.Documents !== 'undefined') {
+            var signoffNumber = 0,
+              pictureNumber = 0;
+            var signoffFolder, pictureFolder;
+
+            _.forEach(store.DailyUpdate.Documents, function (document, index) {
+                if (document.FilePath.indexOf('signoff') !== -1) {
+                    //Add the signoff folder if it hasn't been created yet
+                    if (typeof signoffFolder === 'undefined') {
+                        signoffFolder = {
+                            id: 'signoff-folder',
+                            text: 'Signoffs',
+                            type: 'undeletableFolder',
+                            // state: { 'opened' : true},
+                            children: []
+                        };
+                        rootNode.children.push(signoffFolder);
+                    }
+
+                    //Add the signoff item to the folder
+                    signoffFolder.children.push({
+                        id: 'signoff-' + ++signoffNumber,
+                        text: "Signoff #" + signoffNumber + /\.[0-9a-z]+$/i.exec(document.FilePath)[0],
+                        url: encodeURI(document.FilePath),
+                        type: 'file'
+                    });
+                } else {
+                    if (typeof pictureFolder === 'undefined') {
+                        //Add the picture folder if it hasn't been created yet
+                        pictureFolder = {
+                            id: 'picture-folder',
+                            text: 'Update Photos',
+                            type: 'undeletableFolder',
+                            // state: { 'opened' : true},
+                            children: [{
+                                id: 'picture-gallery',
+                                text: "Click to View Gallery",
+                                url: encodeURI("https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/DailyUpdates/index.aspx#" + store.StoreNumber + "/dailyupdate/gallery"),
+                                type: 'file'
+                            }]
+                        };
+                        rootNode.children.push(pictureFolder);
+                    }
+
+                    //Add the picture to the folder
+                    pictureFolder.children.push({
+                        id: 'picture-' + ++pictureNumber,
+                        text: "Photo #" + pictureNumber + /\.[0-9a-z]+$/i.exec(document.FilePath)[0] + " - " + moment.unix(document.FileName.split('-')[0]).format('l'),
+                        url: encodeURI(document.FilePath),
+                        type: 'file'
+                    });
+                }
+            });
+        }
+
+        //if image attachments found in Payment Survey Signoff
+        var signoffPictureNumber = 0;
+        var signoffPictureFolder;
+        var level10DataOrdersNumber = 0;
+        var level10DataOrders;
+
+        if (typeof signoffPictureFolder === 'undefined') {
+            signoffPictureFolder = {
+                id: 'PAYSsignoff-folder',
+                text: 'Next Gen PAYS - Signoff Photos',
+                type: 'undeletableFolder',
+                children: []
+                // state: { 'opened' : true},
+            };
+            rootNode.children.push(signoffPictureFolder);
+        }
+
+        if (typeof level10DataOrders === 'undefined') {
+            level10DataOrders = {
+                id: 'LevelTenDataOrders-folder',
+                text: 'Level 10 Data Orders',
+                type: 'undeletableFolder',
+                children: []
+                // state: { 'opened' : true},
+            };
+            rootNode.children.push(level10DataOrders);
+        }
+
+        $().SPServices({
+            operation: "GetListItems",
+            async: false,
+            listName: "Level 10 Orders",
+            CAMLQuery: "<Query><Where><Eq><FieldRef Name='Title' /><Value Type='Text'>" + store.StoreNumber + "</Value></Eq></Where></Query>",
+            /*CAMLViewFields: "<ViewFields><FieldRef Name='Title' /></ViewFields>",*/
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                    var id = $(this).attr("ows_ID");
+                    var PONUM = $(this).attr("ows_PO_x0020_Number");
+
+                    level10DataOrders.children.push({
+                        id: 'Level10DataOrder-' + ++level10DataOrdersNumber,
+                        text: "PO # " + PONUM + " (Click to View / Cancel)",
+                        url: "/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Level%2010%20Orders/DispForm.aspx?ID=" + id,
+                        type: 'file'
+                    });
+                });
+            }
+        });
+
+
+
+        $().SPServices({
+            operation: "GetListItems",
+            async: false,
+            listName: "Payment Survey Signoff",
+            CAMLQuery: "<Query><Where><Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Text'>" + store.StoreNumber + "</Value></Eq></Where></Query>",
+            /*CAMLViewFields: "<ViewFields><FieldRef Name='Title' /></ViewFields>",*/
+            completefunc: function (xData, Status) {
+
+                var previousFileName = "";
+                var fileNameCounter = 1;
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                    var id = $(this).attr("ows_ID");
+                    var title = $(this).attr("ows_Title");
+
+                    $().SPServices({
+                        async: false,
+                        operation: "GetAttachmentCollection",
+                        listName: "Payment Survey Signoff",
+                        ID: id,
+                        completefunc: function (xData, Status) {
+                            $(xData.responseXML).find("Attachments > Attachment").each(function (i, el) {
+                                var $node = $(this),
+                                        filePath = $node.text(),
+                                        arrString = filePath.split("/"),
+                                        fileName = arrString[arrString.length - 1];
+                                var getFileNameOnly = fileName.substring(0, fileName.indexOf("-"));
+                                if (getFileNameOnly.indexOf("SurveyStart") === 0)
+                                    return true;
+
+                                getFileNameOnly = getFileNameOnly.replace(/([A-Z])/g, ' $1').trim();
+
+                                if (previousFileName === getFileNameOnly)
+                                    fileNameCounter++;
+                                else
+                                    fileNameCounter = 1;
+
+                                var fileNameCounterString = "";
+                                if (fileNameCounter > 1) {
+                                    if (fileNameCounter < 10)
+                                        fileNameCounterString = " - 0" + fileNameCounter;
+                                    else
+                                        fileNameCounterString = " - " + fileNameCounter;
+                                }
+                                signoffPictureFolder.children.push({
+                                    id: 'PAYSsignoffphotos-' + ++signoffPictureNumber,
+                                    text: getFileNameOnly + fileNameCounterString,
+                                    url: encodeURI(filePath),
+                                    type: 'file'
+                                });
+
+                                previousFileName = getFileNameOnly;
+                            });
+                        }
+                    });
+                });
+            }
+        });
+
+        //Add the documents
+        _.forEach(store.Documents, function (document, index) {
+            //Create any sudo folders (separator is a [`] character combo)
+            var lastNode = rootNode;
+            var parts = document.FileName.split('[`]'),
+              fileName = parts.pop();
+
+            //Go through all the folder parts and make sure the whole chain exists
+            _.each(parts, function (part) {
+                //Look for the folder in the child nodes
+                var nextNode = _.find(lastNode.children, { id: 'folder-' + part });
+                if (typeof nextNode === 'undefined') {
+                    nextNode = {
+                        id: 'folder-' + part,
+                        text: part,
+                        children: []
+                    };
+                    lastNode.children.push(nextNode);
+                }
+                lastNode = nextNode;
+            });
+
+            //Add the item to it's folder
+            lastNode.children.push({
+                id: document.FileName,
+                text: fileName,
+                url: encodeURI(document.FilePath),
+                type: 'file'
+            });
+        });
+
+        return rootNode;
+    }
+
+    function renderDocuments(store, view) {
+        jsTreeDom = view.el.find('#document-tree');
+
+        //$("#document-manage").html("&nbsp;&nbsp;[<a href='https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Purchase%20Order/AllItems.aspx?FilterField1=StoreNumber&FilterValue1=" + store.StoreNumber + "'>manage POs</a>]");
+        $("#document-manage").html("<div style='float:left;'>&nbsp;&nbsp;[<a href='https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Purchase%20Order/AllItems.aspx?FilterField1=StoreNumber&FilterValue1=" + store.StoreNumber + "'>manage POs</a>]</div><div style='float:right;'><table><tr><td colspan='3'>[<a href='https://videoredirect.sonicdrivein.com/RetailTech/POSSurvey/?store=" + store.StoreNumber + "'  target='_blank'>Kitchen POS Equipment Survey</a>]</td></tr><tr><td>[<a href='https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/survey' target='_blank'>Survey</a>]<br />&nbsp;<span style='font-size:12px;'>-<a href='https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/PaymentSurveySignoff/ViewPhotosAllArea.html?store=" + store.StoreNumber + "&area=SurveyStart' target='_blank'>All Photos</a></span></td><td valign=top>&nbsp;[<a target='_blank' href='https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/checkin'>Check In</a>]<br /></td><td>&nbsp;[<a href='https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/dailyupdate' target='_blank'>Signoff</a>]&nbsp;&nbsp;&nbsp;<br />&nbsp;<span style='font-size:12px;'>-<a href='https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/PaymentSurveySignoff/ViewPhotosAllArea.html?store=" + store.StoreNumber + "&area=Signoff&area2=HardwareInstallation&area3=HardwareRemoval&area4=NetworkConnectivity&area5=PaymentTerminal' target='_blank'>All Photos</a></span></td></tr></table></div><div style='clear:both;'></div>");
+        var me = {
+            el: jsTreeDom,
+            updateDocuments: function () {
+                jsTreeDom.jstree(true).settings.core.data = [buildDocumentTree(store)];
+                jsTreeDom.jstree(true).refresh();
+            }
+        };
+
+        //Setup click event listener
+        jsTreeDom.on('select_node.jstree', function (node, selected, event) {
+            if (selected.node.original.url) {
+                window.open(selected.node.original.url, '_blank');
+            }
+        });
+
+        //Setup drag and drop listener
+        jsTreeDom.on('drop', function (e) {
+            jsTreeDom.css('background-color', '');
+            jsTreeDom.css('border', '5px #FFF solid');
+            //Call event function if it exists
+            if (view.onUploadDocuments) {
+                view.onUploadDocuments(e.originalEvent);
+            }
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        //Setup drag and drop hover listener
+        jsTreeDom.on('dragover', function (e) {
+            if (jsTreeDom.css('background-color') !== '') {
+                jsTreeDom.css('background-color', '#dff2ff');
+                jsTreeDom.css('border', '5px #21618C dashed');
+            }
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        //Setup drag and drop leave listener
+        jsTreeDom.on('dragleave', function (e) {
+            jsTreeDom.css('background-color', '');
+            jsTreeDom.css('border', '5px #FFF solid');
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        //Turn it into a tree
+        jsTreeDom.jstree({
+            core: {
+                multiple: false,
+                responsive: true,
+                themes: {
+                    responsive: true
+                },
+                data: [buildDocumentTree(store)]
+            },
+            types: {
+                "#": {
+                    max_children: 1,
+                    valid_children: ["root"]
+                },
+                root: {
+                    valid_children: ["default"]
+                },
+                "default": {
+                    valid_children: ["default", "file"]
+                },
+                file: {
+                    icon: "jstree-file",
+                    valid_children: []
+                },
+                purchaseOrder: {
+                    icon: "jstree-file",
+                    valid_children: ['file']
+                },
+                undeletableFolder: {
+                    validChildren: ['file']
+                }
+            },
+            contextmenu: {
+                select_node: false,
+                items: function (node, callback) {
+                    if (node.type === 'default') {
+                        return {
+                            delete: {
+                                separator_before: false,
+                                separator_after: false,
+                                _disabled: false, //(this.check("create_node", data.reference, {}, "last")),????
+                                label: "Delete",
+                                action: function (data) {
+                                    //TODO - Delete children files
+                                    alert('not implmented');
+                                }
+                            }
+                        }
+                    } else if (node.type === 'root') {
+                        return {
+                            uploadFiles: {
+                                separator_before: false,
+                                separator_after: true,
+                                _disabled: false, //(this.check("create_node", data.reference, {}, "last")),????
+                                label: "Upload Files",
+                                action: function (data) {
+                                    //Show File Upload Box from hidden input
+                                    var fileInput = $('<input  type="file" style="display: none;" multiple/>');
+                                    fileInput.on('change', function () {
+                                        var files = fileInput[0].files;
+
+                                        if (files && files[0]) {
+                                            var file = files[0];
+                                            alert(file.name);
+                                        }
+                                        var fileName = $(this).val();
+                                        $(".filename").html(fileName);
+                                    });
+                                    fileInput.click();
+                                }
+                            },
+                            uploadFolder: {
+                                separator_before: false,
+                                separator_after: false,
+                                _disabled: false, //(this.check("create_node", data.reference, {}, "last")),????
+                                label: "Upload Folder (Chrome)",
+                                action: function (data) {
+                                    //TODO - Show Folder Upload Box from Hidden Input
+                                    alert('not implmented');
+                                }
+                            }
+                        }
+                    } else if (node.type === 'file' && node.id.indexOf('po-') !== 0 && node.id.indexOf('signoff-') !== 0 && node.id.indexOf('picture-') !== 0) {
+                        return {
+                            delete: {
+                                separator_before: false,
+                                separator_after: false,
+                                _disabled: false,
+                                label: "Delete",
+                                action: function (data) {
+                                    //Delete File
+                                    var modal = $(deleteTemplate);
+                                    modal.find('#file-name').html(node.text);
+                                    modal.modal({
+                                        escapeClose: false,
+                                        clickClose: false,
+                                        showClose: false
+                                    });
+
+
+                                    //Click to submit
+                                    modal.find('#delete-file').on('click', function () {
+                                        if (view.onDeleteFile) {
+                                            view.onDeleteFile(node.original.url, modal);
+                                        }
+                                    });
+                                    //Click to cancel rename
+                                    modal.find('#cancel-delete', function () {
+                                        $.modal.close();
+                                        modal.remove();
+                                    });
+
+
+                                }
+                            },
+                            rename: {
+                                separator_before: false,
+                                separator_after: false,
+                                _disabled: false,
+                                label: "Rename",
+                                action: function (data) {
+                                    //TODO - Rename
+                                    var modal = $(renameTemplate);
+                                    modal.find('#name').val(node.text);
+                                    modal.modal({
+                                        escapeClose: false,
+                                        clickClose: false,
+                                        showClose: false
+                                    });
+
+                                    //Enter to submit
+                                    modal.find('#name').keypress(function (e) {
+                                        if (e.which === 13) {
+                                            $(this).blur();
+                                            modal.find('#rename').focus().click();
+                                        }
+                                    });
+                                    //Click to submit
+                                    modal.find('#rename').on('click', function () {
+                                        if (view.onRenameFile) {
+                                            view.onRenameFile(node.original.url, modal.find('#name').val(), modal);
+                                        }
+                                    });
+                                    //Click to cancel rename
+                                    modal.find('#cancel-rename', function () {
+                                        $.modal.close();
+                                        modal.remove();
+                                    });
+                                }
+                            }
+                        }
+                    } else {
+                        return {
+                            nope: {
+                                separator_before: false,
+                                separator_after: false,
+                                _disabled: false,
+                                label: "Special File/Folder - Can't Upload or Delete",
+                                action: function (data) { }
+                            }
+                        }
+                    }
+                }
+            },
+            sort: function (a, b) {
+                a1 = this.get_node(a);
+                b1 = this.get_node(b);
+                if (a1.type === b1.type) {
+                    return (a1.text > b1.text) ? 1 : -1;
+                } else {
+                    return (a1.type === 'file') ? 1 : -1;
+                }
+            },
+            plugins: ["contextmenu", 'types', 'responsive', 'sort']
+        });
+
+        return me;
+    }
+
+    function renderConstruction(store, options) {
+
+        //Process the data
+        //Stop if another route has registered
+        if (!options.routeCheck()) {
+            return;
+        }
+        var me = {
+            store: store
+        };
+
+        //Turn the summary template into a dom element
+        var summary = $($.parseHTML(constructionSummaryTemplate));
+        me.el = summary;
+
+        //if (summary.find('#AudioIncludeCable').val() === '')
+        //    summary.find('#AudioIncludeCable').html('UNASSIGNED');
+        //if (summary.find('#IncludeSpeakersMics').val() === '') 
+        //    summary.find('#IncludeSpeakersMics').html('UNASSIGNED');
+
+        $().SPServices({
+            operation: "GetListItems",
+            async: false,
+            listName: "Combined Construction Extend",
+            CAMLViewFields: "<ViewFields Properties='True' />",
+            CAMLQuery: "<Query><Where><Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Text'>" + store.StoreNumber + "</Value></Eq></Where></Query>",
+            CAMLRowLimit: 1,
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                    //store.VP6800NumOfTerminals = $(this).attr("ows_VP6800_x0020_Num_x0020_Of_x0020_");
+                    store.InforServerHDDUpgradeType = $(this).attr("ows_Infor_x0020_Server_x0020_HDD_x00");
+                    store.InforServerHDDUpgradeOrdered = $(this).attr("ows_Infor_x0020_Server_x0020_HDD_x000");
+                    store.InforServerHDDUpgradeDelivered = $(this).attr("ows_Infor_x0020_Server_x0020_HDD_x001");
+                    store.InforServerHDDUpgradeGoLive = $(this).attr("ows_Infor_x0020_Server_x0020_HDD_x002");
+                    store.HMEIntegrationType = $(this).attr("ows_HME_x0020_Integration_x0020_Type");
+                    store.HMEIntegrationGoLive = $(this).attr("ows_HME_x0020_Integration_x0020_Go_x");
+                    store.HMEIntegrationInstaller = $(this).attr("ows_HME_x0020_Integration_x0020_Inst");
+                    store.HMEIntegrationITPM = $(this).attr("ows_HME_x0020_Integration_x0020_IT_x");
+                    store.VP6800GoLive = $(this).attr("ows_VP6800_x0020_Go_x0020_Live");
+                    store.VP6800NumOfTerminals = $(this).attr("ows_VP6800_x0020_Num_x0020_Of_x0020_");
+                    store.VP6800NumOf45Units = $(this).attr("ows_VP6800_x0020_Num_x0020_Of_x0020_0");
+                    store.VP6800NumOf90Units = $(this).attr("ows_VP6800_x0020_Num_x0020_Of_x0020_1");
+                    store.VP6800DTWindow = $(this).attr("ows_VP6800_x0020_DT_x0020_Window");
+                    store.VP6800Sunshield = $(this).attr("ows_VP6800_x0020_Sunshield");
+                    store.VP6800Ordered = $(this).attr("ows_VP6800_x0020_Ordered");
+                    store.VP6800Delivery = $(this).attr("ows_VP6800_x0020_Delivery");
+                    store.VP6800TrackingNum = $(this).attr("ows_VP6800_x0020_Tracking_x0020_Num");
+                    store.VP6800Level10TrackingNum = $(this).attr("ows_Level_x0020_10_x0020_Tracking_x0");
+                    store.VP6800Installer = $(this).attr("ows_VP6800_x0020_Installer");
+                    store.VP6800PONum = $(this).attr("ows_VP6800_x0020_PO_x0020_Num");
+                    store.VP6800ITPM = $(this).attr("ows_VP6800_x0020_IT_x0020_PM");
+                    store.HughesSwitchUpgradeOrdered2 = $(this).attr("ows_Hughes_x0020_Switch_x0020_Upgrad");
+                    store.VP6800ProjectSiteSurveyDate = $(this).attr("ows_VP6800_x0020_Project_x0020_Site_");
+                    store.VP6800ProjectSiteSurveyCompany = $(this).attr("ows_VP6800_x0020_Project_x0020_Site_0");
+                    store.VP6800ProjectSignOffsComplete = $(this).attr("ows_VP6800_x0020_Project_x0020_Sign_");
+                    store.VP6800ProjectSwitchSerialNum = $(this).attr("ows_VP6800_x0020_Project_x0020_Switc");
+                    store.VP6800ProjectSwitchSerialNumTwo = $(this).attr("ows_VP6800_x0020_Project_x0020_Switc0");
+                    store.VP6800ProjectSwitchUPSSerialNum = $(this).attr("ows_VP6800_x0020_Project_x0020_Switc1");
+                    store.VP6800ProjectPaymentSerialNum1 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme");
+                    store.VP6800ProjectLaneNum1 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_");
+                    store.VP6800ProjectPaymentSerialNum2 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme0");
+                    store.VP6800ProjectLaneNum2 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_0");
+                    store.VP6800ProjectPaymentSerialNum3 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme1");
+                    store.VP6800ProjectLaneNum3 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_1");
+                    store.VP6800ProjectPaymentSerialNum4 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme2");
+                    store.VP6800ProjectLaneNum4 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_2");
+                    store.VP6800ProjectPaymentSerialNum5 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme3");
+                    store.VP6800ProjectLaneNum5 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_3");
+                    store.VP6800ProjectPaymentSerialNum6 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme4");
+                    store.VP6800ProjectLaneNum6 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_4");
+                    store.VP6800ProjectPaymentSerialNum7 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme5");
+                    store.VP6800ProjectLaneNum7 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_5");
+                    store.VP6800ProjectPaymentSerialNum8 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme6");
+                    store.VP6800ProjectLaneNum8 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_6");
+
+                    store.VP6800ProjectPaymentSerialNum9 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme7");
+                    store.VP6800ProjectLaneNum9 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_7");
+
+                    store.VP6800ProjectPaymentSerialNum10 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme8");
+                    store.VP6800ProjectLaneNum10 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_8");
+
+                    store.VP6800ProjectNotes = $(this).attr("ows_VP6800_x0020_Project_x0020_Notes");
+                    store.VP6800ServerCabinet = $(this).attr("ows_VP6800_x0020_Server_x0020_Cabine");
+                    store.VP6800ServerCabinetShelf = $(this).attr("ows_VP6800_x0020_Server_x0020_Cabine0");
+                    store.VP6800ServerCabinetNumber = $(this).attr("ows_VP6800_x0020_Server_x0020_Cabine1");
+
+                    store.VP6800StoreCloseTime = $(this).attr("ows_VP6800_x0020_Store_x0020_Close_x");
+                    store.VP6800InstallerLead = $(this).attr("ows_VP6800_x0020_Installer_x0020_Lea");
+
+                    store.VP6800IntroCallToFee = $(this).attr("ows_VP6800_x0020_Intro_x0020_Call_x0");
+                    store.VP6800SiteSurveyRequested = $(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x");
+                    store.VP6800HughesDoctoFEE = $(this).attr("ows_VP6800_x0020_Hughes_x0020_Doc_x0");
+                    store.VP6800HughesDoctoHughes = $(this).attr("ows_VP6800_x0020_Hughes_x0020_Doc_x00");
+                    store.VP6800SiteSurveyConfirmedbyInstaller = $(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x0");
+                    store.VP6800SiteSurveyDateCommtoFEE = $(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x1");
+                    store.VP6800SiteSurveyResultsReviewed = $(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x3");
+
+                    store.VP6800SiteSurveyCompleted = $(this).attr("ows_VP6800_x0020_SITE_x0020_SURVEY_x2");
+                    store.VP6800SSTech = $(this).attr("ows_VP6800_x0020_SS_x0020_Tech");
+                    store.VP6800PartsCall = $(this).attr("ows_VP6800_x0020_Parts_x0020_Call");
+                    store.VP6800OrderDocSenttoFee = $(this).attr("ows_VP6800_x0020_Order_x0020_Doc_x00");
+                    store.VP6800SignaturePageReceived = $(this).attr("ows_VP6800_x0020_Signature_x0020_Pag");
+                    store.VP6800InstallScheduled = $(this).attr("ows_VP6800_x0020_Install_x0020_Sched");
+                    store.VP680030DayComm = $(this).attr("ows_VP6800_x0020_30_x0020_Day_x0020_");
+                    store.VP68002WeekComm = $(this).attr("ows_VP6800_x0020_2_x0020_Week_x0020_");
+                    store.VP6800ActionItemCalltoFEEfromSS = $(this).attr("ows_VP6800_x0020_Action_x0020_Item_x");
+                    store.VP68001WeekComm = $(this).attr("ows_VP6800_x0020_1_x0020_Week_x0020_");
+                    store.VP6800DayBeforeInstallComm = $(this).attr("ows_VP6800_x0020_Day_x0020_Before_x0");
+                    store.VP6800ReviewSignOffs = $(this).attr("ows_VP6800_x0020_Review_x0020_Sign_x");
+                    store.VP6800RemediationDate = $(this).attr("ows_VP6800_x0020_Remediation_x0020_D");
+                    store.VP6800DeliverablestoFEE = $(this).attr("ows_VP6800_x0020_Deliverables_x0020_");
+
+                    store.AddressBillTo = $(this).attr("ows_AddressBillTo");
+                    store.CompanyBillTo = $(this).attr("ows_CompanyBillTo");
+                    store.CityBillTo = $(this).attr("ows_CityBillTo");
+                    store.StateBillTo = $(this).attr("ows_StateBillTo");
+                    store.ZipBillTo = $(this).attr("ows_ZipBillTo");
+                    store.EmailBillTo = $(this).attr("ows_EmailBillTo");
+                    store.VP6800ProjectServiceNowNum = $(this).attr("ows_VP6800_x0020_Project_x0020_Servi");
+
+                    store.PaymentTerminalAndInfoLane50Facing = $(this).attr("ows_PaymentTerminalAndInfoLane50Faci");
+                    store.PaymentTerminalAndInfoLane91Facing = $(this).attr("ows_PaymentTerminalAndInfoLane91Faci");
+                    store.PaymentTerminalAndInfoLane92Facing = $(this).attr("ows_PaymentTerminalAndInfoLane92Faci");
+                    store.PaymentTerminalAndInfoLane93Facing = $(this).attr("ows_PaymentTerminalAndInfoLane93Faci");
+                    store.PaymentTerminalAndInfoLane94Facing = $(this).attr("ows_PaymentTerminalAndInfoLane94Faci");
+                    store.PaymentTerminalAndInfoLane95Facing = $(this).attr("ows_PaymentTerminalAndInfoLane95Faci");
+                    store.PaymentTerminalAndInfoLane96Facing = $(this).attr("ows_PaymentTerminalAndInfoLane96Faci");
+                    store.PaymentTerminalAndInfoLane97Facing = $(this).attr("ows_PaymentTerminalAndInfoLane97Faci");
+                    store.PaymentTerminalAndInfoLane98Facing = $(this).attr("ows_PaymentTerminalAndInfoLane98Faci");
+                    store.PaymentTerminalAndInfoLane99Facing = $(this).attr("ows_PaymentTerminalAndInfoLane99Faci");
+
+                    store.FirewallInstaller = $(this).attr("ows_FirewallInstaller");
+                    store.FirewallGoLive = $(this).attr("ows_FirewallGoLive");
+                    store.FirewallITPM = $(this).attr("ows_FirewallITPM");
+                    store.FirewallNotes = $(this).attr("ows_FirewallNotes");
+                });
+            }
+        });
+
+        if (store.FirewallGoLive !== '' && typeof store.FirewallGoLive !== 'undefined') {
+            if (moment(store.FirewallGoLive).isValid()) {
+                store.FirewallGoLive = moment(store.FirewallGoLive).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.InforServerHDDUpgradeDelivered !== '' && typeof store.InforServerHDDUpgradeDelivered !== 'undefined') {
+            if (moment(store.InforServerHDDUpgradeDelivered).isValid()) {
+                store.InforServerHDDUpgradeDelivered = moment(store.InforServerHDDUpgradeDelivered).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.InforServerHDDUpgradeGoLive !== '' && typeof store.InforServerHDDUpgradeGoLive !== 'undefined') {
+            if (moment(store.InforServerHDDUpgradeGoLive).isValid()) {
+                store.InforServerHDDUpgradeGoLive = moment(store.InforServerHDDUpgradeGoLive).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.HMEIntegrationGoLive !== '' && typeof store.HMEIntegrationGoLive !== 'undefined') {
+            if (moment(store.HMEIntegrationGoLive).isValid()) {
+                store.HMEIntegrationGoLive = moment(store.HMEIntegrationGoLive).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800GoLive !== '' && typeof store.VP6800GoLive !== 'undefined') {
+            if (moment(store.VP6800GoLive).isValid()) {
+                store.VP6800GoLive = moment(store.VP6800GoLive).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800Delivery !== '' && typeof store.VP6800Delivery !== 'undefined') {
+            if (moment(store.VP6800Delivery).isValid()) {
+                store.VP6800Delivery = moment(store.VP6800Delivery).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800Ordered !== '' && typeof store.VP6800Ordered !== 'undefined') {
+            if (moment(store.VP6800Ordered).isValid()) {
+                store.VP6800Ordered = moment(store.VP6800Ordered).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800ProjectSiteSurveyDate !== '' && typeof store.VP6800ProjectSiteSurveyDate !== 'undefined') {
+            if (moment(store.VP6800ProjectSiteSurveyDate).isValid()) {
+                store.VP6800ProjectSiteSurveyDate = moment(store.VP6800ProjectSiteSurveyDate).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800IntroCallToFee !== '' && typeof store.VP6800IntroCallToFee !== 'undefined') {
+            if (moment(store.VP6800IntroCallToFee).isValid()) {
+                store.VP6800IntroCallToFee = moment(store.VP6800IntroCallToFee).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SiteSurveyRequested !== '' && typeof store.VP6800SiteSurveyRequested !== 'undefined') {
+            if (moment(store.VP6800SiteSurveyRequested).isValid()) {
+                store.VP6800SiteSurveyRequested = moment(store.VP6800SiteSurveyRequested).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800HughesDoctoFEE !== '' && typeof store.VP6800HughesDoctoFEE !== 'undefined') {
+            if (moment(store.VP6800HughesDoctoFEE).isValid()) {
+                store.VP6800HughesDoctoFEE = moment(store.VP6800HughesDoctoFEE).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800HughesDoctoHughes !== '' && typeof store.VP6800HughesDoctoHughes !== 'undefined') {
+            if (moment(store.VP6800HughesDoctoHughes).isValid()) {
+                store.VP6800HughesDoctoHughes = moment(store.VP6800HughesDoctoHughes).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SiteSurveyConfirmedbyInstaller !== '' && typeof store.VP6800SiteSurveyConfirmedbyInstaller !== 'undefined') {
+            if (moment(store.VP6800SiteSurveyConfirmedbyInstaller).isValid()) {
+                store.VP6800SiteSurveyConfirmedbyInstaller = moment(store.VP6800SiteSurveyConfirmedbyInstaller).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SiteSurveyDateCommtoFEE !== '' && typeof store.VP6800SiteSurveyDateCommtoFEE !== 'undefined') {
+            if (moment(store.VP6800SiteSurveyDateCommtoFEE).isValid()) {
+                store.VP6800SiteSurveyDateCommtoFEE = moment(store.VP6800SiteSurveyDateCommtoFEE).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SiteSurveyResultsReviewed !== '' && typeof store.VP6800SiteSurveyResultsReviewed !== 'undefined') {
+            if (moment(store.VP6800SiteSurveyResultsReviewed).isValid()) {
+                store.VP6800SiteSurveyResultsReviewed = moment(store.VP6800SiteSurveyResultsReviewed).format("MM/DD/YYYY");;
+            }
+        }
+
+
+
+        if (store.VP6800SiteSurveyCompleted !== '' && typeof store.VP6800SiteSurveyCompleted !== 'undefined') {
+            if (moment(store.VP6800SiteSurveyCompleted).isValid()) {
+                store.VP6800SiteSurveyCompleted = moment(store.VP6800SiteSurveyCompleted).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SSTech !== '' && typeof store.VP6800SSTech !== 'undefined') {
+            if (moment(store.VP6800SSTech).isValid()) {
+                store.VP6800SSTech = moment(store.VP6800SSTech).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800PartsCall !== '' && typeof store.VP6800PartsCall !== 'undefined') {
+            if (moment(store.VP6800PartsCall).isValid()) {
+                store.VP6800PartsCall = moment(store.VP6800PartsCall).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800OrderDocSenttoFee !== '' && typeof store.VP6800OrderDocSenttoFee !== 'undefined') {
+            if (moment(store.VP6800OrderDocSenttoFee).isValid()) {
+                store.VP6800OrderDocSenttoFee = moment(store.VP6800OrderDocSenttoFee).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SignaturePageReceived !== '' && typeof store.VP6800SignaturePageReceived !== 'undefined') {
+            if (moment(store.VP6800SignaturePageReceived).isValid()) {
+                store.VP6800SignaturePageReceived = moment(store.VP6800SignaturePageReceived).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800InstallScheduled !== '' && typeof store.VP6800InstallScheduled !== 'undefined') {
+            if (moment(store.VP6800InstallScheduled).isValid()) {
+                store.VP6800InstallScheduled = moment(store.VP6800InstallScheduled).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP680030DayComm !== '' && typeof store.VP680030DayComm !== 'undefined') {
+            if (moment(store.VP680030DayComm).isValid()) {
+                store.VP680030DayComm = moment(store.VP680030DayComm).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP68002WeekComm !== '' && typeof store.VP68002WeekComm !== 'undefined') {
+            if (moment(store.VP68002WeekComm).isValid()) {
+                store.VP68002WeekComm = moment(store.VP68002WeekComm).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800ActionItemCalltoFEEfromSS !== '' && typeof store.VP6800ActionItemCalltoFEEfromSS !== 'undefined') {
+            if (moment(store.VP6800ActionItemCalltoFEEfromSS).isValid()) {
+                store.VP6800ActionItemCalltoFEEfromSS = moment(store.VP6800ActionItemCalltoFEEfromSS).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP68001WeekComm !== '' && typeof store.VP68001WeekComm !== 'undefined') {
+            if (moment(store.VP68001WeekComm).isValid()) {
+                store.VP68001WeekComm = moment(store.VP68001WeekComm).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800DayBeforeInstallComm !== '' && typeof store.VP6800DayBeforeInstallComm !== 'undefined') {
+            if (moment(store.VP6800DayBeforeInstallComm).isValid()) {
+                store.VP6800DayBeforeInstallComm = moment(store.VP6800DayBeforeInstallComm).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800ReviewSignOffs !== '' && typeof store.VP6800ReviewSignOffs !== 'undefined') {
+            if (moment(store.VP6800ReviewSignOffs).isValid()) {
+                store.VP6800ReviewSignOffs = moment(store.VP6800ReviewSignOffs).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800RemediationDate !== '' && typeof store.VP6800RemediationDate !== 'undefined') {
+            if (moment(store.VP6800RemediationDate).isValid()) {
+                store.VP6800RemediationDate = moment(store.VP6800RemediationDate).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800DeliverablestoFEE !== '' && typeof store.VP6800DeliverablestoFEE !== 'undefined') {
+            if (moment(store.VP6800DeliverablestoFEE).isValid()) {
+                store.VP6800DeliverablestoFEE = moment(store.VP6800DeliverablestoFEE).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800PONum !== '' && typeof store.VP6800PONum !== 'undefined') {
+            if (store.VP6800PONum.indexOf(".") > -1)
+                store.VP6800PONum = store.VP6800PONum.substring(0, store.VP6800PONum.indexOf("."));
+        }
+
+        //Set the calculated POPS Install and Go-Live Dates
+        if (store.PopsDeliveryDate !== '' && typeof store.PopsDeliveryDate !== 'undefined') {
+            if (moment(store.InstallDate).isValid()) {
+                summary.find('#pops-install-date').html(moment(store.InstallDate).format('l'));
+            }
+            if (moment(store.InstallDate).isValid()) {
+                summary.find('#pops-go-live-date').html(moment(store.GoLiveDate).format('l'));
+            }
+        }
+
+        //Show or hide DT POPS conversion fields based on whether or not the the construction install date is before the DT POPS Delivery Date
+        if ((store.DtPopsDeliveryDate === '' || store.DtPopsDeliveryDate < store.InstallDate) && store.InstallDate > '2016-01-01') {
+            //Remove DtPopsSurveyStatus, DtPopsConstructionDate, DtPopsInstallDate, DtPopsInstaller fields and labels
+            //summary.find('#dt-pops-container').children().remove();
+        } else {
+            summary.find('construction-dt-pops-quantity').remove();
+            summary.find('construction-dt-pops-quantity-label').remove();
+        }
+
+        try {
+            var POSCostTotal = Big(currReplace(store.PosHardwareSoftwareCost))
+                .plus(Big(currReplace(store.PosProServicesSupportCost)));
+            summary.find('#POS-cost').text(formatMoney(POSCostTotal));
+            store.PosCostTotal = POSCostTotal;
+        }
+        catch (err) {
+            console.log("POS - Total Cost - Addition Error:" + err.message);
+        }
+
+        //updateCostTracker(store);
+
+        //--------------------------------------------------------------Activate Editors
+        //Add view to callback for value changes
+        function beforeChange(key, newValue, revertBackground, oldValue, el) {
+            //If function is passed, call on each value change and return the value in this callback - allows business logic before field change
+
+            if (options.beforeChange) return options.beforeChange(me, key, newValue, revertBackground, oldValue, el);
+        }
+
+        //Add view to callback for value changes
+        function afterChange(key, value, store, revertBackground, response) {
+
+            //handle live update of POS - Total Cost:
+            //if (key === 'PosHardwareSoftwareCost' || key === 'PosProServicesSupportCost') {
+            //    try {
+            //        var POSCostTotal = Big(currReplace(store.PosHardwareSoftwareCost))
+            //        .plus(Big(currReplace(store.PosProServicesSupportCost)));
+            //        summary.find('#POS-cost').text(formatMoney(POSCostTotal));
+            //        store.PosCostTotal = POSCostTotal;
+            //    }
+            //    catch (err) {
+            //        console.log("Addition Error in POS Cost:" + err.message);
+            //    }
+            //}
+
+            //handle live update of Store Config - Total Cost:
+            if (key === 'PosHardwareSoftwareCost' || key === 'PosProServicesSupportCost' || key === 'IDTECHCost' || key === 'FABCONCost' || key === 'AudioCost' || key === 'PaysCost' || key === 'DmbCost' || key === 'SonicRadioCost' || key === 'InstallationCost' || key === 'PosStatus'
+|| key === 'PopsStatus'
+|| key === 'AudioStatus'
+|| key === 'CirronetStatus'
+|| key === 'DmbTvStatus'
+|| key === 'SonicRadioStatus'
+|| key === 'ProjectStatus') {
+
+                updateCostTracker(store);
+
+            }
+
+            //If function is passed, call on each value change and return the value in this callback - allows business logic after field change/save
+            if (options.afterChange) return options.afterChange(me, key, value, store, revertBackground, response);
+            else revertBackground();
+        }
+
+        function updateCostTracker(store) {
+            //POS - Total Cost:
+            try {
+                var POSCostTotal = Big(currReplace(store.PosHardwareSoftwareCost))
+                    .plus(Big(currReplace(store.PosProServicesSupportCost)));
+                summary.find('#POS-cost').text(formatMoney(POSCostTotal));
+                store.PosCostTotal = POSCostTotal;
+            }
+            catch (err) {
+                console.log("POS - Total Cost - Addition Error:" + err.message);
+            }
+
+            //FabCon - Total Cost:
+            try {
+                var FabConCostTotal = Big(currReplace(store.FABCONCost))
+                    .plus(Big(currReplace(store.IDTECHCost)));
+                summary.find('#FabConTotalCost').text(formatMoney(FabConCostTotal));
+                store.FabConTotalCost = FabConCostTotal;
+            }
+            catch (err) {
+                console.log("FabCon - Total Cost - Addition Error:" + err.message);
+            }
+
+            //Store Configuration - Total Cost:
+            try {
+                var StoreConfigurationCost = Big(currReplace(store.FABCONCost))
+                    .plus(Big(currReplace(store.IDTECHCost)))
+                    .plus(Big(currReplace(store.AudioCost)))
+                    .plus(Big(currReplace(store.PaysCost)))
+                    .plus(Big(currReplace(store.DmbCost)))
+                    .plus(Big(currReplace(store.SonicRadioCost)))
+                    .plus(Big(currReplace(store.InstallationCost)))
+                    .plus(Big(currReplace(store.PosHardwareSoftwareCost)))
+                    .plus(Big(currReplace(store.PosProServicesSupportCost)));
+
+                summary.find('#StoreConfigurationCost').text(formatMoney(StoreConfigurationCost));
+                store.StoreConfigurationCost = formatMoney(POSCostTotal);
+
+                var passedPosHardwareSoftwareCost = false; //failed
+                if (store.PosStatus === 'Not Required')
+                    passedPosHardwareSoftwareCost = true;
+                else if (store.PosStatus !== 'Not Required' && Big(currReplace(store.PosHardwareSoftwareCost)) > 0)
+                    passedPosHardwareSoftwareCost = true;
+
+                var passedPosProServicesSupportCost = false; //failed
+                if (store.PosStatus === 'Not Required')
+                    passedPosProServicesSupportCost = true;
+                else if (store.PosStatus !== 'Not Required' && Big(currReplace(store.PosProServicesSupportCost)) > 0)
+                    passedPosProServicesSupportCost = true;
+
+                var passedPopsStatus = false; //failed
+                if (store.PopsStatus === 'Not Required')
+                    passedPopsStatus = true;
+                else if (store.PopsStatus !== 'Not Required' && Big(currReplace(store.FABCONCost)) > 0)
+                    passedPopsStatus = true;
+
+                var passedAudioStatus = false; //failed
+                if (store.AudioStatus === 'Not Required')
+                    passedAudioStatus = true;
+                else if (store.AudioStatus !== 'Not Required' && Big(currReplace(store.AudioCost)) > 0)
+                    passedAudioStatus = true;
+
+                var passedCirronetStatus = false; //failed
+                if (store.CirronetStatus === 'Not Required')
+                    passedCirronetStatus = true;
+                else if (store.CirronetStatus !== 'Not Required' && Big(currReplace(store.PaysCost)) > 0)
+                    passedCirronetStatus = true;
+
+                var passedDmbTvStatus = false; //failed
+                if (store.DmbTvStatus === 'Not Required')
+                    passedDmbTvStatus = true;
+                else if (store.DmbTvStatus !== 'Not Required' && Big(currReplace(store.DmbCost)) > 0)
+                    passedDmbTvStatus = true;
+
+                var passedSonicRadioStatus = false; //failed
+                if (store.SonicRadioStatus === 'Not Required')
+                    passedSonicRadioStatus = true;
+                else if (store.SonicRadioStatus !== 'Not Required' && Big(currReplace(store.SonicRadioCost)) > 0)
+                    passedSonicRadioStatus = true;
+
+                var passedProjectStatus = false; //failed
+                if (store.ProjectStatus === 'Not Required')
+                    passedProjectStatus = true;
+                else if (store.ProjectStatus !== 'Not Required' && Big(currReplace(store.InstallationCost)) > 0)
+                    passedProjectStatus = true;
+
+                if (passedPosHardwareSoftwareCost && passedPosProServicesSupportCost && passedPopsStatus && passedAudioStatus && passedCirronetStatus && passedDmbTvStatus && passedSonicRadioStatus && passedProjectStatus)
+                    summary.find('#StoreConfigurationCost').addClass("green-highlight");
+                else
+                    summary.find('#StoreConfigurationCost').removeClass("green-highlight", 1000, "easeInBack");
+
+                UpdateField("Combined Schedule", store.CombinedId, "StoreConfigurationCost", StoreConfigurationCost);
+            }
+            catch (err) {
+                console.log("Store Configuration - Total Cost - Addition Error:" + err.message);
+            }
+        }
+
+        //Activate all the fields marked as display or editable
+        widgetHelper.activate(summary, store, beforeChange, afterChange);
+
+        //--------------------------------------------------------------Create Links to Documents
+        var purchaseOrdersLoaded = false,
+          documentsLoaded = false;
+
+        construction.getDocuments(store, function (s) {
+            documentsLoaded = true;
+            store.Documents = s.Documents;
+            completeDocuments();
+        });
+
+        purchaseOrderStore.loadData(function (purchaseOrders) {
+            store.PurchaseOrders = purchaseOrders;
+            if (purchaseOrders.length > 0) {
+                var poRequests = 0;
+                _.each(purchaseOrders, function (po) {
+                    poRequests++;
+                    purchaseOrderStore.getDocuments(po, function () {
+                        if (--poRequests <= 0) {
+                            purchaseOrdersLoaded = true;
+                            completeDocuments();
+                        }
+                    });
+                });
+            } else {
+                purchaseOrdersLoaded = true;
+                completeDocuments();
+            }
+        }, { StoreNumber: store.StoreNumber });
+
+        function completeDocuments() {
+            if (purchaseOrdersLoaded && documentsLoaded) {
+                me.Documents = renderDocuments(store, me);
+            }
+        }
+
+
+        //--------------------------------------------------------------Setup Workflow Dropdown
+        //Make sure the dropdown got destroyed
+        var button = registry.byId('workflow-button');
+        if (button) button.destroy();
+
+        me.Workflows = summary.find('#workflows');
+
+        //--------------------------------------------------------------Setup SharePoint Links
+        summary.find('#construction-calls').prop('href', "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Construction%20Calls/DispForm.aspx?ID=" + store.ConstructionId);
+        summary.find('#combined-schedule').prop('href', "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
+        summary.find('#master-portal').prop('href', "https://www.sonicpartnernet.com/public/master%20portal/store.aspx?store=" + store.StoreNumber);
+
+        //--------------------------------------------------------------Issues/Tasks
+        issues.loadData({ store: store }, function (issues) {
+            issuesLoaded = true;
+            store.Issues = issues;
+            me.Issues = renderIssues(store, 'Open', $.find('#issues'));
+            options.afterRenderIssues(me);
+        });
+
+        //--------------------------------------------------------------Notes
+        notes.loadData({ store: store }, function (notes) {
+            notesLoaded = true;
+            store.Notes = notes;
+            me.Notes = renderNotes(store, $.find('#notes'), options);
+            options.afterRenderNotes(me);
+        });
+
+        //Insert the summary into the target element
+        $(options.target).html(summary);
+
+        //---------------------------------------------------------------Changes
+        $('#go-live-change-count').html('Loading...');
+        combined.getGoLiveChanges(store, function (changes) {
+            goLiveChangesLoaded = true;
+            store.GoLiveChanges = changes;
+
+            $('#go-live-change-count').html(store.GoLiveChanges.length);
+            var goLiveChangeRow = summary.find('#go-live-changes');
+            _.each(store.GoLiveChanges, function (change) {
+                goLiveChangeRow.append('<tr>' +
+                  '<td>' + moment(change.date).format('l') + '</td>' +
+                  '<td>' + moment(change.modified).format('l') + '</td>' +
+                  '<td>' + change.modifiedBy + '</td>' +
+                  '</tr>')
+            });
+        });
+        combined.getGoLiveChangesExtend(store, function (changes) {
+            //goLiveChangesLoaded = true;
+            store.GoLiveChangesExtend = changes;
+
+            $('#go-live-change-extend-count').html(store.GoLiveChangesExtend.length);
+            var goLiveChangeRow = summary.find('#go-live-changes-extend');
+            _.each(store.GoLiveChangesExtend, function (change) {
+                goLiveChangeRow.append('<tr>' +
+                  '<td>' + moment(change.date).format('l') + '</td>' +
+                  '<td>' + moment(change.modified).format('l') + '</td>' +
+                  '<td>' + change.modifiedBy + '</td>' +
+                  '</tr>')
+            });
+        });
+
+        combined.getPMChanges(store, function (changes) {
+            //goLiveChangesLoaded = true;
+            store.PMChanges = changes;
+
+            $('#pm-change-count').html(store.PMChanges.length);
+            var goLiveChangeRow = summary.find('#pm-changes');
+            _.each(store.PMChanges, function (change) {
+                goLiveChangeRow.append('<tr>' +
+                  '<td>' + change.date + '</td>' +
+                  '<td>' + moment(change.modified).format('l') + '</td>' +
+                  '<td>' + change.modifiedBy + '</td>' +
+                  '</tr>')
+            });
+        });
+
+
+        combined.getPMChangesExtend(store, function (changes) {
+            //goLiveChangesLoaded = true;
+            store.PMChangesExtend = changes;
+
+            $('#pm-change-extend-count').html(store.PMChangesExtend.length);
+            var goLiveChangeRow = summary.find('#pm-changes-extend');
+            _.each(store.PMChangesExtend, function (change) {
+                goLiveChangeRow.append('<tr>' +
+                  '<td>' + change.date + '</td>' +
+                  '<td>' + moment(change.modified).format('l') + '</td>' +
+                  '<td>' + change.modifiedBy + '</td>' +
+                  '</tr>')
+            });
+        });
+
+        //Fire callback if passed
+        if (options.callback) {
+            options.callback(me);
+        }
+
+        //
+        if (store.Pos === 'Infor') {
+            $("#InforWorkstationHDDDeliverySec").css("display", "");
+        }
+        else if (store.Pos === 'Micros') {
+            $("#Oracle5810ServerDeliverySec").css("display", "");
+        }
+
+        var combinedConstructionExtend;
+        //get ID of record from Combined Construction Extend
+        $().SPServices({
+            operation: "GetListItems",
+            async: false,
+            listName: "Combined Construction Extend",
+            CAMLViewFields: "<ViewFields><FieldRef Name='ID' /><FieldRef Name='PaymentTerminalAndInfoLane50Faci' /><FieldRef Name='PaymentTerminalAndInfoLane91Faci' /><FieldRef Name='PaymentTerminalAndInfoLane92Faci' /><FieldRef Name='PaymentTerminalAndInfoLane93Faci' /><FieldRef Name='PaymentTerminalAndInfoLane94Faci' /><FieldRef Name='PaymentTerminalAndInfoLane95Faci' /><FieldRef Name='PaymentTerminalAndInfoLane96Faci' /><FieldRef Name='PaymentTerminalAndInfoLane97Faci' /><FieldRef Name='PaymentTerminalAndInfoLane98Faci' /><FieldRef Name='PaymentTerminalAndInfoLane99Faci' /><FieldRef Name='VP6800_x0020_Installer' /><FieldRef Name='VP6800_x0020_Server_x0020_Cabine0' /><FieldRef Name='VP6800_x0020_Server_x0020_Cabine1' /><FieldRef Name='VP6800_x0020_Server_x0020_Cabine2' /></ViewFields>",
+            CAMLQuery: "<Query><Where><Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Text'>" + store.StoreNumber + "</Value></Eq></Where></Query>",
+            CAMLRowLimit: 1,
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                    combinedConstructionExtend = $(this).attr("ows_ID");
+                    var serverCabinet = $(this).attr("ows_VP6800_x0020_Server_x0020_Cabine1");
+                    var VP6800ServerCabinet12uQTY = $(this).attr("ows_VP6800_x0020_Server_x0020_Cabine2");
+                    var VP6800ServerCabinetShelf = $(this).attr("ows_VP6800_x0020_Server_x0020_Cabine0");
+                    var VP6800Installer = $(this).attr("ows_VP6800_x0020_Installer");
+                    var PaymentTerminalAndInfoLane50Facing = $(this).attr("ows_PaymentTerminalAndInfoLane50Faci");
+                    var PaymentTerminalAndInfoLane91Facing = $(this).attr("ows_PaymentTerminalAndInfoLane91Faci");
+                    var PaymentTerminalAndInfoLane92Facing = $(this).attr("ows_PaymentTerminalAndInfoLane92Faci");
+                    var PaymentTerminalAndInfoLane93Facing = $(this).attr("ows_PaymentTerminalAndInfoLane93Faci");
+                    var PaymentTerminalAndInfoLane94Facing = $(this).attr("ows_PaymentTerminalAndInfoLane94Faci");
+                    var PaymentTerminalAndInfoLane95Facing = $(this).attr("ows_PaymentTerminalAndInfoLane95Faci");
+                    var PaymentTerminalAndInfoLane96Facing = $(this).attr("ows_PaymentTerminalAndInfoLane96Faci");
+                    var PaymentTerminalAndInfoLane97Facing = $(this).attr("ows_PaymentTerminalAndInfoLane97Faci");
+                    var PaymentTerminalAndInfoLane98Facing = $(this).attr("ows_PaymentTerminalAndInfoLane98Faci");
+                    var PaymentTerminalAndInfoLane99Facing = $(this).attr("ows_PaymentTerminalAndInfoLane99Faci");
+                    $("#VP6800ServerCabinetNumber").val(serverCabinet);
+                    $("#VP6800ServerCabinet12uQTY").val(VP6800ServerCabinet12uQTY);
+                    $("#VP6800ServerCabinetShelf").val(VP6800ServerCabinetShelf);
+                    $("#VP6800Installer").val(VP6800Installer);
+
+                    $("#PaymentTerminalAndInfoLane50Facing").val(PaymentTerminalAndInfoLane50Facing);
+                    $("#PaymentTerminalAndInfoLane91Facing").val(PaymentTerminalAndInfoLane91Facing);
+                    $("#PaymentTerminalAndInfoLane92Facing").val(PaymentTerminalAndInfoLane92Facing);
+                    $("#PaymentTerminalAndInfoLane93Facing").val(PaymentTerminalAndInfoLane93Facing);
+                    $("#PaymentTerminalAndInfoLane94Facing").val(PaymentTerminalAndInfoLane94Facing);
+                    $("#PaymentTerminalAndInfoLane95Facing").val(PaymentTerminalAndInfoLane95Facing);
+                    $("#PaymentTerminalAndInfoLane96Facing").val(PaymentTerminalAndInfoLane96Facing);
+                    $("#PaymentTerminalAndInfoLane97Facing").val(PaymentTerminalAndInfoLane97Facing);
+                    $("#PaymentTerminalAndInfoLane98Facing").val(PaymentTerminalAndInfoLane98Facing);
+                    $("#PaymentTerminalAndInfoLane99Facing").val(PaymentTerminalAndInfoLane99Facing);
+                });
+            }
+        });
+
+        $("#PaymentTerminalAndInfoLane50Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane50Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane91Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane91Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane92Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane92Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane93Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane93Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane94Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane94Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane95Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane95Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane96Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane96Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane97Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane97Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane98Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane98Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane99Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane99Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#VP6800ServerCabinetShelf").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["VP6800_x0020_Server_x0020_Cabine0", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#VP6800Installer").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["VP6800_x0020_Installer", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#VP6800ServerCabinetNumber").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["VP6800_x0020_Server_x0020_Cabine1", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#VP6800ServerCabinet12uQTY").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["VP6800_x0020_Server_x0020_Cabine2", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#VP6800ProjectNotes").blur(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["VP6800_x0020_Project_x0020_Notes", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $('#uploadPOSCostfile').change(function () {
+            uploadCostFile(store, 'uploadPOSCost');
+        });
+
+        $('#uploadFABCONCostfile').change(function () {
+            uploadCostFile(store, 'uploadFABCONCost');
+        });
+        $('#uploadIDTECHCostfile').change(function () {
+            uploadCostFile(store, 'uploadIDTECHCost');
+        });
+
+
+        $('#uploadAudioCostfile').change(function () {
+            uploadCostFile(store, 'uploadAudioCost');
+        });
+
+        $('#uploadPaysCostfile').change(function () {
+            uploadCostFile(store, 'uploadPaysCost');
+        });
+
+        $('#uploadDmbCostfile').change(function () {
+            uploadCostFile(store, 'uploadDmbCost');
+        });
+
+        $('#uploadSonicRadioCostfile').change(function () {
+            uploadCostFile(store, 'uploadSonicRadioCost');
+        });
+
+        $('#uploadInstallationCostfile').change(function () {
+            uploadCostFile(store, 'uploadInstallationCost');
+        });
+        
+
+    }
+
+    function uploadCostFile(store, location)
+    {
+        if (window.File && window.FileList && window.FileReader) {
+            var files = event.target.files; //FileList object
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function () {
+                    var n = reader.result.indexOf(";base64,") + 8;
+                    var b64 = reader.result.substring(n);
+                    //Upload the base 64 file
+                    combined.uploadDocument(store, b64, location + "file-" + file.name, function () {
+                        console.log(file.name + ' File Uploaded');
+                        OpenCostfiles(location);
+                    });
+                };
+                reader.onerror = function (error) {
+                    alert('Error Uploading File during base 64 conversion!')
+                };
+            }
+        } else
+            console.log("Your browser does not support File API");
+    }
+
+    function renderConversion(store, options) {
+        var url = $(location).attr('href');
+        var suffix_s = url.substring(url.length - 4);
+        store.StoreNumber = suffix_s;
+
+        //return record construction list ID
+        $().SPServices({
+            operation: "GetListItems",
+            listName: "Construction_Calls",
+            CAMLViewFields: "<ViewFields><FieldRef Name='ID' /></ViewFields>",
+            CAMLQuery: "<Query><Where><Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Text'>" + store.StoreNumber + "</Value></Eq></Where></Query>",
+            CAMLRowLimit: 1,
+            async: false,
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                    store.ConstructionId = $(this).attr("ows_ID");
+
+                });
+            }
+        });
+
+
+        //Stop if another route has registered
+        if (!options.routeCheck()) {
+            return;
+        }
+
+        $().SPServices({
+            operation: "GetListItems",
+            async: false,
+            listName: "Combined Construction Extend",
+            CAMLViewFields: "<ViewFields Properties='True' />",
+            CAMLQuery: "<Query><Where><Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Text'>" + store.StoreNumber + "</Value></Eq></Where></Query>",
+            CAMLRowLimit: 1,
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                    //store.VP6800NumOfTerminals = $(this).attr("ows_VP6800_x0020_Num_x0020_Of_x0020_");
+                    store.InforServerHDDUpgradeType = $(this).attr("ows_Infor_x0020_Server_x0020_HDD_x00");
+                    store.InforServerHDDUpgradeOrdered = $(this).attr("ows_Infor_x0020_Server_x0020_HDD_x000");
+                    store.InforServerHDDUpgradeDelivered = $(this).attr("ows_Infor_x0020_Server_x0020_HDD_x001");
+                    store.InforServerHDDUpgradeGoLive = $(this).attr("ows_Infor_x0020_Server_x0020_HDD_x002");
+                    store.HMEIntegrationType = $(this).attr("ows_HME_x0020_Integration_x0020_Type");
+                    store.HMEIntegrationGoLive = $(this).attr("ows_HME_x0020_Integration_x0020_Go_x");
+                    store.HMEIntegrationInstaller = $(this).attr("ows_HME_x0020_Integration_x0020_Inst");
+                    store.HMEIntegrationITPM = $(this).attr("ows_HME_x0020_Integration_x0020_IT_x");
+                    store.VP6800GoLive = $(this).attr("ows_VP6800_x0020_Go_x0020_Live");
+                    store.VP6800NumOfTerminals = $(this).attr("ows_VP6800_x0020_Num_x0020_Of_x0020_");
+                    store.VP6800NumOf45Units = $(this).attr("ows_VP6800_x0020_Num_x0020_Of_x0020_0");
+                    store.VP6800NumOf90Units = $(this).attr("ows_VP6800_x0020_Num_x0020_Of_x0020_1");
+                    store.VP6800DTWindow = $(this).attr("ows_VP6800_x0020_DT_x0020_Window");
+                    store.VP6800Sunshield = $(this).attr("ows_VP6800_x0020_Sunshield");
+                    store.VP6800Ordered = $(this).attr("ows_VP6800_x0020_Ordered");
+                    store.VP6800Delivery = $(this).attr("ows_VP6800_x0020_Delivery");
+                    store.VP6800TrackingNum = $(this).attr("ows_VP6800_x0020_Tracking_x0020_Num");
+                    store.VP6800Level10TrackingNum = $(this).attr("ows_Level_x0020_10_x0020_Tracking_x0");
+                    store.VP6800Installer = $(this).attr("ows_VP6800_x0020_Installer");
+                    store.VP6800PONum = $(this).attr("ows_VP6800_x0020_PO_x0020_Num");
+                    store.VP6800ITPM = $(this).attr("ows_VP6800_x0020_IT_x0020_PM");
+                    store.HughesSwitchUpgradeOrdered2 = $(this).attr("ows_Hughes_x0020_Switch_x0020_Upgrad");
+                    store.VP6800ProjectSiteSurveyDate = $(this).attr("ows_VP6800_x0020_Project_x0020_Site_");
+                    store.VP6800ProjectSiteSurveyCompany = $(this).attr("ows_VP6800_x0020_Project_x0020_Site_0");
+                    store.VP6800ProjectSignOffsComplete = $(this).attr("ows_VP6800_x0020_Project_x0020_Sign_");
+                    store.VP6800ProjectSwitchSerialNum = $(this).attr("ows_VP6800_x0020_Project_x0020_Switc");
+                    store.VP6800ProjectSwitchSerialNumTwo = $(this).attr("ows_VP6800_x0020_Project_x0020_Switc0");
+                    store.VP6800ProjectSwitchUPSSerialNum = $(this).attr("ows_VP6800_x0020_Project_x0020_Switc1");
+                    store.VP6800ProjectPaymentSerialNum1 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme");
+                    store.VP6800ProjectLaneNum1 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_");
+                    store.VP6800ProjectPaymentSerialNum2 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme0");
+                    store.VP6800ProjectLaneNum2 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_0");
+                    store.VP6800ProjectPaymentSerialNum3 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme1");
+                    store.VP6800ProjectLaneNum3 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_1");
+                    store.VP6800ProjectPaymentSerialNum4 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme2");
+                    store.VP6800ProjectLaneNum4 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_2");
+                    store.VP6800ProjectPaymentSerialNum5 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme3");
+                    store.VP6800ProjectLaneNum5 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_3");
+                    store.VP6800ProjectPaymentSerialNum6 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme4");
+                    store.VP6800ProjectLaneNum6 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_4");
+                    store.VP6800ProjectPaymentSerialNum7 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme5");
+                    store.VP6800ProjectLaneNum7 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_5");
+                    store.VP6800ProjectPaymentSerialNum8 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme6");
+                    store.VP6800ProjectLaneNum8 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_6");
+
+
+                    store.VP6800ProjectPaymentSerialNum9 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme7");
+                    store.VP6800ProjectLaneNum9 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_7");
+
+                    store.VP6800ProjectPaymentSerialNum10 = $(this).attr("ows_VP6800_x0020_Project_x0020_Payme8");
+                    store.VP6800ProjectLaneNum10 = $(this).attr("ows_VP6800_x0020_Project_x0020_Lane_8");
+
+                    store.VP6800ProjectNotes = $(this).attr("ows_VP6800_x0020_Project_x0020_Notes");
+                    store.VP6800ServerCabinet = $(this).attr("ows_VP6800_x0020_Server_x0020_Cabine");
+                    store.VP6800ServerCabinetShelf = $(this).attr("ows_VP6800_x0020_Server_x0020_Cabine0");
+                    store.VP6800ServerCabinetNumber = $(this).attr("ows_VP6800_x0020_Server_x0020_Cabine1");
+
+
+                    store.VP6800IntroCallToFee = $(this).attr("ows_VP6800_x0020_Intro_x0020_Call_x0");
+                    store.VP6800SiteSurveyRequested = $(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x");
+                    store.VP6800HughesDoctoFEE = $(this).attr("ows_VP6800_x0020_Hughes_x0020_Doc_x0");
+                    store.VP6800HughesDoctoHughes = $(this).attr("ows_VP6800_x0020_Hughes_x0020_Doc_x00");
+                    store.VP6800SiteSurveyConfirmedbyInstaller = $(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x0");
+                    store.VP6800SiteSurveyDateCommtoFEE = $(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x1");
+                    store.VP6800SiteSurveyResultsReviewed = $(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x3");
+                    store.VP6800SiteSurveyCompleted = $(this).attr("ows_VP6800_x0020_SITE_x0020_SURVEY_x2");
+                    store.VP6800SSTech = $(this).attr("ows_VP6800_x0020_SS_x0020_Tech");
+                    store.VP6800PartsCall = $(this).attr("ows_VP6800_x0020_Parts_x0020_Call");
+                    store.VP6800OrderDocSenttoFee = $(this).attr("ows_VP6800_x0020_Order_x0020_Doc_x00");
+                    store.VP6800SignaturePageReceived = $(this).attr("ows_VP6800_x0020_Signature_x0020_Pag");
+                    store.VP6800InstallScheduled = $(this).attr("ows_VP6800_x0020_Install_x0020_Sched");
+                    store.VP680030DayComm = $(this).attr("ows_VP6800_x0020_30_x0020_Day_x0020_");
+                    store.VP68002WeekComm = $(this).attr("ows_VP6800_x0020_2_x0020_Week_x0020_");
+                    store.VP6800ActionItemCalltoFEEfromSS = $(this).attr("ows_VP6800_x0020_Action_x0020_Item_x");
+                    store.VP68001WeekComm = $(this).attr("ows_VP6800_x0020_1_x0020_Week_x0020_");
+                    store.VP6800DayBeforeInstallComm = $(this).attr("ows_VP6800_x0020_Day_x0020_Before_x0");
+                    store.VP6800ReviewSignOffs = $(this).attr("ows_VP6800_x0020_Review_x0020_Sign_x");
+                    store.VP6800RemediationDate = $(this).attr("ows_VP6800_x0020_Remediation_x0020_D");
+                    store.VP6800DeliverablestoFEE = $(this).attr("ows_VP6800_x0020_Deliverables_x0020_");
+
+                    store.AddressBillTo = $(this).attr("ows_AddressBillTo");
+                    store.CompanyBillTo = $(this).attr("ows_CompanyBillTo");
+                    store.CityBillTo = $(this).attr("ows_CityBillTo");
+                    store.StateBillTo = $(this).attr("ows_StateBillTo");
+                    store.ZipBillTo = $(this).attr("ows_ZipBillTo");
+                    store.EmailBillTo = $(this).attr("ows_EmailBillTo");
+                    store.VP6800ProjectServiceNowNum = $(this).attr("ows_VP6800_x0020_Project_x0020_Servi");
+
+                    store.FirewallInstaller = $(this).attr("ows_FirewallInstaller");
+                    store.FirewallGoLive = $(this).attr("ows_FirewallGoLive");
+                    store.FirewallITPM = $(this).attr("ows_FirewallITPM");
+                    store.FirewallNotes = $(this).attr("ows_FirewallNotes");
+
+                });
+            }
+        });
+
+        if (store.FirewallGoLive !== '' && typeof store.FirewallGoLive !== 'undefined') {
+            if (moment(store.FirewallGoLive).isValid()) {
+                store.FirewallGoLive = moment(store.FirewallGoLive).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.InforServerHDDUpgradeDelivered !== '' && typeof store.InforServerHDDUpgradeDelivered !== 'undefined') {
+            if (moment(store.InforServerHDDUpgradeDelivered).isValid()) {
+                store.InforServerHDDUpgradeDelivered = moment(store.InforServerHDDUpgradeDelivered).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.InforServerHDDUpgradeGoLive !== '' && typeof store.InforServerHDDUpgradeGoLive !== 'undefined') {
+            if (moment(store.InforServerHDDUpgradeGoLive).isValid()) {
+                store.InforServerHDDUpgradeGoLive = moment(store.InforServerHDDUpgradeGoLive).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.HMEIntegrationGoLive !== '' && typeof store.HMEIntegrationGoLive !== 'undefined') {
+            if (moment(store.HMEIntegrationGoLive).isValid()) {
+                store.HMEIntegrationGoLive = moment(store.HMEIntegrationGoLive).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800GoLive !== '' && typeof store.VP6800GoLive !== 'undefined') {
+            if (moment(store.VP6800GoLive).isValid()) {
+                store.VP6800GoLive = moment(store.VP6800GoLive).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800Delivery !== '' && typeof store.VP6800Delivery !== 'undefined') {
+            if (moment(store.VP6800Delivery).isValid()) {
+                store.VP6800Delivery = moment(store.VP6800Delivery).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800Ordered !== '' && typeof store.VP6800Ordered !== 'undefined') {
+            if (moment(store.VP6800Ordered).isValid()) {
+                store.VP6800Ordered = moment(store.VP6800Ordered).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800ProjectSiteSurveyDate !== '' && typeof store.VP6800ProjectSiteSurveyDate !== 'undefined') {
+            if (moment(store.VP6800ProjectSiteSurveyDate).isValid()) {
+                store.VP6800ProjectSiteSurveyDate = moment(store.VP6800ProjectSiteSurveyDate).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800IntroCallToFee !== '' && typeof store.VP6800IntroCallToFee !== 'undefined') {
+            if (moment(store.VP6800IntroCallToFee).isValid()) {
+                store.VP6800IntroCallToFee = moment(store.VP6800IntroCallToFee).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SiteSurveyRequested !== '' && typeof store.VP6800SiteSurveyRequested !== 'undefined') {
+            if (moment(store.VP6800SiteSurveyRequested).isValid()) {
+                store.VP6800SiteSurveyRequested = moment(store.VP6800SiteSurveyRequested).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800HughesDoctoFEE !== '' && typeof store.VP6800HughesDoctoFEE !== 'undefined') {
+            if (moment(store.VP6800HughesDoctoFEE).isValid()) {
+                store.VP6800HughesDoctoFEE = moment(store.VP6800HughesDoctoFEE).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800HughesDoctoHughes !== '' && typeof store.VP6800HughesDoctoHughes !== 'undefined') {
+            if (moment(store.VP6800HughesDoctoHughes).isValid()) {
+                store.VP6800HughesDoctoHughes = moment(store.VP6800HughesDoctoHughes).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SiteSurveyConfirmedbyInstaller !== '' && typeof store.VP6800SiteSurveyConfirmedbyInstaller !== 'undefined') {
+            if (moment(store.VP6800SiteSurveyConfirmedbyInstaller).isValid()) {
+                store.VP6800SiteSurveyConfirmedbyInstaller = moment(store.VP6800SiteSurveyConfirmedbyInstaller).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SiteSurveyDateCommtoFEE !== '' && typeof store.VP6800SiteSurveyDateCommtoFEE !== 'undefined') {
+            if (moment(store.VP6800SiteSurveyDateCommtoFEE).isValid()) {
+                store.VP6800SiteSurveyDateCommtoFEE = moment(store.VP6800SiteSurveyDateCommtoFEE).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SiteSurveyResultsReviewed !== '' && typeof store.VP6800SiteSurveyResultsReviewed !== 'undefined') {
+            if (moment(store.VP6800SiteSurveyResultsReviewed).isValid()) {
+                store.VP6800SiteSurveyResultsReviewed = moment(store.VP6800SiteSurveyResultsReviewed).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SiteSurveyCompleted !== '' && typeof store.VP6800SiteSurveyCompleted !== 'undefined') {
+            if (moment(store.VP6800SiteSurveyCompleted).isValid()) {
+                store.VP6800SiteSurveyCompleted = moment(store.VP6800SiteSurveyCompleted).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SSTech !== '' && typeof store.VP6800SSTech !== 'undefined') {
+            if (moment(store.VP6800SSTech).isValid()) {
+                store.VP6800SSTech = moment(store.VP6800SSTech).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800PartsCall !== '' && typeof store.VP6800PartsCall !== 'undefined') {
+            if (moment(store.VP6800PartsCall).isValid()) {
+                store.VP6800PartsCall = moment(store.VP6800PartsCall).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800OrderDocSenttoFee !== '' && typeof store.VP6800OrderDocSenttoFee !== 'undefined') {
+            if (moment(store.VP6800OrderDocSenttoFee).isValid()) {
+                store.VP6800OrderDocSenttoFee = moment(store.VP6800OrderDocSenttoFee).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800SignaturePageReceived !== '' && typeof store.VP6800SignaturePageReceived !== 'undefined') {
+            if (moment(store.VP6800SignaturePageReceived).isValid()) {
+                store.VP6800SignaturePageReceived = moment(store.VP6800SignaturePageReceived).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800InstallScheduled !== '' && typeof store.VP6800InstallScheduled !== 'undefined') {
+            if (moment(store.VP6800InstallScheduled).isValid()) {
+                store.VP6800InstallScheduled = moment(store.VP6800InstallScheduled).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP680030DayComm !== '' && typeof store.VP680030DayComm !== 'undefined') {
+            if (moment(store.VP680030DayComm).isValid()) {
+                store.VP680030DayComm = moment(store.VP680030DayComm).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP68002WeekComm !== '' && typeof store.VP68002WeekComm !== 'undefined') {
+            if (moment(store.VP68002WeekComm).isValid()) {
+                store.VP68002WeekComm = moment(store.VP68002WeekComm).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800ActionItemCalltoFEEfromSS !== '' && typeof store.VP6800ActionItemCalltoFEEfromSS !== 'undefined') {
+            if (moment(store.VP6800ActionItemCalltoFEEfromSS).isValid()) {
+                store.VP6800ActionItemCalltoFEEfromSS = moment(store.VP6800ActionItemCalltoFEEfromSS).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP68001WeekComm !== '' && typeof store.VP68001WeekComm !== 'undefined') {
+            if (moment(store.VP68001WeekComm).isValid()) {
+                store.VP68001WeekComm = moment(store.VP68001WeekComm).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800DayBeforeInstallComm !== '' && typeof store.VP6800DayBeforeInstallComm !== 'undefined') {
+            if (moment(store.VP6800DayBeforeInstallComm).isValid()) {
+                store.VP6800DayBeforeInstallComm = moment(store.VP6800DayBeforeInstallComm).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800ReviewSignOffs !== '' && typeof store.VP6800ReviewSignOffs !== 'undefined') {
+            if (moment(store.VP6800ReviewSignOffs).isValid()) {
+                store.VP6800ReviewSignOffs = moment(store.VP6800ReviewSignOffs).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800RemediationDate !== '' && typeof store.VP6800RemediationDate !== 'undefined') {
+            if (moment(store.VP6800RemediationDate).isValid()) {
+                store.VP6800RemediationDate = moment(store.VP6800RemediationDate).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800DeliverablestoFEE !== '' && typeof store.VP6800DeliverablestoFEE !== 'undefined') {
+            if (moment(store.VP6800DeliverablestoFEE).isValid()) {
+                store.VP6800DeliverablestoFEE = moment(store.VP6800DeliverablestoFEE).format("MM/DD/YYYY");;
+            }
+        }
+
+
+
+        //add date fields here:
+
+
+
+        if (store.VP6800PONum !== '' && typeof store.VP6800PONum !== 'undefined') {
+            if (store.VP6800PONum.indexOf(".") > -1)
+                store.VP6800PONum = store.VP6800PONum.substring(0, store.VP6800PONum.indexOf("."));
+        }
+
+
+
+        //YYYY-MM-DD hh:mm:ss
+        //2019-01-16 00:00:00
+        if (store.InforServerHDDUpgradeDelivered !== '' && typeof store.InforServerHDDUpgradeDelivered !== 'undefined') {
+            if (moment(store.InforServerHDDUpgradeDelivered).isValid()) {
+                store.InforServerHDDUpgradeDelivered = moment(store.InforServerHDDUpgradeDelivered).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.InforServerHDDUpgradeGoLive !== '' && typeof store.InforServerHDDUpgradeGoLive !== 'undefined') {
+            if (moment(store.InforServerHDDUpgradeGoLive).isValid()) {
+                store.InforServerHDDUpgradeGoLive = moment(store.InforServerHDDUpgradeGoLive).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.HMEIntegrationGoLive !== '' && typeof store.HMEIntegrationGoLive !== 'undefined') {
+            if (moment(store.HMEIntegrationGoLive).isValid()) {
+                store.HMEIntegrationGoLive = moment(store.HMEIntegrationGoLive).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800GoLive !== '' && typeof store.VP6800GoLive !== 'undefined') {
+            if (moment(store.VP6800GoLive).isValid()) {
+                store.VP6800GoLive = moment(store.VP6800GoLive).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800Ordered !== '' && typeof store.VP6800Ordered !== 'undefined') {
+            if (moment(store.VP6800Ordered).isValid()) {
+                store.VP6800Ordered = moment(store.VP6800Ordered).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800Delivery !== '' && typeof store.VP6800Delivery !== 'undefined') {
+            if (moment(store.VP6800Delivery).isValid()) {
+                store.VP6800Delivery = moment(store.VP6800Delivery).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800ProjectSiteSurveyDate !== '' && typeof store.VP6800ProjectSiteSurveyDate !== 'undefined') {
+            if (moment(store.VP6800ProjectSiteSurveyDate).isValid()) {
+                store.VP6800ProjectSiteSurveyDate = moment(store.VP6800ProjectSiteSurveyDate).format("MM/DD/YYYY");;
+            }
+        }
+
+        if (store.VP6800PONum !== '' && typeof store.VP6800PONum !== 'undefined') {
+            if (store.VP6800PONum.indexOf(".") > -1)
+                store.VP6800PONum = store.VP6800PONum.substring(0, store.VP6800PONum.indexOf("."));
+        }
+
+        //Turn the summary template into a dom element
+        var summary = $($.parseHTML(conversionSummaryTemplate));
+
+        var me = {
+            el: summary,
+            store: store
+        };
+
+        //Set the calculated POPS Install and Go-Live Dates
+        var installDate = moment(store.PopsDeliveryDate),
+          goLiveDate = moment(store.PopsDeliveryDate).add(1, 'days');
+
+        //If on a saturday, install is sunday, go-live is on monday
+        if (installDate.format('E') === "6") {
+            installDate.add(1, 'days');
+            goLiveDate.add(1, 'days');
+        }
+
+        if (installDate.isValid()) {
+            summary.find('#pops-install-date').html(installDate.format('l'));
+            summary.find('#pops-go-live-date').html(goLiveDate.format('l'));
+
+        }
+
+        //Add view to callback for value changes
+        function beforeChange(key, newValue, revertBackground, oldValue, el) {
+
+            //If function is passed, call on each value change and return the value in this callback - allows business logic before field change
+            if (options.beforeChange) return options.beforeChange(me, key, newValue, revertBackground, oldValue, el);
+        }
+
+        //Add view to callback for value changes
+        function afterChange(key, value, store, revertBackground, response) {
+
+            //If function is passed, call on each value change and return the value in this callback - allows business logic after field change/save
+            if (options.afterChange) return options.afterChange(me, key, value, store, revertBackground, response);
+            else revertBackground();
+        }
+
+        //Activate all the fields marked as display or editable
+        widgetHelper.activate(summary, store);
+
+        //Make sure the dropdown got destroyed
+        var button = registry.byId('workflow-button');
+        if (button) button.destroy();
+
+        //Create a dropdown button with a menu
+        me.Workflows = summary.find('#workflows');
+
+        //Create links to sharepoint
+        summary.find('#construction-calls').prop('href', "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Construction%20Calls/DispForm.aspx?ID=" + store.ConstructionId);
+        summary.find('#combined-schedule').prop('href', "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
+        summary.find('#master-portal').prop('href', "https://www.sonicpartnernet.com/public/master%20portal/store.aspx?store=" + store.StoreNumber);
+
+        ///--------------------------------------------------------------Issues/Tasks
+        issues.loadData({ store: store }, function (issues) {
+            issuesLoaded = true;
+            store.Issues = issues;
+            me.Issues = renderIssues(store, 'Open', $.find('#issues'));
+            options.afterRenderIssues(me);
+        });
+
+        //--------------------------------------------------------------Notes
+        notes.loadData({ store: store }, function (notes) {
+            notesLoaded = true;
+            store.Notes = notes;
+            me.Notes = renderNotes(store, $.find('#notes'), options);
+            options.afterRenderNotes(me);
+        });
+
+        //--------------------------------------------------------------Create Links to Documents
+        var purchaseOrdersLoaded = false,
+          documentsLoaded = false;
+
+        combined.getDocuments(store, function (s) {
+            documentsLoaded = true;
+            store.Documents = s.Documents;
+            completeDocuments();
+        });
+
+        purchaseOrderStore.loadData(function (purchaseOrders) {
+            store.PurchaseOrders = purchaseOrders;
+            if (purchaseOrders.length > 0) {
+                var poRequests = 0;
+                _.each(purchaseOrders, function (po) {
+                    poRequests++;
+                    purchaseOrderStore.getDocuments(po, function () {
+                        if (--poRequests <= 0) {
+                            purchaseOrdersLoaded = true;
+                            completeDocuments();
+                        }
+                    });
+                });
+            } else {
+                purchaseOrdersLoaded = true;
+                completeDocuments();
+            }
+        }, { StoreNumber: store.StoreNumber });
+
+        function completeDocuments() {
+            if (purchaseOrdersLoaded && documentsLoaded) {
+                me.Documents = renderDocuments(store, me);
+            }
+        }
+
+        //Insert the summary into the target element
+        $(options.target).html(summary);
+
+        //---------------------------------------------------------------Changes
+        $('#go-live-change-count').html('Loading...');
+        combined.getGoLiveChanges(store, function (changes) {
+            goLiveChangesLoaded = true;
+            store.GoLiveChanges = changes;
+
+            $('#go-live-change-count').html(store.GoLiveChanges.length);
+            var goLiveChangeRow = summary.find('#go-live-changes');
+            _.each(store.GoLiveChanges, function (change) {
+                goLiveChangeRow.append('<tr>' +
+                  '<td>' + moment(change.date).format('l') + '</td>' +
+                  '<td>' + moment(change.modified).format('l') + '</td>' +
+                  '<td>' + change.modifiedBy + '</td>' +
+                  '</tr>')
+            });
+        });
+        combined.getGoLiveChangesExtend(store, function (changes) {
+            //goLiveChangesLoaded = true;
+            store.GoLiveChangesExtend = changes;
+
+            $('#go-live-change-extend-count').html(store.GoLiveChangesExtend.length);
+            var goLiveChangeRow = summary.find('#go-live-changes-extend');
+            _.each(store.GoLiveChangesExtend, function (change) {
+                goLiveChangeRow.append('<tr>' +
+                  '<td>' + moment(change.date).format('l') + '</td>' +
+                  '<td>' + moment(change.modified).format('l') + '</td>' +
+                  '<td>' + change.modifiedBy + '</td>' +
+                  '</tr>')
+            });
+        });
+
+        combined.getPMChanges(store, function (changes) {
+            //goLiveChangesLoaded = true;
+            store.PMChanges = changes;
+
+            $('#pm-change-count').html(store.PMChanges.length);
+            var goLiveChangeRow = summary.find('#pm-changes');
+            _.each(store.PMChanges, function (change) {
+                goLiveChangeRow.append('<tr>' +
+                  '<td>' + change.date + '</td>' +
+                  '<td>' + moment(change.modified).format('l') + '</td>' +
+                  '<td>' + change.modifiedBy + '</td>' +
+                  '</tr>')
+            });
+        });
+
+        combined.getPMChangesExtend(store, function (changes) {
+            //goLiveChangesLoaded = true;
+            store.PMChangesExtend = changes;
+
+            $('#pm-change-extend-count').html(store.PMChangesExtend.length);
+            var goLiveChangeRow = summary.find('#pm-changes-extend');
+            _.each(store.PMChangesExtend, function (change) {
+                goLiveChangeRow.append('<tr>' +
+                  '<td>' + change.date + '</td>' +
+                  '<td>' + moment(change.modified).format('l') + '</td>' +
+                  '<td>' + change.modifiedBy + '</td>' +
+                  '</tr>')
+            });
+        });
+
+        //Fire callback if passed
+        if (options.callback) {
+            options.callback(me);
+        }
+
+        if (store.Pos === 'Infor') {
+            $("#InforWorkstationHDDDeliverySec").css("display", "");
+        }
+        else if (store.Pos === 'Micros') {
+            $("#Oracle5810ServerDeliverySec").css("display", "");
+        }
+
+        $().SPServices({
+            operation: "GetListItems",
+            listName: "Construction_Calls",
+            CAMLViewFields: "<ViewFields><FieldRef Name='Merchant_x0020_ID_x0020_Status' /><FieldRef Name='Server_x0020_EPS_x0020_Status' /><FieldRef Name='PAYS_x0020_Type' /><FieldRef Name='Pays_x0020_Delivery_x0020_Date' /><FieldRef Name='Cirronet_x0020_Status' /></ViewFields>",
+            CAMLQuery: "<Query><Where><Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Text'>" + store.StoreNumber + "</Value></Eq></Where></Query>",
+            CAMLRowLimit: 1,
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+
+                    $("#MerchantId").children().children("div").text($(this).attr("ows_Merchant_x0020_ID_x0020_Status"));
+                    $("#ServerEPS").children().children("div").text($(this).attr("ows_Server_x0020_EPS_x0020_Status"));
+                    $("#PAYSTYPE").children().children("div").text($(this).attr("ows_PAYS_x0020_Type"));
+                    var dateVal = $(this).attr("ows_Pays_x0020_Delivery_x0020_Date");
+                    $("#PAYSDelivery").val(moment(dateVal, "YYYY-MM-DD").format("M/D/YYYY"));
+                    $("#PAYSPOSData").children().children("div").text($(this).attr("ows_Cirronet_x0020_Status"));
+                });
+            }
+        });
+
+        var combinedConstructionExtend;
+        //get ID of record from Combined Construction Extend
+        $().SPServices({
+            operation: "GetListItems",
+            async: false,
+            listName: "Combined Construction Extend",
+            CAMLViewFields: "<ViewFields><FieldRef Name='ID' /><FieldRef Name='PaymentTerminalAndInfoLane50Faci' /><FieldRef Name='PaymentTerminalAndInfoLane91Faci' /><FieldRef Name='PaymentTerminalAndInfoLane92Faci' /><FieldRef Name='PaymentTerminalAndInfoLane93Faci' /><FieldRef Name='PaymentTerminalAndInfoLane94Faci' /><FieldRef Name='PaymentTerminalAndInfoLane95Faci' /><FieldRef Name='PaymentTerminalAndInfoLane96Faci' /><FieldRef Name='PaymentTerminalAndInfoLane97Faci' /><FieldRef Name='PaymentTerminalAndInfoLane98Faci' /><FieldRef Name='PaymentTerminalAndInfoLane99Faci' /><FieldRef Name='VP6800_x0020_Installer' /><FieldRef Name='VP6800_x0020_Server_x0020_Cabine0' /><FieldRef Name='VP6800_x0020_Server_x0020_Cabine1' /><FieldRef Name='VP6800_x0020_Server_x0020_Cabine2' /></ViewFields>",
+            CAMLQuery: "<Query><Where><Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Text'>" + store.StoreNumber + "</Value></Eq></Where></Query>",
+            CAMLRowLimit: 1,
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                    combinedConstructionExtend = $(this).attr("ows_ID");
+                    var serverCabinet = $(this).attr("ows_VP6800_x0020_Server_x0020_Cabine1");
+                    var VP6800ServerCabinet12uQTY = $(this).attr("ows_VP6800_x0020_Server_x0020_Cabine2");
+                    var VP6800ServerCabinetShelf = $(this).attr("ows_VP6800_x0020_Server_x0020_Cabine0");
+                    var VP6800Installer = $(this).attr("ows_VP6800_x0020_Installer");
+                    var PaymentTerminalAndInfoLane50Facing = $(this).attr("ows_PaymentTerminalAndInfoLane50Faci");
+                    var PaymentTerminalAndInfoLane91Facing = $(this).attr("ows_PaymentTerminalAndInfoLane91Faci");
+                    var PaymentTerminalAndInfoLane92Facing = $(this).attr("ows_PaymentTerminalAndInfoLane92Faci");
+                    var PaymentTerminalAndInfoLane93Facing = $(this).attr("ows_PaymentTerminalAndInfoLane93Faci");
+                    var PaymentTerminalAndInfoLane94Facing = $(this).attr("ows_PaymentTerminalAndInfoLane94Faci");
+                    var PaymentTerminalAndInfoLane95Facing = $(this).attr("ows_PaymentTerminalAndInfoLane95Faci");
+                    var PaymentTerminalAndInfoLane96Facing = $(this).attr("ows_PaymentTerminalAndInfoLane96Faci");
+                    var PaymentTerminalAndInfoLane97Facing = $(this).attr("ows_PaymentTerminalAndInfoLane97Faci");
+                    var PaymentTerminalAndInfoLane98Facing = $(this).attr("ows_PaymentTerminalAndInfoLane98Faci");
+                    var PaymentTerminalAndInfoLane99Facing = $(this).attr("ows_PaymentTerminalAndInfoLane99Faci");
+
+                    $("#VP6800ServerCabinetNumber").val(serverCabinet);
+                    $("#VP6800ServerCabinet12uQTY").val(VP6800ServerCabinet12uQTY);
+                    $("#VP6800ServerCabinetShelf").val(VP6800ServerCabinetShelf);
+                    $("#VP6800Installer").val(VP6800Installer);
+
+                    $("#PaymentTerminalAndInfoLane50Facing").val(PaymentTerminalAndInfoLane50Facing);
+                    $("#PaymentTerminalAndInfoLane91Facing").val(PaymentTerminalAndInfoLane91Facing);
+                    $("#PaymentTerminalAndInfoLane92Facing").val(PaymentTerminalAndInfoLane92Facing);
+                    $("#PaymentTerminalAndInfoLane93Facing").val(PaymentTerminalAndInfoLane93Facing);
+                    $("#PaymentTerminalAndInfoLane94Facing").val(PaymentTerminalAndInfoLane94Facing);
+                    $("#PaymentTerminalAndInfoLane95Facing").val(PaymentTerminalAndInfoLane95Facing);
+                    $("#PaymentTerminalAndInfoLane96Facing").val(PaymentTerminalAndInfoLane96Facing);
+                    $("#PaymentTerminalAndInfoLane97Facing").val(PaymentTerminalAndInfoLane97Facing);
+                    $("#PaymentTerminalAndInfoLane98Facing").val(PaymentTerminalAndInfoLane98Facing);
+                    $("#PaymentTerminalAndInfoLane99Facing").val(PaymentTerminalAndInfoLane99Facing);
+                });
+            }
+        });
+
+        $("#PaymentTerminalAndInfoLane50Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane50Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane91Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane91Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane92Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane92Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane93Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane93Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane94Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane94Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane95Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane95Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane96Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane96Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane97Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane97Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane98Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane98Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#PaymentTerminalAndInfoLane99Facing").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["PaymentTerminalAndInfoLane99Faci", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#VP6800ServerCabinetShelf").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["VP6800_x0020_Server_x0020_Cabine0", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#VP6800Installer").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["VP6800_x0020_Installer", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+
+        $("#VP6800ServerCabinetNumber").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["VP6800_x0020_Server_x0020_Cabine1", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+        $("#VP6800ServerCabinet12uQTY").change(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["VP6800_x0020_Server_x0020_Cabine2", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+        $("#VP6800ProjectNotes").blur(function () {
+            var dropDownSelection = $(this).val();
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "Update",
+                ID: combinedConstructionExtend,
+                listName: "Combined Construction Extend",
+                valuepairs: [["VP6800_x0020_Project_x0020_Notes", dropDownSelection]],
+                completefunc: function (xData, Status) {
+                }
+            });
+        });
+    }
+
+
+    function renderOTI(store, options) {
+        //Stop if another route has registered
+        if (!options.routeCheck()) {
+            return;
+        }
+        //Turn the summary template into a dom element
+        var summary = $($.parseHTML(OTISummaryTemplate));
+
+        var me = {
+            el: summary,
+            store: store
+        };
+
+        //Set the calculated POPS Install and Go-Live Dates
+        var installDate = moment(store.PopsDeliveryDate),
+          goLiveDate = moment(store.PopsDeliveryDate).add(1, 'days');
+
+        //If on a saturday, install is sunday, go-live is on monday
+        if (installDate.format('E') === "6") {
+            installDate.add(1, 'days');
+            goLiveDate.add(1, 'days');
+        }
+
+        if (installDate.isValid()) {
+            summary.find('#pops-install-date').html(installDate.format('l'));
+            summary.find('#pops-go-live-date').html(goLiveDate.format('l'));
+        }
+
+        //Add view to callback for value changes
+        function beforeChange(key, newValue, revertBackground, oldValue, el) {
+            //If function is passed, call on each value change and return the value in this callback - allows business logic before field change
+            if (options.beforeChange) return options.beforeChange(me, key, newValue, revertBackground, oldValue, el);
+        }
+
+        //Add view to callback for value changes
+        function afterChange(key, value, store, revertBackground, response) {
+            //If function is passed, call on each value change and return the value in this callback - allows business logic after field change/save
+            if (options.afterChange) return options.afterChange(me, key, value, store, revertBackground, response);
+            else revertBackground();
+        }
+
+        //Activate all the fields marked as display or editable
+        widgetHelper.activate(summary, store);
+
+        //Make sure the dropdown got destroyed
+        var button = registry.byId('workflow-button');
+        if (button) button.destroy();
+
+        //Create a dropdown button with a menu
+        me.Workflows = summary.find('#workflows');
+
+        //Create links to sharepoint
+        summary.find('#combined-schedule').prop('href', "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
+        summary.find('#master-portal').prop('href', "https://www.sonicpartnernet.com/public/master%20portal/store.aspx?store=" + store.StoreNumber);
+
+        ///--------------------------------------------------------------Issues/Tasks
+        issues.loadData({ store: store }, function (issues) {
+            issuesLoaded = true;
+            store.Issues = issues;
+            me.Issues = renderIssues(store, 'Open', $.find('#issues'));
+            options.afterRenderIssues(me);
+        });
+
+        //--------------------------------------------------------------Notes
+        notes.loadData({ store: store }, function (notes) {
+            notesLoaded = true;
+            store.Notes = notes;
+            me.Notes = renderNotes(store, $.find('#notes'), options);
+            options.afterRenderNotes(me);
+        });
+
+        //--------------------------------------------------------------Create Links to Documents
+        var purchaseOrdersLoaded = false,
+          documentsLoaded = false;
+
+        combined.getDocuments(store, function (s) {
+            documentsLoaded = true;
+            store.Documents = s.Documents;
+            completeDocuments();
+        });
+
+        purchaseOrderStore.loadData(function (purchaseOrders) {
+            store.PurchaseOrders = purchaseOrders;
+            if (purchaseOrders.length > 0) {
+                var poRequests = 0;
+                _.each(purchaseOrders, function (po) {
+                    poRequests++;
+                    purchaseOrderStore.getDocuments(po, function () {
+                        if (--poRequests <= 0) {
+                            purchaseOrdersLoaded = true;
+                            completeDocuments();
+                        }
+                    });
+                });
+            } else {
+                purchaseOrdersLoaded = true;
+                completeDocuments();
+            }
+        }, { StoreNumber: store.StoreNumber });
+
+        function completeDocuments() {
+            if (purchaseOrdersLoaded && documentsLoaded) {
+                me.Documents = renderDocuments(store, me);
+            }
+        }
+
+        //Insert the summary into the target element
+        $(options.target).html(summary);
+
+        //Fire callback if passed
+        if (options.callback) {
+            options.callback(me);
+        }
+
+        if (store.Pos === 'Infor') {
+            $("#InforWorkstationHDDDeliverySec").css("display", "");
+        }
+        else if (store.Pos === 'Micros') {
+            $("#Oracle5810ServerDeliverySec").css("display", "");
+        }
+    }
+
+
+    return {
+        render: function (options) {
+            //Make sure search is showing and the event is registered
+            searchController.bootstrap();
+
+            //Set the date
+            $('#current-date').html(moment().format('dddd, MMMM Do YYYY - h:mm A'));
+            //Set the title
+            $('#sub-title').html('Summary View - Store #' + options.storeNumber);
+
+            //Get the data from the search controller or load it directly
+            if (typeof searchController.data[options.storeNumber] === 'undefined') {
+                //console.log('get template2' + store.ProjectType);
+                typeCheck(options);
+
+            } else {
+
+                if (searchController.data[options.storeNumber].ProjectType === 'POS Conversion') {
+                    renderConversion(searchController.data[options.storeNumber]);
+                }
+                else if (searchController.data[options.storeNumber].ProjectType === 'OTI') {
+
+                    renderOTI(searchController.data[options.storeNumber]);
+                }
+                else {
+                    renderConstruction(searchController.data[options.storeNumber]);
+                }
+            }
+
+            //$('#Oracle5810ServerDeliverySec').css('display', 'none');
+
+        }
+    };
+
+    //Utility function
+    //TODO Put this somewhere to be accesed by all views that use sharepoint data 
+    function formatDate(dateString, formatString) {
+        formatString = formatString || "l";
+
+        if (dateString.split("-").length > 1) {
+            return moment(dateString).format("l");
+        } else {
+            return "";
+        }
+    }
+});

@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/resources/lib/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" type="text/css" href="/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/resources/style/main.css">
+    <link rel="stylesheet" type="text/css" href="/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/resources/style/pure-min.css">
+
+</head>
+<body class="claro">
+
+    <div id="main">
+
+
+        <div id="content">
+            <!--<fieldset style="width: 533px; height: 75px; margin: 0 10px 10px 10px;">-->
+            <!--<legend class="header">Filters</legend>-->
+            <div class="dijitTitlePane" id="filters" widgetid="filters" style="width: 555px; margin: 0px 10px 10px;">
+                <div data-dojo-attach-event="ondijitclick:_onTitleClick, onkeydown:_onTitleKey" class="dijitTitlePaneTitle dijitTitlePaneTitleOpen dijitOpen" data-dojo-attach-point="titleBarNode" id="filters_titleBarNode">
+                    <div class="dijitTitlePaneTitleFocus" data-dojo-attach-point="focusNode" aria-pressed="true" role="button" aria-controls="filters_pane" tabindex="0">
+                        <span data-dojo-attach-point="arrowNode" class="dijitInline dijitArrowNode" role="presentation"></span><span data-dojo-attach-point="arrowNodeInner" class="dijitArrowNodeInner">-</span><span data-dojo-attach-point="titleNode" class="dijitTitlePaneTextNode" style="user-select: none;">Report Filters</span>
+                    </div>
+                </div>
+                <div class="dijitTitlePaneContentOuter" data-dojo-attach-point="hideNode" role="presentation" style="">
+                    <div class="dijitReset" data-dojo-attach-point="wipeNode" role="presentation" style="height: auto;">
+                        <div class="dijitTitlePaneContentInner" data-dojo-attach-point="containerNode" role="region" id="filters_pane" aria-labelledby="filters_titleBarNode" aria-hidden="false">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 60px;"><label for="start-date">Go-Live From:</label></td>
+                                        <td>
+                                            <div class="dijit dijitReset dijitInline dijitLeft dijitTextBox dijitComboBox dijitDateTextBox dijitValidationTextBox" id="widget_start-date" role="combobox" aria-haspopup="true" data-dojo-attach-point="_popupStateNode" widgetid="start-date" style="width: 200px; margin: 5px 0px;"><div class="dijitReset dijitRight dijitButtonNode dijitArrowButton dijitDownArrowButton dijitArrowButtonContainer" data-dojo-attach-point="_buttonNode" role="presentation"><input class="dijitReset dijitInputField dijitArrowButtonInner" value="▼ " type="text" tabindex="-1" readonly="readonly" role="button presentation" aria-hidden="true"></div><div class="dijitReset dijitValidationContainer"><input class="dijitReset dijitInputField dijitValidationIcon dijitValidationInner" value="Χ " type="text" tabindex="-1" readonly="readonly" role="presentation"></div><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" type="text" autocomplete="off" data-dojo-attach-point="textbox,focusNode" role="textbox" tabindex="0" id="start-date" value="9/29/2019"><input type="hidden"></div></div>
+                                        </td>
+                                        <td style="width: 60px; padding-left: 20px;"><label for="end-date">To:</label></td>
+                                        <td>
+                                            <div class="dijit dijitReset dijitInline dijitLeft dijitTextBox dijitComboBox dijitDateTextBox dijitValidationTextBox" id="widget_end-date" role="combobox" aria-haspopup="true" data-dojo-attach-point="_popupStateNode" widgetid="end-date" style="width: 200px; margin: 5px 0px;"><div class="dijitReset dijitRight dijitButtonNode dijitArrowButton dijitDownArrowButton dijitArrowButtonContainer" data-dojo-attach-point="_buttonNode" role="presentation"><input class="dijitReset dijitInputField dijitArrowButtonInner" value="▼ " type="text" tabindex="-1" readonly="readonly" role="button presentation" aria-hidden="true"></div><div class="dijitReset dijitValidationContainer"><input class="dijitReset dijitInputField dijitValidationIcon dijitValidationInner" value="Χ " type="text" tabindex="-1" readonly="readonly" role="presentation"></div><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" type="text" autocomplete="off" data-dojo-attach-point="textbox,focusNode" role="textbox" tabindex="0" id="end-date" value="10/5/2019"><input type="hidden"></div></div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="width: 60px;"><label for="installer">Franchisee:</label></td>
+                                        <td>
+                                            <div class="dijit dijitReset dijitInline dijitLeft dijitTextBox" id="widget_installer" role="presentation" widgetid="installer" style="width: 200px; margin: 5px 0px;"><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" data-dojo-attach-point="textbox,focusNode" autocomplete="off" type="text" tabindex="0" id="installer" value=""></div></div>
+                                        </td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 60px;"><label for="pos">Installer:</label></td>
+                                        <td>
+                                            <div class="dijit dijitReset dijitInline dijitLeft dijitTextBox" id="widget_pos" role="presentation" widgetid="pos" style="width: 200px; margin: 5px 0px;"><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" data-dojo-attach-point="textbox,focusNode" autocomplete="off" type="text" tabindex="0" id="pos" value=""></div></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 60px;"><label for="city">City:</label></td>
+                                        <td>
+                                            <div class="dijit dijitReset dijitInline dijitLeft dijitTextBox" id="widget_city" role="presentation" widgetid="city" style="width: 200px; margin: 5px 0px;"><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" data-dojo-attach-point="textbox,focusNode" autocomplete="off" type="text" tabindex="0" id="city" value=""></div></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 60px;"><label for="state">State:</label></td>
+                                        <td>
+                                            <div class="dijit dijitReset dijitInline dijitLeft dijitTextBox" id="widget_state" role="presentation" widgetid="state" style="width: 200px; margin: 5px 0px;"><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" data-dojo-attach-point="textbox,focusNode" autocomplete="off" type="text" tabindex="0" id="state" value=""></div></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 60px;"></td>
+                                        <td><span class="dijit dijitReset dijitInline dijitButton" role="presentation" widgetid="filter-button"><span class="dijitReset dijitInline dijitButtonNode" data-dojo-attach-event="ondijitclick:__onClick" role="presentation"><span class="dijitReset dijitStretch dijitButtonContents" data-dojo-attach-point="titleNode,focusNode" role="button" aria-labelledby="filter-button_label" tabindex="0" id="filter-button" style="user-select: none;"><span class="dijitReset dijitInline dijitIcon dijitNoIcon" data-dojo-attach-point="iconNode"></span><span class="dijitReset dijitToggleButtonIconChar">●</span><span class="dijitReset dijitInline dijitButtonText" id="filter-button_label" data-dojo-attach-point="containerNode">Apply Filters</span></span></span><input type="button" value="" class="dijitOffScreen" data-dojo-attach-event="onclick:_onClick" tabindex="-1" role="presentation" aria-hidden="true" data-dojo-attach-point="valueNode"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+
+                            <div data-dojo-attach-event="ondijitclick:_onTitleClick, onkeydown:_onTitleKey" class="dijitTitlePaneTitle dijitTitlePaneTitleOpen dijitOpen" data-dojo-attach-point="titleBarNode" id="filters_titleBarNode">
+                                <div class="dijitTitlePaneTitleFocus" data-dojo-attach-point="focusNode" aria-pressed="true" role="button" aria-controls="filters_pane" tabindex="0">
+                                    <span data-dojo-attach-point="arrowNode" class="dijitInline dijitArrowNode" role="presentation"></span><span data-dojo-attach-point="arrowNodeInner" class="dijitArrowNodeInner">-</span><span data-dojo-attach-point="titleNode" class="dijitTitlePaneTextNode" style="user-select: none;">Communications</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</body>
+</html>

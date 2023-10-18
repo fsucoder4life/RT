@@ -1,0 +1,76 @@
+<table id="email" style="width: 100%; vertical-align: top;">
+    <tr>
+        <td>To:</td>
+        <td id="to">SonicSales@hme.com;</td>
+    </tr>
+    <tr>
+        <td>CC:</td>
+        <td id="cc">CORP\new store technology installations; </td>
+    </tr>
+    <tr>
+        <td>Subject:</td>
+        <td id="subject"></td>
+    </tr>
+    <tr style="vertical-align: top;">
+        <td>Message:</td>
+        <td>
+            <div id="message" contenteditable="true" style="min-height: 450px;">
+                <p>Please provide a quote for this store based on the information below.  Please be sure to reply to all so our entire team receives it. Thanks!</p>
+                <table id="quote-info">
+                    <tr>
+                        <td>Store Number:</td><td>#<span data-display="StoreNumber"></span></td>
+                    </tr>
+                    <tr>
+                        <td></td><td id="Address" data-display="Address"></td>
+                    </tr>
+                    <tr>
+                        <td></td><td><span data-display="City"></span> <span data-display="State"></span>, <span data-display="Zip"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Franchisee:</td><td id="FranchiseGroup" data-display="FranchiseGroup"></td>
+                    </tr>
+                    <tr>
+                        <td>Primary Contact:</td><td id="PrimaryContact" data-display="PrimaryContact"></td>
+                    </tr>
+                    <tr>
+                        <td>Primary Phone:</td><td id="PrimaryPhone" data-display="PrimaryPhone"></td>
+                    </tr>
+                    <tr>
+                        <td>Primary Email:</td><td id="PrimaryEmail" data-display="PrimaryEmail"></td>
+                    </tr>
+                    <tr>
+                        <td>POS Type:</td><td id="Pos" data-display="Pos"></td>
+                    </tr>
+                    <tr>
+                        <td>Routers:</td><td id="Routers"></td>
+                    </tr>
+                    <tr>
+                        <td>Stall Count:</td><td id="TotalStallCountWithFlat"></td>
+                    </tr>
+                    <tr>
+                        <td>Patio Count:</td><td id="PatioCount" data-display="PatioCount"></td>
+                    </tr>
+                    <tr>
+                        <td>Audio:</td><td id="AudioConfiguration" data-display="AudioConfiguration"></td>
+                    </tr>
+                    <tr>
+                        <td>Drive-Thru:</td><td id="DriveThruStatus" data-display="DriveThruFormat"></td>
+                    </tr>
+                    <tr>
+                        <td>Ground Loop:</td><td id="GroundLoopStatus" data-display="GroundLoopStatus"></td>
+                    </tr>
+                    <tr>
+                        <td>Include Cable:</td><td id="AudioIncludeCable" data-display="AudioIncludeCable"></td>
+                    </tr>
+                    <tr>
+                        <td>Include Speakers/Mics:</td><td id="IncludeSpeakersMics" data-display="IncludeSpeakersMics"></td>
+                    </tr>
+                    <tr>
+                        <td>Audio Delivery Date:</td><td id="AudioDeliveryDate" data-display="AudioDeliveryDate"></td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+<div style="text-align: center;"><button id="submit-button" type="button"></button></div>

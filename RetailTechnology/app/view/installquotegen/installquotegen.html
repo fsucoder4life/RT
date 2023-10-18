@@ -1,0 +1,77 @@
+<div id="po-editor">
+    <div id="po-title-container">
+        <h1 id="po-title">POS Installation Quote Generator</h1>
+    </div>
+
+    <table id="po-billing" style="display:none;">
+        <tr><td colspan="2"><h3>Billing</h3></td></tr>
+        <tr>
+            <td> Name:</td>
+            <td data-editable="BillingName"></td>
+        </tr>
+        <tr>
+            <td> Phone:</td>
+            <td data-editable="BillingPhone"></td>
+        </tr>
+        <tr>
+            <td> Email:</td>
+            <td data-editable="BillingEmail"></td>
+        </tr>
+        <tr>
+            <td>Address:</td>
+            <td data-editable="BillingAddress"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><span data-editable="BillingCity"></span>,&nbsp;&nbsp;<span data-editable="BillingState"></span>&nbsp;&nbsp;<span data-editable="BillingZip"></span></td>
+        </tr>
+    </table>
+    <table id="po-shipping" style="display:none;">
+        <tr><td colspan="2"><h3>Shipping</h3></td></tr>
+        <tr>
+            <td> Store:</td>
+            <td>Sonic Drive In #<span data-display="StoreNumber"></span></td>
+        </tr>
+        <tr>
+            <td> Name:</td>
+            <td data-editable="ShippingName"></td>
+        </tr>
+        <tr>
+            <td>Address:</td>
+            <td data-editable="ShippingAddress"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><span data-editable="ShippingCity"></span>,&nbsp;&nbsp;<span data-editable="ShippingState"></span>&nbsp;&nbsp;<span data-editable="ShippingZip"></span></td>
+        </tr>
+    </table>
+    <div style="clear: both;"></div>
+    <table id="po-notes" style="display:none;">
+        <tr>
+            <td><h3>Notes:</h3></td>
+            <td data-editable="Notes"></td>
+        </tr>
+    </table>
+    <div style="clear: both;"></div>
+    <table id="po-items"></table>
+
+    <table id="po-details">
+        <tr>
+            <td>Total: </td>
+            <td id="po-total"></td>
+        </tr>
+        <tr>
+            <td>PO#: </td>
+            <td data-display="PurchaseOrderId"></td>
+        </tr>
+        <tr>
+            <td>Deliver: </td>
+            <td><input id="po-delivery" data-editable="DeliveryDate" /></td>
+        </tr>
+    </table>
+
+    <div id="po-buttons">
+        
+        <button id="po-send-po" class="pure-button pure-button-primary">Send Email</button>
+    </div>
+</div>

@@ -1,0 +1,129 @@
+Type: Text StaticName: Title Name: Title 
+Type: Lookup StaticName: Store_x0020_Number Name: Store Number 
+Type: DateTime StaticName: Date_x0020_of_x0020_Initial_x002 Name: Date of Initial Call 
+Type: Note StaticName: Discussion_x0020_Notes Name: Discussion Notes 
+Type: DateTime StaticName: Micros_x0020_Account_x0020_Form_ Name: Micros Account Form Sent 
+Type: DateTime StaticName: POS_x0020_list_x0020_given_x0020 Name: POS Quote Ordered 
+Type: DateTime StaticName: POS_x0020_Quote_x0020_to_x0020_F Name: POS Quote to FR 
+Type: DateTime StaticName: Summary_x0020_Quote_x0020_Sent Name: Summary Quote Sent 
+Type: DateTime StaticName: POS_x0020_Quote_x0020_Signed_x00 Name: POS Quote Signed-Del 
+Type: DateTime StaticName: POPS_x0020_Agreement_x0020_Signe Name: POPS Agreement Signed 
+Type: DateTime StaticName: Store_x0020_Survey_x0020_Sent Name: Pricing Survey Sent 
+Type: DateTime StaticName: Store_x0020_Survey_x0020_Complet Name: Pricing Survey Completed 
+Type: DateTime StaticName: Installer_x0020_Arrival_x0020_Da Name: Installer Arrival Date 
+Type: DateTime StaticName: POS_x0020_Delivery_x0020_Date Name: POS Delivery Date 
+Type: Choice StaticName: POPS_x0020_Type Name: POPS Display/Insert 
+Type: DateTime StaticName: Menu_x0020_Order_x0020_Date Name: Menu Order Date 
+Type: DateTime StaticName: Menus_x0020_Shipped_x0020_Date Name: Menu Shipped Date 
+Type: DateTime StaticName: HME_x0020_Ordered Name: HME Ordered 
+Type: DateTime StaticName: HME_x0020_Quote_x0020_Delivered_ Name: HME Quote Delivered to FR 
+Type: DateTime StaticName: HME_x0020_Quote_x0020_Ordered Name: HME Equipment Delivery Date 
+Type: DateTime StaticName: Pays_x0020_Ordered Name: Pays Ordered 
+Type: DateTime StaticName: Pays_x0020_Delivery_x0020_Date Name: Pays Delivery Date 
+Type: DateTime StaticName: Hughes_x0020_Quote_x0020_Ordered Name: VSAT Ordered 
+Type: DateTime StaticName: Hughes_x0020_Equipment_x0020_Del Name: VSAT Install Date 
+Type: DateTime StaticName: DSL_x0020_Ordered Name: DSL Ordered 
+Type: DateTime StaticName: DSL_x0020_Install_x0020_Date Name: DSL Install Date 
+Type: DateTime StaticName: Wireless_x0020_Ordered Name: Wireless Ordered 
+Type: DateTime StaticName: Wireless_x0020_Delivery Name: Wireless Delivery Date 
+Type: DateTime StaticName: TV_x0020_and_x0020_LTO_x0020_Equ Name: TV and LTO Equipment Ordered 
+Type: DateTime StaticName: TV_x0020_and_x0020_LTO_x0020_Equ0 Name: TV and LTO Delivery Date 
+Type: DateTime StaticName: CCTV_x0020_Quote_x0020_Ordered Name: CCTV Quote Ordered 
+Type: DateTime StaticName: CCTV_x0020_Delivery_x0020_Date Name: CCTV Delivery Date 
+Type: ContentTypeId StaticName: ContentTypeId Name: Content Type ID 
+Type: Note StaticName: _ModerationComments Name: Approver Comments 
+Type: Text StaticName: File_x0020_Type Name: File Type 
+Type: Lookup StaticName: Store_x0020_Number_x003a_Franchi Name: Store Number:Franchise Group 
+Type: Lookup StaticName: Store_x0020_Number_x003a_Princip Name: Store Number:Principal Name 
+Type: Lookup StaticName: Store_x0020_Number_x003a_Address Name: Store Number:Address Full 
+Type: Lookup StaticName: Store_x0020_Number_x003a_City Name: Store Number:City 
+Type: Lookup StaticName: Store_x0020_Number_x003a_State Name: Store Number:State 
+Type: Lookup StaticName: Store_x0020_Number_x003a_Store_x Name: Store Number:Store Go-Live Date 
+Type: Lookup StaticName: Store_x0020_Number_x003a_POPS_x0 Name: Store Number:POPS Install Date 
+Type: Lookup StaticName: Store_x0020_Number_x003a_POPS_x00 Name: Store Number:POPS Delivery Date 
+Type: Lookup StaticName: Store_x0020_Number_x003a_Stall_x Name: Store Number:Stall Count 
+Type: Lookup StaticName: Store_x0020_Number_x003a_Patio_x Name: Store Number:Patio Units 
+Type: Lookup StaticName: Store_x0020_Number_x003a_Zipcode Name: Store Number:Zipcode 
+Type: Lookup StaticName: Store_x0020_Number_x003a_Regiona Name: Store Number:Regional Vice President 
+Type: Lookup StaticName: POS_x0020_Type Name: POS Type 
+Type: Text StaticName: Primary_x0020_Contact Name: Primary Contact 
+Type: Text StaticName: Primary_x0020_Contact_x0020_Phon Name: Primary Contact Phone 
+Type: Text StaticName: Primary_x0020_Contact_x0020_Emai Name: Primary Contact Email 
+Type: DateTime StaticName: DMB_x002f_TV_x0020_Delivery_x002 Name: DMB/TV Delivery Date 
+Type: Text StaticName: Satellite_x0020_Status Name: Satellite Status 
+Type: Text StaticName: HAN_x0020_Status Name: HAN Status 
+Type: Text StaticName: DSL_x0020_Status Name: DSL Status 
+Type: Text StaticName: POS_x0020_Status Name: POS Status 
+Type: Text StaticName: POPS_x0020_Status Name: POPS Status 
+Type: Text StaticName: Audio_x0020_Status Name: Audio Status 
+Type: Text StaticName: Ground_x0020_Loop_x0020_Status Name: Ground Loop Status 
+Type: DateTime StaticName: Ground_x0020_Loop_x0020_Delivery Name: Ground Loop Delivery 
+Type: Text StaticName: PAYS_x0020_Type Name: PAYS Type 
+Type: Text StaticName: Cirronet_x0020_Status Name: Cirronet Status 
+Type: Text StaticName: Merchant_x0020_ID_x0020_Status Name: Merchant ID Status 
+Type: Text StaticName: Server_x0020_EPS_x0020_Status Name: Server EPS Status 
+Type: Text StaticName: PAYS_x0020_Status Name: PAYS Status 
+Type: Number StaticName: DMB_x0020_Quantity Name: DMB Quantity 
+Type: Number StaticName: TV_x0020_Quantity Name: TV Quantity 
+Type: Text StaticName: DMB_x002f_TV_x0020_Status Name: DMB/TV Status 
+Type: Text StaticName: Drive_x002d_Thru_x0020_Format Name: Drive-Thru Format 
+Type: Text StaticName: Inside_x0020_Dining Name: Inside Dining 
+Type: Text StaticName: Installation_x0020_Status Name: Installation Status 
+Type: Text StaticName: Construction_x0020_Status Name: Construction Status 
+Type: Text StaticName: Kitchen_x0020_Install_x0020_Date Name: Kitchen Install Date 
+Type: Text StaticName: Construction_x0020_Manager Name: Construction Manager 
+Type: Number StaticName: PAYS_x0020_Quantity Name: PAYS Quantity 
+Type: DateTime StaticName: Speaker_x002f_Receiver_x0020_Del Name: Speaker/Receiver Delivery Date 
+Type: Text StaticName: Speaker_x002f_Receiver_x0020_Sta Name: Speaker/Receiver Status 
+Type: Text StaticName: OCB_x0020_Quantity Name: OCB Quantity 
+Type: Counter StaticName: ID Name: ID 
+Type: Computed StaticName: ContentType Name: Content Type 
+Type: DateTime StaticName: Modified Name: Modified 
+Type: DateTime StaticName: Created Name: Created 
+Type: User StaticName: Author Name: Created By 
+Type: User StaticName: Editor Name: Modified By 
+Type: Boolean StaticName: _HasCopyDestinations Name: Has Copy Destinations 
+Type: Text StaticName: _CopySource Name: Copy Source 
+Type: Integer StaticName: owshiddenversion Name: owshiddenversion 
+Type: Integer StaticName: WorkflowVersion Name: Workflow Version 
+Type: Integer StaticName: _UIVersion Name: UI Version 
+Type: Text StaticName: _UIVersionString Name: Version 
+Type: Attachments StaticName: Attachments Name: Attachments 
+Type: ModStat StaticName: _ModerationStatus Name: Approval Status 
+Type: Computed StaticName: Edit Name: Edit 
+Type: Computed StaticName: LinkTitleNoMenu Name: Title 
+Type: Computed StaticName: LinkTitle Name: Title 
+Type: Computed StaticName: LinkTitle2 Name: Title 
+Type: Computed StaticName: SelectTitle Name: Select 
+Type: Integer StaticName: InstanceID Name: Instance ID 
+Type: Number StaticName: Order Name: Order 
+Type: Guid StaticName: GUID Name: GUID 
+Type: Guid StaticName: WorkflowInstanceID Name: Workflow Instance ID 
+Type: Lookup StaticName: FileRef Name: URL Path 
+Type: Lookup StaticName: FileDirRef Name: Path 
+Type: Lookup StaticName: Last_x0020_Modified Name: Modified 
+Type: Lookup StaticName: Created_x0020_Date Name: Created 
+Type: Lookup StaticName: FSObjType Name: Item Type 
+Type: Lookup StaticName: SortBehavior Name: Sort Type 
+Type: Computed StaticName: PermMask Name: Effective Permissions Mask 
+Type: File StaticName: FileLeafRef Name: Name 
+Type: Lookup StaticName: UniqueId Name: Unique Id 
+Type: Lookup StaticName: SyncClientId Name: Client Id 
+Type: Lookup StaticName: ProgId Name: ProgId 
+Type: Lookup StaticName: ScopeId Name: ScopeId 
+Type: Computed StaticName: HTML_x0020_File_x0020_Type Name: HTML File Type 
+Type: Computed StaticName: _EditMenuTableStart Name: Edit Menu Table Start 
+Type: Computed StaticName: _EditMenuTableStart2 Name: Edit Menu Table Start 
+Type: Computed StaticName: _EditMenuTableEnd Name: Edit Menu Table End 
+Type: Computed StaticName: LinkFilenameNoMenu Name: Name 
+Type: Computed StaticName: LinkFilename Name: Name 
+Type: Computed StaticName: LinkFilename2 Name: Name 
+Type: Computed StaticName: DocIcon Name: Type 
+Type: Computed StaticName: ServerUrl Name: Server Relative URL 
+Type: Computed StaticName: EncodedAbsUrl Name: Encoded Absolute URL 
+Type: Computed StaticName: BaseName Name: File Name 
+Type: Lookup StaticName: MetaInfo Name: Property Bag 
+Type: Integer StaticName: _Level Name: Level 
+Type: Boolean StaticName: _IsCurrentVersion Name: Is Current Version 
+Type: Lookup StaticName: ItemChildCount Name: Item Child Count 
+Type: Lookup StaticName: FolderChildCount Name: Folder Child Count 

@@ -1,0 +1,48 @@
+<div class="modal" style="max-width: 1000px;">
+    <div><h3>Update Statuses?<br/></h3></div>
+    <div>Un-check any items you don't want changed in this process<br/></div>
+    <table>
+        <thead>
+            <tr>
+                <td></td>
+                <td style="width: 150px;"></td>
+                <td style="width: 200px;"><b>Old Status</b></td>
+                <td style="width: 200px;"><b>Request Status</b></td>
+                <td style="width: 200px;"><b>New Status</b></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="checkbox" checked id="update-vsat-status"/></td>
+                <td>VSAT Status:</td>
+                <td data-display="HughesVsatStatus"></td>
+                <td data-display="NewHughesVsatRequestStatus"></td>
+                <td data-display="NewHughesVsatStatus"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" checked id="update-temp-status"/></td>
+                <td>Temp 4G Status:</td>
+                <td data-display="HughesTempStatus"></td>
+                <td data-display="NewHughesTempRequestStatus"></td>
+                <td data-display="NewHughesTempStatus"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" checked id="update-primary-status"/></td>
+                <td>Primary Status:</td>
+                <td data-display="HughesPrimaryStatus"></td>
+                <td data-display="NewHughesPrimaryRequestStatus"></td>
+                <td data-display="NewHughesPrimaryStatus"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" checked id="update-deinstall-status"/></td>
+                <td>De-Install Status:</td>
+                <td data-display="HughesDeinstallStatus"></td>
+                <td data-display="NewHughesDeinstallRequestStatus"></td>
+                <td data-display="NewHughesDeinstallStatus"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="text-align: center;">
+        <button class="pure-button pure-button-primary" id="hughes-status-check-next">Next</button>
+    </div>
+</div>

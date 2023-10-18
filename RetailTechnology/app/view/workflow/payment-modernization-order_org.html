@@ -1,0 +1,175 @@
+<table id="email" style="width: 100%; vertical-align: top;">
+    <tr>
+        <td>To:</td>
+        <td id="to">SonicOrder@level10.com;  </td>
+    </tr>
+    <tr>
+        <td>CC:</td>
+        <td id="cc">technology.implementation@sonicdrivein.com; </td>
+    </tr>
+    <tr>
+        <td>Subject:</td>
+        <td id="subject"></td>
+    </tr>
+    <tr style="vertical-align:top;">
+        <td>Message:</td>
+        <td>
+            <div id="message" contenteditable="true" style="min-height: 450px;">
+                <div style="font-family: Arial, Helvetica, sans-serif;">
+                    <p>Hello all - We need Next Gen Pays established at this location. Please make arrangements to complete and/or ship to the following address for delivery by <span data-display="VP6800Delivery" style="font-weight: bold;"></span>.  Please respond to the IT project manager listed below to verify that you can meet this date or with any issues that we might have.  Thanks!</p>
+                    <table id="quote-info" style="font-family: Arial, Helvetica, sans-serif;">
+                        <tr>
+                            <td>Store Number:</td>
+                            <td>#<span data-display="StoreNumber"></span></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="Address" data-display="Address"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><span data-display="City"></span> <span data-display="State"></span>, <span data-display="Zip"></span></td>
+                        </tr>
+                        <tr>
+                            <td>Franchisee:</td>
+                            <td id="FranchiseGroup" data-display="FranchiseGroup"></td>
+                        </tr>
+                        <tr>
+                            <td>Primary Contact:</td>
+                            <td id="PrimaryContact" data-display="PrimaryContact"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="PrimaryPhone" data-display="PrimaryPhone"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="PrimaryEmail" data-display="PrimaryEmail"></td>
+                        </tr>
+                        <tr>
+                            <td>Delivery:</td>
+                            <td style="font-weight: bold;" id="PaysDeliveryDate" data-display="VP6800Delivery"></td>
+                        </tr>
+                        <tr>
+                            <td>Project Manager:</td>
+                            <td id="ProjectManager" data-display="VP6800ITPM"></td>
+                        </tr>
+                        <tr>
+                            <td>Bill To:</td>
+                            <td id="CompanyBillTo" data-display="CompanyBillTo"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="AddressBillTo" data-display="AddressBillTo"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><span data-display="CityBillTo"></span>, <span data-display="StateBillTo"></span> <span data-display="ZipBillTo"></span></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="EmailBillTo" data-display="EmailBillTo"></td>
+                        </tr>
+                        <tr>
+                            <td>PO #:</td>
+                            <td id="PONum" data-display="PONum"></td>
+                        </tr>
+                    </table>
+
+                    <p><b></b></p>
+                    <table class="order-items" style="border: 1px solid black; border-collapse: collapse; font-family: Arial, Helvetica, sans-serif;">
+                        <thead>
+                            <tr style="background-color: #333; color: #DDD;">
+                                <th>QTY</th>
+                                <th>Part #</th>
+                                <th>Item</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="vpUnitsQuantityRow">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;" class="vpUnitsQuantity"></td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-IDV68-10011-S1</td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">Payment Reader (includes Data Encryption Key)</td>
+                            </tr>
+
+                            <tr class="vpUnitsQuantityRow">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;" class="vpUnitsQuantity"></td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-80159241-001</td>
+                                <td style="border-top: 1px solid black; text-align: center;">POE Cable for VP6800</td>
+                            </tr>
+                            <tr class="vp45QuantityRow">
+                                <td id="serial-cables" style="border-top: 1px solid black; width: 45px; text-align: center;" class="vp45Quantity"></td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-FC-6506B</td>
+                                <td style="border-top: 1px solid black; text-align: center;">Payment Enclosure #23773 (45 Degree)</td>
+                            </tr>
+                            <tr class="vp90QuantityRow">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;" class="vp90Quantity"></td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-FC-6506ODB</td>
+                                <td style="border-top: 1px solid black; text-align: center;">Payment Enclosure VP6800 (90 Degree)</td>
+                            </tr>
+                            <tr class="sunShieldQuantityRow">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;" class="sunShieldQuantity"></td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-FC-6506-005OD</td>
+                                <td style="border-top: 1px solid black; text-align: center;">15 Degree Sun Shield</td>
+                            </tr>
+                            <tr class="DTWindowQuantityRow">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;" class="DTWindowQuantity"></td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-FC-654802</td>
+                                <td style="border-top: 1px solid black; text-align: center;">Drive-Thru Window Enclosure with bracket</td>
+                            </tr>
+                            <tr class="hughesSwitchUpgradeOrderedQuantityRow">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;" class="hughesSwitchUpgradeOrderedQuantity"></td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-FS-124E-POE</td>
+                                <td style="border-top: 1px solid black; text-align: center;">24 Port Switch</td>
+                            </tr>
+                            <tr class="hughesSwitchUpgradeOrderedQuantityRow">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;">1</td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-OR700LCDRM1U</td>
+                                <td style="border-top: 1px solid black; text-align: center;">CyberPower 700va Rackmountd i UPS</td>
+                            </tr>
+                            <tr class="hughesSwitchUpgradeOrderedQuantityRow">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;">1</td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-RM-FR-T3</td>
+                                <td style="border-top: 1px solid black; text-align: center;">Forti RackMount Shelf</td>
+                            </tr>
+                            <tr class="hughesSwitchUpgradeOrderedQuantityRow" id="serverCabinet6u" style="display:none;">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;" class="serverCabinetQuantity"></td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-VMP-ERWEN-6E</td>
+                                <td style="border-top: 1px solid black; text-align: center;">6u Server Cabinet</td>
+                            </tr>
+                            <tr class="hughesSwitchUpgradeOrderedQuantityRow" id="serverCabinet12u" style="display:none;">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;" class="serverCabinet12uQuantity"></td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-SRW12USG</td>
+                                <td style="border-top: 1px solid black; text-align: center;">12u Server Cabinet</td>
+                            </tr>
+                            <tr class="hughesSwitchUpgradeOrderedQuantityRow fankit2" id="serverCabinet12uFan" style="display:none;">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;" class="">1</td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-SRCOOLMVKIT</td>
+                                <td style="border-top: 1px solid black; text-align: center;">Magnetic Vinyl Kit for Rack Airflow</td>
+                            </tr>
+                            <tr class="hughesSwitchUpgradeOrderedQuantityRow fankit">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;" class="fanKitQuantity"></td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-SRFANWM</td>
+                                <td style="border-top: 1px solid black; text-align: center;">2 Fan Kit for Wall Enclosures (Server Cabinet Fan Kit)</td>
+                            </tr>
+                            <tr class="hughesSwitchUpgradeOrderedQuantityRow" id="MOR71" style="display:none;">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;" class="serverCabinetShelfQuantity"></td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;">SON-SRSHELF2P</td>
+                                <td style="border-top: 1px solid black; text-align: center;">Rack Shelf for MOR71 (Server Cabinet)</td>
+                            </tr>
+                            <tr class="" id="" style="">
+                                <td style="border-top: 1px solid black; width: 45px; text-align: center;" class="">1</td>
+                                <td style="border-top: 1px solid black; width: 250px; text-align: center;"></td>
+                                <td style="border-top: 1px solid black; text-align: center;">Level 10 Kitting/Staging Fee</td>
+                            </tr>
+
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+<div style="text-align: center;"><button id="submit-button" type="button"></button></div>

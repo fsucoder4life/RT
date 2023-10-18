@@ -1,0 +1,85 @@
+<div style="font-family: Arial, Helvetica, sans-serif;  ">
+    All,<br/><br/>
+    Please initiate the following orders.  The Hughes agreement is either attached or already on file at Hughes.<br/><br/>
+    <table id="quote-info" style="font-family: Arial, Helvetica, sans-serif;  ">
+        <tr>
+            <td>Store Number:</td><td>#<span data-display="StoreNumber"></span></td>
+        </tr>
+        <tr>
+            <td></td><td id="Address" data-display="Address"></td>
+        </tr>
+        <tr>
+            <td></td><td><span data-display="City"></span> <span data-display="State"></span>, <span data-display="Zip"></span></td>
+        </tr>
+        <tr>
+            <td>Franchisee:</td><td id="FranchiseGroup" data-display="FranchiseGroup"></td>
+        </tr>
+        <tr>
+            <td>Primary Contact:</td><td id="PrimaryContact" data-display="PrimaryContact"></td>
+        </tr>
+        <tr>
+            <td>Primary Phone:</td><td id="PrimaryPhone" data-display="PrimaryPhone"></td>
+        </tr>
+        <tr>
+            <td>Primary Email:</td><td id="PrimaryEmail" data-display="PrimaryEmail"></td>
+        </tr>
+        <tr>
+            <td>Sonic Type:</td><td id="ProjectType" data-display="ProjectType"></td>
+        </tr>
+        <!--<tr>-->
+            <!--<td>Hughes Type:</td><td id="HughesProjectType" data-display="HughesProjectType"></td>-->
+        <!--</tr>-->
+        <tr>
+            <td>Notes:</td><td id="HughesNotes" data-display="HughesNotes"></td>
+        </tr>
+    </table>
+    <br/><br/><br/>
+    <style>
+        #schedule-table td {
+            padding-right: 20px;
+            padding-left: 20px;
+        }
+    </style>
+    <table id="schedule-table" style="border: 1px solid black; border-collapse: collapse; font-family: Arial, Helvetica, sans-serif;">
+        <tr style="background-color: #333; color: #DDD;">
+            <th colspan="4">Orders</th>
+        </tr>
+        <tr style="background-color: #555; color: #DDD;">
+            <th>Type</th>
+            <th>Date</th>
+            <th>Date Type</th>
+            <th>Status</th>
+        </tr>
+        <tr id="hughes-vsat-row">
+            <td>VSAT</td>
+            <td data-display="HughesVsatDate"></td>
+            <td data-display="HughesVsatDateType"></td>
+            <td data-display="HughesVsatStatus"></td>
+        </tr>
+        <tr id="hughes-temp-row">
+            <td>Temp 4G</td>
+            <td data-display="HughesTempDate"></td>
+            <td data-display="HughesTempDateType"></td>
+            <td data-display="HughesTempStatus"></td>
+        </tr>
+        <tr id="hughes-primary-row">
+            <td>Primary</td>
+            <td data-display="HughesPrimaryDate"></td>
+            <td data-display="HughesPrimaryDateType"></td>
+            <td data-display="HughesPrimaryStatus"></td>
+        </tr>
+        <tr id="hughes-deinstall-row">
+            <td>De-Install</td>
+            <td data-display="HughesDeinstallDate"></td>
+            <td data-display="HughesDeinstallDateType"></td>
+            <td data-display="HughesDeinstallStatus"></td>
+        </tr>
+    </table>
+
+    <br/>
+    Respectfully,<br/><br/>
+    <span id="pm"></span><br/>
+    New Store Team<br/>
+    <span id="phone"></span><br/>
+    <span id="email"></span><br/>
+</div>

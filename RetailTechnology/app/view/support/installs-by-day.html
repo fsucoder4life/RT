@@ -1,0 +1,91 @@
+<!--<fieldset style="width: 533px; height: 75px; margin: 0 10px 10px 10px;">-->
+    <!--<legend class="header">Filters</legend>-->
+<div id="filters">
+    <table>
+        <tr>
+            <td style="width: 60px;"><label for="start-date">From:</label></td>
+            <td id="start-date"></td>
+            <td style="width: 60px; padding-left: 20px;"><label for="end-date">To:</label></td>
+            <td id="end-date"></td>
+        </tr>
+        <tr>
+            <td style="width: 60px;"><label for="project-type">Type:</label></td>
+            <td>
+                <select style="height: 58px" id="project-type" name="project-type" size="3">
+                    <option value="construction">Construction</option>
+                    <option value="pos-pre-cable">POS Pre-Cable</option>
+                    <option value="pos-conversion">POS Conversion</option>
+                    <option value="pops-survey">POPS Survey</option>
+                    <option value="pops-electrical">POPS Electrical</option>
+                    <option value="pops-conversion">POPS Conversion</option>
+                    <option value="pops-pre-cable">POPS Pre-Cable</option>
+                    <option value="audio-survey">Audio Survey</option>
+                    <option value="audio-pre-cable">Audio Pre-Cable</option>
+                    <option value="audio-conversion">Audio Conversion</option>
+                    <option value="dt-pops">DT POPS</option>
+                    
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 60px;"><label for="installer">Installer:</label></td>
+            <td id="installer"></td>
+        </tr>
+        <tr>
+            <td style="width: 60px;"><label for="pos">POS:</label></td>
+            <td id="pos"></td>
+        </tr>
+        <tr>
+            <td style="width: 60px;"><label for="city">City:</label></td>
+            <td id="city"></td>
+        </tr>
+        <tr>
+            <td style="width: 60px;"><label for="state">State:</label></td>
+            <td id="state"></td>
+        </tr>
+        <tr>
+            <td style="width: 60px;"></td>
+            <td><button id="filter-button">Apply Filters</button></td>
+        </tr>
+    </table>
+</div>
+<!--</fieldset>-->
+<fieldset style="width: 250px; height: 75px; margin: 0 10px 10px 10px; float: left">
+    <legend class="header">POS To Date</legend>
+    <table>
+        <tr>
+            <td style="width: 60px;"><label for="total-pos">Total:</label></td>
+            <td id="total-pos"></td>
+        </tr>
+        <tr>
+            <td><label for="micros-pos">Micros:</label></td>
+            <td id="micros-pos"></td>
+        </tr>
+        <tr>
+            <td><label for="infor-pos">Infor:</label></td>
+            <td id="infor-pos"></td>
+        </tr>
+    </table>
+</fieldset>
+<fieldset style="width: 250px; height: 75px; margin: 0 10px 10px 0; float: left;">
+    <legend class="header">POPS to Date</legend>
+    <table>
+        <tr>
+            <td style="width: 60px;"><label for="total-pops-stores">Stores:</label></td>
+            <td id="total-pops-stores"></td>
+        </tr>
+        <tr>
+            <td><label for="total-pops-units">Units:</label></td>
+            <td id="total-pops-units"></td>
+        </tr>
+    </table>
+</fieldset>
+<div style="clear: both;"></div>
+<div style="margin: 0 10px 10px 10px;" id="installs-container">
+    <div style="background-color: #666666; color: #DDDDDD; text-align: center; font-size: larger;">Installs for the days from <span id="installs-header"></span></div>
+    <div id="installs"></div>
+</div>
+<div style="margin: 0px 10px 10px 10px">
+    * All construction install lengths are estimated to take 5 days.  Installs that take longer are not represented here, and those that are completed in fewer days will remain on the schedule.<br/>
+    ** Conversion projects only show up on the schedule for the day they begin even though they continue through to the next morning.
+</div>

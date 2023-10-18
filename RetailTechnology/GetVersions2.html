@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery-1.11.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery.SPServices-2014.01.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/moment.min.js"></script>
+    <title>GET VERSIONS</title>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+<body>
+
+    <table class="pure-table-striped" style="margin-left: auto; margin-right: auto;">
+        <thead>
+            <tr>
+                <th style="min-width: 150px;">Store</th>
+                <th style="min-width: 150px;">Field</th>
+                <th style="min-width: 150px;">Change</th>
+                <th style="min-width: 150px;">Modified On</th>
+                <th style="min-width: 150px;">Modified By</th>
+            </tr>
+        </thead>
+        <tbody id="goLiveChangeRow"></tbody>
+    </table>
+
+
+
+    <script>
+
+        var htmlOutput = "";
+        var storeCounter = 1;
+        var hitStore = false;
+        var listname = "Combined Schedule";
+
+        //cycle through all fields for a store
+        //getFields(1487, 2653);
+        //getFields(3527, 3271);
+        //getFields(5122, 3303);
+        //getFields(3883, 1721);
+        //getFields(3651, 399);
+        //getFields(4327, 2886);
+
+        //getGoLiveChanges(storeNum, storeID, name, displayName);
+
+        //getFields("1005", "7776");
+        
+        $().SPServices({
+            operation: "GetListItems",
+            listName: listname,
+            CAMLViewFields: "<ViewFields><FieldRef Name='ID' /><FieldRef Name='Title' /></ViewFields>",
+            CAMLQuery: "<Query><Where><IsNotNull><FieldRef Name='Title' /></IsNotNull></Where></Query>",
+            CAMLRowLimit: 0,
+            async: false,
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                    
+                    var storeNumber = $(this).attr("ows_Title");
+                    
+                    //storeNumber = storeNumber.substring(storeNumber.indexOf(";#") + 2);
+                    if (storeNumber === "1957")
+                        hitStore = true;
+                    if (!hitStore)
+                        return;
+                    console.log(storeNumber);
+                    
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Order1", "Principal/Operator Class Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Market_x0020_Start_x0020_Date", "Market Start Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "GO_x0020_LIVE_x0020_DATE", "POS Go-Live Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "POS_x0020_Training_x0020_Date_x0", "POS Training Date (Const)");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "POPS_x0020_Install_x0020_Date", "POPS Install Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "POPS_x0020_Delivery_x0020_Date", "POPS Delivery Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Electrical_x0020_Upgrade", "Electrical Upgrade");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Site_x0020_Surveys_x0020_POPS", "Site Survey");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "POPS_x0020_Menu_x0020_Delivery", "POPS Menu Delivery");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "FortiGate_x0020_Delivery_x0020_D", "FortiGate Delivery Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Software_x0020_Update_x0020_Date", "Software Update Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Construction_x0020_Calls_x003a_I", "Construction Calls:Installer Arrival Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Pre_x002d_Cable_x0020_Date", "Pre-Cable Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Mobile_x0020_Enable_x0020_Date", "Mobile Enable Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Mobile_x0020_Enable_x0020_Date_x", "Mobile Enable Date T");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Light_x0020_Box_x0020_Replacemen", "Light Box Replacement");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Field10", "Original Mobile Enable Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Mobile_x0020_Training_x0020_Rece", "Mobile Training Received Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "HAN_x0020_Install_x0020_Date", "HAN Install Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "GR", "GR");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "MultiCast", "MultiCast");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Symantec", "Symantec");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Audio_x0020_Delivery_x0020_Date", "Audio Delivery/Pre-Cable Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Audio_x0020_Install_x0020_Date", "Audio Install Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Audio_x0020_Site_x0020_Survey_x0", "Audio Site Survey Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Audio_x0020_Go_x0020_Live_x0020_", "Audio Go Live Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "POS_x0020_Pre_x002d_Cable", "POS Pre-Cable");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Audio_x0020_Conversion_x0020_Dat", "Audio Conversion Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "POPS_x0020_Pre_x002d_Cable_x0020", "POPS Pre-Cable Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "DT_x0020_POPS_x0020_Construction", "DT POPS Construction Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "DT_x0020_POPS_x0020_Install_x002", "DT POPS Install Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "VSAT_x0020_Date", "VSAT Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "VSAT_x0020_Date_x0020_Type", "VSAT Date Type");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "HAN_x0020_Date_x0020_Type", "HAN Date Type");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Primary_x0020_Hughes_x0020_Date", "Primary Hughes Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Primary_x0020_Hughes_x0020_Date_", "Primary Hughes Date Type");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Hughes_x0020_Deinstall_x0020_Dat", "Hughes Deinstall Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Hughes_x0020_Deinstall_x0020_Dat0", "Hughes Deinstall Date Type");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Server_x0020_Upgrade_x0020_Date", "Server Upgrade Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "DT_x0020_POPS_x0020_Base_x0020_D", "DT POPS Base Delivery Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "MarketingUpdated", "MarketingUpdated");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "DT_x0020_POPS_x0020_Delivery_x00", "DT POPS Delivery Date");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Oracle_x0020_5810_x0020_Server_x", "Oracle 5810 Server Delivery");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Oracle_x0020_5810_x0020_Server_x0", "Oracle 5810 Server Go-Live");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Infor_x0020_Workstation_x0020_HD", "Infor Workstation HDD Delivery");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Infor_x0020_Workstation_x0020_HD0", "Infor Workstation HDD Go-Live");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Audio_x0020_Ground_x0020_Loop_x00", "Audio Ground Loop Delivery");
+                    getGoLiveChanges(storeNumber, $(this).attr("ows_ID"), "Created_x0020_Date", "Created");
+                    
+                    console.log("finished:" + storeNumber + " count:" + storeCounter);
+                    storeCounter++;
+                });
+            }
+        });
+
+        //$("#goLiveChangeRow").append(htmlOutput);
+
+        function getFields(storeNum, storeID) {
+            $().SPServices({
+                operation: "GetList",
+                async: false,
+                listName: listname,
+                completefunc: function (xData, Status) {
+                    //console.log(xData.responseText);
+                    $(xData.responseXML).find("Fields > Field").each(function () {
+                        var $node = $(this);
+                        var type = $node.attr("Type");
+                        var name = $node.attr("StaticName");
+                        if (name === 'Modified' || name === 'Created')
+                            return;
+                        var displayName = $node.attr("DisplayName");
+                        if (type.toLowerCase().indexOf("date") > -1 || name.toLowerCase().indexOf("date") > -1 || displayName.toLowerCase().indexOf("date") > -1) {
+                            //console.log("Type: " + type + " StaticName: " + name + " DisplayName:" + displayName);
+                            //console.log("Checking: " + displayName);
+                            //GetRevisionsByField(recordID, name, displayName);
+                            //getGoLiveChanges(storeNum, storeID, name, displayName);
+                            $("#goLiveChangeRow").append('<tr>' +
+                                   '<td>getGoLiveChanges(storeNumber, $(this).attr("ows_ID"),"' + name + '","' + displayName + '");</td></tr>');
+
+                        }
+                    });
+                }
+            });
+            console.log("finished:" + storeNum);
+        }
+
+        function getGoLiveChanges(storeNum, storeID, field, displayName) {
+
+            $().SPServices({
+                operation: "GetVersionCollection",
+                async: false,
+                strlistID: listname,
+                strlistItemID: storeID,
+                strFieldName: field,
+                completefunc: function (xData, Status) {
+                    var lastDate = '';
+                    $($(xData.responseText).find("Version").get().reverse()).each(function (i) {
+
+                        var date = $(this).attr(field),
+                          modified = $(this).attr("Modified"),
+                          modifiedBy = $(this).attr("Editor").replace(/.*;#/, '').replace(/,.*/, '');
+
+                        if (date !== lastDate) {
+                            if (modifiedBy.toLowerCase().indexOf("coffman") > -1) {
+                                //htmlOutput += '<tr>' +
+                                //    '<td>' + storeNum + '</td>' +
+                                //    '<td>' + displayName + '</td>' +
+                                //                  '<td>' + moment(date).format('l') + '</td>' +
+                                //                  '<td>' + moment(modified).format('l') + '</td>' +
+                                //                  '<td>' + modifiedBy + '</td>' +
+                                //                  '</tr>';
+
+                                insertIntoVersionChanges(storeNum, displayName, moment(date).format('l'), moment(modified).format('l'), modifiedBy);
+                            }
+
+                            //changes.push({ date: date, modified: modified, modifiedBy: modifiedBy });
+                            lastDate = date;
+                        }
+                    });
+
+                }
+            });
+        }
+
+        function insertIntoVersionChanges(Store, Field, Change, ModifiedOn, ModifiedBy) {
+            $().SPServices({
+                operation: "UpdateListItems",
+                async: false,
+                batchCmd: "New",
+                listName: "RecordVersionChanges2",
+                valuepairs: [["Title", Store], ["Field", Field], ["Change", Change], ["Modified_x0020_On", ModifiedOn], ["ModifiedBy", ModifiedBy]],
+                completefunc: function (xData, Status) {
+                    
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>

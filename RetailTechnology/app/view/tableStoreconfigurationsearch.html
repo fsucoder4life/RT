@@ -1,0 +1,112 @@
+﻿<div class="dijitTitlePane" id="filters" widgetid="filters" style="width: 555px; margin: 0px 10px 10px;">
+    <div data-dojo-attach-event="ondijitclick:_onTitleClick, onkeydown:_onTitleKey" class="dijitTitlePaneTitle dijitTitlePaneTitleOpen dijitOpen" data-dojo-attach-point="titleBarNode" id="filters_titleBarNode">
+        <div class="dijitTitlePaneTitleFocus" data-dojo-attach-point="focusNode" aria-pressed="true" role="button" aria-controls="filters_pane" tabindex="0">
+            <span data-dojo-attach-point="arrowNode" class="dijitInline dijitArrowNode" role="presentation"></span><span data-dojo-attach-point="arrowNodeInner" class="dijitArrowNodeInner">-</span><span data-dojo-attach-point="titleNode" class="dijitTitlePaneTextNode" style="user-select: none;">Report Filters</span>
+        </div>
+    </div>
+    <div class="dijitTitlePaneContentOuter" data-dojo-attach-point="hideNode" role="presentation">
+        <div class="dijitReset" data-dojo-attach-point="wipeNode" role="presentation">
+            <div class="dijitTitlePaneContentInner" data-dojo-attach-point="containerNode" role="region" id="filters_pane" aria-labelledby="filters_titleBarNode" aria-hidden="false">
+                <b>Search Criteria:</b>
+                <table id="tablePayment">
+                    <tbody>
+                        
+                        <tr><td colspan="4"><br /></td></tr>
+                        <tr>
+                            <td colspan="2" style="width: 110px;"><label for="type">Type:</label></td>
+                            <td colspan="2">
+                                <select id="type">
+                                    <option value="ALL" checked>ALL</option>
+                                    <option value="Conversion" >POS Conversion</option>
+                                    <option value="New">New</option>
+                                    <option value="Rebuild">Rebuild</option>
+                                    <option value="Remodel">Remodel</option>
+                                    <option value="Relocation">Relocation</option>
+                                    <option value="Server Swap">Server Swap</option>
+                                    <option value="OTI">OTI</option>
+                                    <option value="Rebuild">Rebuild</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="width: 60px;"><label for="stallRange">Stall Range:</label></td>
+                            <td colspan="2">
+                                <select id="stallRange">
+                                    <option value="ALL" checked>ALL</option>
+                                    <option value="0">0</option>
+                                    <option value="5">1-5</option>
+                                    <option value="10">6-10</option>
+                                    <option value="15">11-15</option>
+                                    <option value="20">16-20</option>
+                                    <option value="25">21-25</option>
+                                    <option value="30">26-30</option>
+                                    <option value="31">30+</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="width: 60px;"><label for="driveThru">Drive-Thru:</label></td>
+                            <td colspan="2">
+                                <select id="driveThru">
+                                    <option value="ALL" checked>ALL</option>
+                                    <option value="No">No</option>
+                                    <option value="Single">Single</option>
+                                    <option value="Double">Double</option>
+                                    
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="width: 60px;"><label for="pos">POS:</label></td>
+                            <td colspan="2">
+                                <select id="pos">
+                                    <option value="ALL" checked>ALL</option>
+                                    <option value="Micros">Micros</option>
+                                    <option value="Infor">Infor</option>
+                                    <option value="Ordermatic">Ordermatic</option>
+
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="width: 60px;"><label for="audio">Audio:</label></td>
+                            <td colspan="2">
+                                <select id="audio">
+                                    <option value="ALL" checked>ALL</option>
+                                    <option value="HME">HME</option>
+                                    <option value="Micros">Micros</option>
+                                    <option value="Ordermatic">Ordermatic</option>
+
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="width: 60px;"><label for="dineIn">Dine-In:</label></td>
+                            <td colspan="2">
+                                <select id="dineIn">
+                                    <option value="ALL" checked>ALL</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                    
+
+                                </select>
+                            </td>
+                        </tr>
+                        <tr><td colspan="4"><br /></td></tr>
+                        
+                        <tr><td colspan="4"><br /></td></tr>
+                        <tr>
+                            <td colspan="2" style="width: 60px;"></td>
+                            <td colspan="2"><span class="dijit dijitReset dijitInline dijitButton" role="presentation" widgetid="filter-button"><span class="dijitReset dijitInline dijitButtonNode" role="presentation"><span class="dijitReset dijitStretch dijitButtonContents" data-dojo-attach-point="titleNode,focusNode" role="button" aria-labelledby="filter-button_label" tabindex="0" id="filter-button" style="user-select: none;"><span class="dijitReset dijitInline dijitIcon dijitNoIcon" data-dojo-attach-point="iconNode"></span><span class="dijitReset dijitToggleButtonIconChar">●</span><span class="dijitReset dijitInline dijitButtonText" id="filter-button_label" data-dojo-attach-point="containerNode" onclick="javascript: ApplyFilters();">Search</span></span></span><input type="button" value="" class="dijitOffScreen" data-dojo-attach-event="onclick:_onClick" tabindex="-1" role="presentation" aria-hidden="true" data-dojo-attach-point="valueNode"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<table id="stores" class="pure-table pure-table-striped" style="width:100%;">
+    <thead>
+    </thead>
+    <tbody id="storesTBody"></tbody>
+</table>

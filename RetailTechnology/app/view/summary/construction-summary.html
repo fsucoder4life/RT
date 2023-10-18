@@ -1,0 +1,780 @@
+<div class="summary-row">
+    <div class="summary-box summary-box-side" style="min-height:490px;">
+        <div class="summary-box-title">Store Contact</div>
+        <div id="store-name" style="clear: left;">Sonic Drive In #<div data-display="StoreNumber" style="display: inline-block;"></div></div>
+        <div data-editable="Address" id="store-address"></div>
+        <div id="store-location">
+            <div data-editable="City" id="store-city" style="min-width: 40px; margin-right: 5px; display: inline-block;"></div>
+            <div style="margin-right: 5px; display: inline-block;font-size:20px;"><b>,</b></div>
+            <div data-editable="State" id="store-state" style="min-width: 20px; display: inline-block;"></div>
+
+            <div data-editable="Zip" id="store-zip" style="min-width: 100px; display: inline-block"></div>
+        </div>
+        <div class="summary-box-label" style="width: 100px;">Store&nbsp;Phone:</div>               <div style="width: 160px;" data-editable="StorePhone" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width: 100px;">Store&nbsp;Manager:</div>               <div style="width: 160px;" data-editable="StoreManager" class="summary-box-input"></div>
+        <br><br>
+        <div class="summary-box-label" style="clear: left; width: 55px;">POC:</div>    <div style="width: 275px;" data-editable="PrimaryContact" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width: 55px;">Phone:</div>               <div style="width: 275px;" data-editable="PrimaryPhone" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width: 55px;">Email:</div>               <div style="width: 275px;" data-editable="PrimaryEmail" class="summary-box-input"></div>
+
+        <div style="clear:left; margin-bottom: 14px;"></div>
+
+        <div class="summary-box-label" style="clear: left; width: 55px;">GC:</div>    <div style="width: 275px;" data-editable="Contractor" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width: 55px;">Phone:</div>               <div style="width: 275px;" data-editable="ContractorPhone" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width: 55px;">Email:</div>               <div style="width: 275px;" data-editable="ContractorEmail" class="summary-box-input"></div>
+        <div style="clear:left; margin-bottom: 14px;"></div>
+        <div class="summary-box-label" style="width: 55px;"><b>Bill To:</b></div><br />
+        Company:<br />
+        <div data-editable="CompanyBillTo" id="company-bill-to" style="clear:both;border: 1px solid gray; box-shadow: none;"></div>
+        Address: <br />
+        <div data-editable="AddressBillTo" id="store-address-bill-to" style="clear:both;border: 1px solid gray; box-shadow: none;"></div>
+        <div id="store-location">
+            <div data-editable="CityBillTo" id="store-city-bill-to" style="min-width: 150px; margin-right: 5px; display: inline-block;border: 1px solid gray; box-shadow: none;"></div>
+            <div style="margin-right: 5px; display: inline-block;font-size:20px;"><b>,</b></div>
+            <div data-editable="StateBillTo" id="store-state-bill-to" style="min-width: 30px; display: inline-block;border: 1px solid gray; box-shadow: none;"></div>
+            <div data-editable="ZipBillTo" id="store-zip-bill-to" style="min-width: 60px; display: inline-block;border: 1px solid gray; box-shadow: none;"></div>
+        </div>
+        
+        <div class="summary-box-label" style="width: 55px;">Email:</div>               <div style="width: 265px;display: inline-block;border: 1px solid gray; box-shadow: none;" data-editable="EmailBillTo" class="summary-box-input"></div>
+
+    </div>
+    <div class="summary-box summary-box-middle" style="min-height:490px;">
+        <div class="summary-box-title" style="font-size: 1.6em; margin-top: 65px">Go-Live Date</div>
+        <input class="summary-box-title" data-editable="GoLiveDate" style="font-size: 1.6em;" />
+        <br /><br /><hr style="margin-right:10px;padding-right:10px;" />
+        <div class="summary-box-title">Store Configuration</div>
+        <div class="summary-box-label">Type:</div>              <div data-editable="ProjectType" class="summary-box-input"></div>
+        <div class="summary-box-label">Drive-Thru:</div>        <div data-editable="DriveThruFormat" class="summary-box-input"></div>
+        <div class="summary-box-label">Inside Dining:</div>     <div data-editable="InsideDining" class="summary-box-input"></div>
+        <div style="display:none;">
+            <div class="summary-box-label">Const. Status:</div>     <div data-editable="ConstructionStatus" class="summary-box-input"></div>
+        </div>
+        <div class="summary-box-label">Ground Break:</div>      <div data-editable="GroundBreakDate" class="summary-box-input"></div>
+        <div class="summary-box-label">Kitchen Install:</div>   <div data-editable="KitchenInstallDate" class="summary-box-input"></div>
+        <div style="display:none;">
+            <div class="summary-box-label">Telecom Conduit:</div>   <div data-editable="TelecomConduitDate" class="summary-box-input"></div>
+        </div>
+        <div style="display:none;"><div class="summary-box-label">Chronically Ailing:</div><div data-editable="ChronicallyAiling" class="summary-box-input"></div></div>
+        <div class="summary-box-label">Total Cost:</div>  <span style="float:left;">$</span><div id="StoreConfigurationCost" data-display="StoreConfigurationCost" class="summary-box-input" style="width:150px;"></div>
+
+
+    </div>
+    <div class="summary-box summary-box-side" id="stakeholders" style="min-height:490px;">
+        <div class="summary-box-title">Stakeholders</div>
+        <div data-editable="Classification"></div>
+        <div style="float: right; width: 20%">FEE</div>      <div data-editable="FranchiseGroup" style="width: 80%; float: right;"></div>
+        <div style="float: right; width: 20%; clear: right;">SVP</div>      <div data-editable="SeniorVicePresident" style="width: 80%; float: right;"></div>
+        <div style="float: right; width: 20%; clear: right;">RVP</div>      <div data-editable="RegionalVicePresident" style="width: 80%; float: right;"></div>
+        <div style="float: right; width: 20%; clear: right;">ML</div>       <div data-editable="MarketLeader" style="width: 80%; float: right;"></div>
+        <div style="float: right; width: 20%; clear: right;">Coord</div>    <div data-editable="Coordinator" style="width: 80%; float: right;"></div>
+        <div style="float: right; width: 20%; clear: right;">Trainer</div>  <div data-editable="Trainer" style="width: 80%; float: right;"></div>
+        <div style="float: right; width: 20%; clear: right;">CD</div>  <div data-editable="ConstructionManager" style="width: 80%; float: right;"></div>
+        <div style="float: right; width: 20%; clear: right;">IT PM</div>  <div data-editable="ProjectManager" style="width: 80%; float: right;"></div>
+    </div>
+</div>
+<div class="summary-row">
+    <div class="summary-box summary-box-side">
+        <div class="summary-box-title">Connectivity</div>
+        <!--<div class="summary-box-label">Install Type:</div>  <input style="margin-bottom: 5px;" data-editable="HughesProjectType" class="summary-box-input" />-->
+
+        <fieldset class="summary-box-connectivity-fieldset">
+            <legend>Backup</legend>
+            <input class="connectivity-status" placeholder="Status" data-editable="HughesVsatStatus" />
+            <input class="connectivity-date" placeholder="Date" data-editable="HughesVsatDate">
+            <input class="connectivity-date-type" placeholder="Type" data-editable="HughesVsatDateType">
+        </fieldset>
+
+        <fieldset class="summary-box-connectivity-fieldset">
+            <legend>Temp 4G</legend>
+            <input class="connectivity-status" placeholder="Status" data-editable="HughesTempStatus">
+            <input class="connectivity-date" placeholder="Date" data-editable="HughesTempDate">
+            <input class="connectivity-date-type" placeholder="Type" data-editable="HughesTempDateType">
+        </fieldset>
+
+        <fieldset class="summary-box-connectivity-fieldset">
+            <legend>Primary</legend>
+            <input class="connectivity-status" placeholder="Status" data-editable="HughesPrimaryStatus">
+            <input class="connectivity-date" placeholder="Date" data-editable="HughesPrimaryDate">
+            <input class="connectivity-date-type" placeholder="Type" data-editable="HughesPrimaryDateType">
+        </fieldset>
+
+        <fieldset class="summary-box-connectivity-fieldset">
+            <legend>De-Install</legend>
+            <input class="connectivity-status" placeholder="Status" data-editable="HughesDeinstallStatus">
+            <input class="connectivity-date" placeholder="Date" data-editable="HughesDeinstallDate">
+            <input class="connectivity-date-type" placeholder="Type" data-editable="HughesDeinstallDateType">
+        </fieldset>
+
+        <fieldset class="summary-box-connectivity-fieldset">
+            <legend>Notes</legend>
+            <textarea data-editable="HughesNotes"></textarea>
+        </fieldset>
+
+    </div>
+    <div class="summary-box summary-box-middle" style="height:320px;">
+        <div class="summary-box-title">POS</div>
+        <div class="summary-box-label">Vendor:</div>        <div data-editable="Pos" class="summary-box-input"></div>
+        <!--<div class="summary-box-label">OCB:</div>           <div data-editable="Ocb" class="summary-box-input"></div>-->
+        <div class="summary-box-label">Delivery:</div>      <input data-editable="PosDeliveryDate" class="summary-box-input" />
+        <div class="summary-box-label">Config:</div>        <input data-editable="PosConfigDate" class="summary-box-input" />
+        <div class="summary-box-label">Support:</div>       <input data-editable="PosVendorSupportDate" class="summary-box-input" />
+        <!--<div class="summary-box-label">Quote Status:</div>  <div data-editable="PosQuoteStatus" class="summary-box-input"></div>-->
+        <div class="summary-box-label">Status:</div>        <div data-editable="PosStatus" class="summary-box-input"></div>
+        <div class="summary-box-label">EM Status:</div>     <div data-editable="EnterpriseManagementStatus" class="summary-box-input"></div>
+        <div class="summary-box-label">POS Tech:</div>     <div data-editable="PosTechnician" class="summary-box-input"></div>
+
+        <div class="summary-box-label">Hardware & Software:</div>  <span style="float:left;">$</span><div style="width:150px;" data-editable="PosHardwareSoftwareCost" id="POS-HardwareSoftware-cost" class="summary-box-input"></div>
+        <div class="summary-box-label">Professional Services/Support:</div>  <span style="float:left;">$</span><div style="width:150px;" data-editable="PosProServicesSupportCost" id="POS-ProServicesSupport-cost" class="summary-box-input"></div>
+        
+
+
+        <div class="summary-box-label">Cost:</div>  <span style="float:left;">$</span><div style="width:150px;" id="POS-cost" class="summary-box-input"></div>
+        <img src="resources/images/uparrow2.png" id="uploadPOSCostArrow" style="width:20px;float:right;margin-right:2px;margin-top:5px;cursor:pointer;" onclick="OpenCostfiles('uploadPOSCost')" />
+        <img src="resources/images/paperclipUpload.png" id="uploadPOSCost" style="cursor:pointer;float:right;width:15px;margin-right:2px;" onclick="UploadFile('uploadPOSCostfile')" />
+        <input type="file" id="uploadPOSCostfile" name="uploadPOSCostfile" style="display:none" />
+        <div class="summary-box-label" id="uploadPOSCostDiv" style="position: relative;margin:5px;padding:5px;width: auto; background-color:white;float: right; border: 1px solid gray;z-index:101;display:none;"><span id="uploadPOSCostSpan" style="float:right;"></span></div>
+        
+
+        <div id="Oracle5810ServerDeliverySec" style="display:none;">
+            <div class="summary-box-label">Oracle 5810 Server Delivery:</div>     <div data-editable="Oracle5810ServerDelivery" class="summary-box-input"></div>
+            <div class="summary-box-label">Oracle 5810 Server Go-Live:</div>     <div data-editable="Oracle5810ServerGoLive" class="summary-box-input"></div>
+        </div>
+        <div id="InforWorkstationHDDDeliverySec" style="display:none;">
+            <div class="summary-box-label">Infor Workstation HDD Delivery:</div>     <div data-editable="InforWorkstationHDDDelivery" class="summary-box-input"></div>
+            <div class="summary-box-label">Infor Workstation HDD Go-Live:</div>     <div data-editable="InforWorkstationHDDGoLive" class="summary-box-input"></div>
+        </div>
+    </div>
+    <div class="summary-box summary-box-side" style="height:362px;">
+        <div class="summary-box-title">FABCON</div>
+        <div class="summary-box-label">Stalls:</div>        <div data-editable="StallCount" class="summary-box-input"></div>
+        <div class="summary-box-label">Patio:</div>         <div data-editable="PatioCount" class="summary-box-input"></div>
+        <div class="summary-box-label">Flat:</div>         <div data-editable="FlatCount" class="summary-box-input"></div>
+        <div id="construction-dt-pops-quantity-label" class="summary-box-label">DT POPS:</div>       <div id="construction-dt-pops-quantity" data-editable="DtPopsQuantity" class="summary-box-input"></div>
+        <div id="construction-dt-pops-menu-boards-label" class="summary-box-label">DT Menu Boards:</div>       <div id="construction-dt-pops-menu-boards-quantity" data-editable="DtMenuBoardsQuantity" class="summary-box-input"></div>
+        <div class="summary-box-label">Extensions:</div>    <div data-editable="ExtensionBrackets" class="summary-box-input"></div>
+        <div class="summary-box-label">C Channels:</div>    <div data-editable="CChannelBrackets" class="summary-box-input"></div>
+        <!--<div class="summary-box-label">Type:</div>          <div data-editable="PopsType" class="summary-box-input"></div>-->
+        <div class="summary-box-label">DT Base Delivery:</div><input data-editable="DtPopsBaseDeliveryDate" class="summary-box-input" />
+        <div class="summary-box-label">DT Base Status:</div><input data-editable="DtPopsBaseStatus" class="summary-box-input" />
+        <div class="summary-box-label">Delivery:</div>      <input data-editable="PopsDeliveryDate" class="summary-box-input" />
+        <div class="summary-box-label">Status:</div>        <div data-editable="PopsStatus" class="summary-box-input"></div>
+        <div class="summary-box-label">Install Date:</div>  <div id="pops-install-date" class="summary-box-input"></div>
+        <div class="summary-box-label">Go-Live Date:</div>  <div id="pops-go-live-date" class="summary-box-input"></div>
+        
+        <table>
+            <tr><td>FabCon Cost:</td><td>
+                <span style="float:left;">$</span><div style="width:150px;" data-editable="FABCONCost" id="FABCON-cost" class="summary-box-input"></div>
+<img src="resources/images/uparrow2.png" id="uploadFABCONCostArrow" style="width:20px;float:right;margin-right:2px;margin-top:5px;cursor:pointer;" onclick="OpenCostfiles('uploadFABCONCost')" />
+<img src="resources/images/paperclipUpload.png" id="uploadFABCONCost" style="cursor:pointer;float:right;width:15px;margin-right:2px;" onclick="UploadFile('uploadFABCONCostfile')" />
+<input type="file" id="uploadFABCONCostfile" name="uploadFABCONCostfile" style="display:none" />
+<div class="summary-box-label" id="uploadFABCONCostDiv" style="position: relative;margin:5px;padding:5px;width: auto; background-color:white;float: right; border: 1px solid gray;z-index:101;display:none;"><span id="uploadFABCONCostSpan" style="float:right;"></span></div>
+                </td></tr>
+            <tr><td>ID Cost:</td><td>
+                                     <span style="float:left;">$</span><div style="width:150px;" data-editable="IDTECHCost" id="IDTECH-cost" class="summary-box-input"></div>
+                                     <img src="resources/images/uparrow2.png" id="uploadIDTECHCostArrow" style="width:20px;float:right;margin-right:2px;margin-top:5px;cursor:pointer;" onclick="OpenCostfiles('uploadIDTECHCost')" />
+                                     <img src="resources/images/paperclipUpload.png" id="uploadIDTECHCost" style="cursor:pointer;float:right;width:15px;margin-right:2px;" onclick="UploadFile('uploadIDTECHCostfile')" />
+                                     <input type="file" id="uploadIDTECHCostfile" name="uploadIDTECHCostfile" style="display:none" />
+                                     <div class="summary-box-label" id="uploadIDTECHCostDiv" style="position: relative;margin:5px;padding:5px;width: auto; background-color:white;float: right; border: 1px solid gray;z-index:101;display:none;"><span id="uploadIDTECHCostSpan" style="float:right;"></span></div>
+                </td></tr>
+            <tr><td>Total Cost:</td><td>
+                                        <span style="float:left;">$</span><div id="FabConTotalCost" data-display="FabConTotalCost" class="summary-box-input" style="width:150px;"></div>
+                </td></tr>
+        </table>
+    </div>
+</div>
+<div class="summary-row">
+    <div class="summary-box summary-box-side" style="height:342px;">
+        <div class="summary-box-title">Audio</div>
+        <div class="summary-box-label">Audio Type:</div>   <div data-editable="AudioType" class="summary-box-input"></div>
+        <div class="summary-box-label">Status:</div>   <div data-editable="AudioStatus" class="summary-box-input"></div>
+        <div class="summary-box-label">Vendor Note:</div>   <div data-editable="AudioVendorStatus" class="summary-box-input"></div>
+        <div class="summary-box-label">Loops Required:</div>   <div data-editable="GroundLoopStatus" class="summary-box-input"></div>
+        <div class="summary-box-label">Loop Type:</div>   <div data-editable="AudioLoopType" class="summary-box-input"></div>
+        <div class="summary-box-label">Loop Delivery:</div>   <div data-editable="GroundLoopDelivery" class="summary-box-input"></div>
+        <div class="summary-box-label">Config:</div><div data-editable="AudioConfiguration" class="summary-box-input"></div>
+        <div class="summary-box-label">Delivery:</div><input data-editable="AudioDeliveryDate" class="summary-box-input" />
+        <div class="summary-box-label">Endpoints:</div><div data-editable="AudioEndpointCount" class="summary-box-input"></div>
+        <div class="summary-box-label">Site Survey:</div><input data-editable="AudioSiteSurveyDate" class="summary-box-input" />
+        <div class="summary-box-label">Install:</div><input data-editable="AudioInstallDate" class="summary-box-input" />
+        <div class="summary-box-label">Installer:</div><div data-editable="AudioInstaller" class="summary-box-input"></div>
+        <div class="summary-box-label">Include Cable:</div><div data-editable="AudioIncludeCable" class="summary-box-input"></div>
+        <div class="summary-box-label">Include Speakers/Mics:</div><div data-editable="IncludeSpeakersMics" class="summary-box-input" style="margin-top:20px;"></div>
+
+        <div class="summary-box-label">Cost:</div>  <span style="float:left;">$</span><div style="width:150px;" data-editable="AudioCost" id="Audio-cost" class="summary-box-input"></div>
+        <img src="resources/images/uparrow2.png" id="uploadAudioCostArrow" style="width:20px;float:right;margin-right:2px;margin-top:5px;cursor:pointer;" onclick="OpenCostfiles('uploadAudioCost')" />
+        <img src="resources/images/paperclipUpload.png" id="uploadAudioCost" style="cursor:pointer;float:right;width:15px;margin-right:2px;" onclick="UploadFile('uploadAudioCostfile')" />
+        <input type="file" id="uploadAudioCostfile" name="uploadAudioCostfile" style="display:none" />
+        <div class="summary-box-label" id="uploadAudioCostDiv" style="position: relative;margin:5px;padding:5px;width: auto; background-color:white;float: right; border: 1px solid gray;z-index:101;display:none;"><span id="uploadAudioCostSpan" style="float:right;"></span></div>
+        <br />
+    </div>
+    <div class="summary-box summary-box-middle" style="height:342px;">
+        <div class="summary-box-title">PAYS</div>
+        <div class="summary-box-label">BuyPass ID:</div>   <div data-editable="MerchantId" class="summary-box-input"></div>
+        <div class="summary-box-label">ServerEPS:</div>     <div data-editable="ServerEps" class="summary-box-input"></div>
+        <div class="summary-box-label">OA Date:</div>     <div data-editable="OADate" class="summary-box-input"></div>
+        <div class="summary-box-label">Type:</div>          <div data-editable="PaysType" class="summary-box-input"></div>
+        <div class="summary-box-label">Delivery:</div>      <input data-editable="PaysDeliveryDate" class="summary-box-input" />
+        <div class="summary-box-label">Status:</div>      <div data-editable="CirronetStatus" class="summary-box-input"></div>
+        <!--<div class="summary-box-label">Status:</div>        <div data-editable="PaysStatus" class="summary-box-input"></div>-->
+        <div class="summary-box-label">PAYS Units:</div>    <div data-editable="PaysQuantity" class="summary-box-input"></div>
+        <div class="summary-box-label">45° Enclosures:</div> <div data-editable="PaysEnclosureIndoor" class="summary-box-input"></div>
+        <div class="summary-box-label">90° Enclosures:</div> <div data-editable="PaysEnclosureOutdoor" class="summary-box-input"></div>
+        <div class="summary-box-label">DT Enclosures:</div> <div data-editable="PaysEnclosureDriveThru" class="summary-box-input"></div>
+        <div class="summary-box-label">15° Sun Shields:</div> <div data-editable="DegreeSunShield" class="summary-box-input"></div>
+        <div class="summary-box-label">RackMount UPS:</div> <div data-editable="PaysRackMountUPS" class="summary-box-input"></div>
+        <div class="summary-box-label">RackMount Shelf:</div> <div data-editable="PaysRackMountShelf" class="summary-box-input"></div>
+        
+
+        <div class="summary-box-label">Cost:</div>  <span style="float:left;">$</span><div style="width:150px;" data-editable="PaysCost" id="PAYS-cost" class="summary-box-input"></div>
+        <img src="resources/images/uparrow2.png" id="uploadPaysCostArrow" style="width:20px;float:right;margin-right:2px;margin-top:5px;cursor:pointer;" onclick="OpenCostfiles('uploadPaysCost')" />
+        <img src="resources/images/paperclipUpload.png" id="uploadPaysCost" style="cursor:pointer;float:right;width:15px;margin-right:2px;" onclick="UploadFile('uploadPaysCostfile')" />
+        <input type="file" id="uploadPaysCostfile" name="uploadPaysCostfile" style="display:none" />
+        <div class="summary-box-label" id="uploadPaysCostDiv" style="position: relative;margin:5px;padding:5px;width: auto; background-color:white;float: right; border: 1px solid gray;z-index:101;display:none;"><span id="uploadPaysCostSpan" style="float:right;"></span></div>
+
+    </div>
+    <div class="summary-box summary-box-side" style="height:290px;">
+        <div class="summary-box-title">DMB/TV</div>
+        <div class="summary-box-label">DMB Qty:</div>         <div data-editable="DmbQuantity" class="summary-box-input"></div>
+        <div class="summary-box-label">TV Qty:</div>          <div data-editable="TvQuantity" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:200px;">Warranty Requested:</div> <div data-editable="MorningDrinkStopTime" class="summary-box-input" style="width:130px;"></div>
+        <div class="summary-box-label">Content Created:</div> <div data-editable="DmbContentCreated" class="summary-box-input"></div>
+        <div class="summary-box-label">Delivery Date:</div>   <input data-editable="DmbTvDeliveryDate" class="summary-box-input" />
+        <div class="summary-box-label">Status:</div>          <div data-editable="DmbTvStatus" class="summary-box-input"></div>
+        
+        <div class="summary-box-label">Cost:</div>  <span style="float:left;">$</span><div style="width:150px;" data-editable="DmbCost" id="DMB-cost" class="summary-box-input"></div>
+        <img src="resources/images/uparrow2.png" id="uploadDmbCostArrow" style="width:20px;float:right;margin-right:2px;margin-top:5px;cursor:pointer;" onclick="OpenCostfiles('uploadDmbCost')" />
+        <img src="resources/images/paperclipUpload.png" id="uploadDmbCost" style="cursor:pointer;float:right;width:15px;margin-right:2px;" onclick="UploadFile('uploadDmbCostfile')" />
+        <input type="file" id="uploadDmbCostfile" name="uploadDmbCostfile" style="display:none" />
+        <div class="summary-box-label" id="uploadDmbCostDiv" style="position: relative;margin:5px;padding:5px;width: auto; background-color:white;float: right; border: 1px solid gray;z-index:101;display:none;"><span id="uploadDmbCostSpan" style="float:right;"></span></div>
+
+        <div class="summary-box-title">Sonic Radio</div>
+        <div class="summary-box-label">Outdoor Speakers:</div>
+        <input data-editable="SonicRadioOutdoorSpeakerCount" placeholder="Qty" class="summary-box-input" style="width:50px; margin-right:5px; border-bottom: 1px solid lightgrey;" />
+        <input class="summary-box-input" placeholder="Color" data-editable="SonicRadioOutdoorSpeakerColor" style="width:136px; border-bottom: 1px solid lightgrey;" />
+        <div class="summary-box-label">Indoor Speakers:</div> <input data-editable="SonicRadioCeilingSpeakerCount" class="summary-box-input" placeholder="Qty" />
+        <div class="summary-box-label">Zones:</div>           <input data-editable="SonicRadioZoneCount" class="summary-box-input" placeholder="Qty" />
+        <div class="summary-box-label">Server Racks:</div>    <input data-editable="SonicRadioRackCount" class="summary-box-input" placeholder="Qty" />
+        <div class="summary-box-label">Delivery:</div>        <input data-editable="SonicRadioDeliveryDate" class="summary-box-input" />
+        <div class="summary-box-label">Status:</div>          <input data-editable="SonicRadioStatus" class="summary-box-input" />
+
+        <div class="summary-box-label">Cost:</div>  <span style="float:left;">$</span><div style="width:150px;" data-editable="SonicRadioCost" id="SonicRadio-cost" class="summary-box-input"></div>
+        <img src="resources/images/uparrow2.png" id="uploadSonicRadioCostArrow" style="width:20px;float:right;margin-right:2px;margin-top:5px;cursor:pointer;" onclick="OpenCostfiles('uploadSonicRadioCost')" />
+        <img src="resources/images/paperclipUpload.png" id="uploadSonicRadioCost" style="cursor:pointer;float:right;width:15px;margin-right:2px;" onclick="UploadFile('uploadSonicRadioCostfile')" />
+        <input type="file" id="uploadSonicRadioCostfile" name="uploadSonicRadioCostfile" style="display:none" />
+        <div class="summary-box-label" id="uploadSonicRadioCostDiv" style="position: relative;margin:5px;padding:5px;width: auto; background-color:white;float: right; border: 1px solid gray;z-index:101;display:none;"><span id="uploadSonicRadioCostSpan" style="float:right;"></span></div>
+    </div>
+</div>
+<div class="summary-row">
+    <div class="summary-box summary-box-side" id="dt-pops-container">
+        <div class="summary-box-title">DT POPS</div>
+        <div class="summary-box-label">Quantity:</div>           <div id="conversion-dt-pops-quantity" data-editable="DtPopsQuantity" class="summary-box-input"></div>
+        <div class="summary-box-label" id="DtPopsSurveyStatusLabel">Survey:</div>             <div data-editable="DtPopsSurveyStatus" class="summary-box-input"></div>
+        <div class="summary-box-label">Delivery Date:</div>      <div data-editable="DtPopsDeliveryDate" class="summary-box-input"></div>
+        <div class="summary-box-label">Status:</div>             <div data-editable="DtPopsStatus" class="summary-box-input"></div>
+        <div class="summary-box-label" id="DtPopsConstructionDateLabel">Construction Date:</div>  <div data-editable="DtPopsConstructionDate" class="summary-box-input"></div>
+        <div class="summary-box-label" id="DtPopsInstallDateLabel">Install Date:</div>       <div data-editable="DtPopsInstallDate" class="summary-box-input"></div>
+        <div class="summary-box-label" id="DtPopsInstallerLabel">Installer:</div>          <div data-editable="DtPopsInstaller" class="summary-box-input"></div>
+    </div>
+    <div class="summary-box summary-box-middle">
+
+
+        <div class="summary-box-title">Oracle CE Kitchen POS Replacement</div>
+        <div class="summary-box-label" style="width:180px;">Micros WS 625x:</div><div data-editable="OracleCEMicros1" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">Micros WS 655x:</div><div data-editable="OracleCEMicros2" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">KDS Controller 210:</div><div data-editable="OracleCEController" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">Installer:</div><div data-editable="OracleCEInstaller" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">PM:</div><div data-editable="OracleCEPM" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">Delivery:</div><div data-editable="OracleCEDelivery" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">Go-Live:</div><div data-editable="OracleCEGoLive" class="summary-box-input" style="width:150px;"></div>
+
+
+    </div>
+    <div class="summary-box summary-box-side">
+        <div class="summary-box-title">Installation</div>
+        <div class="summary-box-label">Vendor:</div>            <div data-editable="Installer" class="summary-box-input"></div>
+        <div class="summary-box-label">Lead Tech:</div>         <div data-editable="LeadTechnician" class="summary-box-input"></div>
+        <!--<div class="summary-box-label">Site Survey:</div>       <div data-editable="SiteSurvey" class="summary-box-input"></div>-->
+        <div class="summary-box-label">Install Date:</div>      <input data-editable="InstallDate" class="summary-box-input" />
+        <div class="summary-box-label">Install End:</div>       <div data-editable="InstallEndDate" class="summary-box-input"></div>
+        <div class="summary-box-label">Quote Status:</div>      <div data-editable="InstallationStatus" class="summary-box-input"></div>
+        <div class="summary-box-label">Music Status:</div>      <div data-editable="SpeakerReceiverStatus" class="summary-box-input"></div>
+        <!--<div class="summary-box-label">Music Delivery:</div>    <div data-editable="SpeakerReceiverDeliveryDate" class="summary-box-input"></div>-->
+        <!--<div class="summary-box-label">Light Box:</div>         <div data-editable="LightBox" class="summary-box-input"></div>-->
+        <div class="summary-box-label">Install Time:</div>      <div data-editable="OvernightInstall" class="summary-box-input"></div>
+        <div class="summary-box-label">Signoffs:</div>          <div data-editable="InstallSignoffStatus" class="summary-box-input"></div>
+        <div class="summary-box-label">Test Transactions:</div> <div data-editable="TestTransactionStatus" class="summary-box-input"></div>
+        <div class="summary-box-label">Project Status:</div>    <div data-editable="ProjectStatus" class="summary-box-input"></div>
+        
+        <div class="summary-box-label">Cost:</div>  <span style="float:left;">$</span><div style="width:150px;" data-editable="InstallationCost" id="Installation-cost" class="summary-box-input"></div>
+        <img src="resources/images/uparrow2.png" id="uploadInstallationCostArrow" style="width:20px;float:right;margin-right:2px;margin-top:5px;cursor:pointer;" onclick="OpenCostfiles('uploadInstallationCost')" />
+        <img src="resources/images/paperclipUpload.png" id="uploadInstallationCost" style="cursor:pointer;float:right;width:15px;margin-right:2px;" onclick="UploadFile('uploadInstallationCostfile')" />
+        <input type="file" id="uploadInstallationCostfile" name="uploadInstallationCostfile" style="display:none" />
+        <div class="summary-box-label" id="uploadInstallationCostDiv" style="position: relative;margin:5px;padding:5px;width: auto; background-color:white;float: right; border: 1px solid gray;z-index:101;display:none;"><span id="uploadInstallationCostSpan" style="float:right;"></span></div>
+
+
+    </div>
+</div>
+
+
+<div class="summary-row">
+    <div class="summary-box summary-box-side" style="height:550px;">
+        <div class="summary-box-title">Infor Server and HDD Upgrades</div>
+        <div class="summary-box-label"># of Terminals:</div>        <div data-editable="InforTerminalUpgradesNumOfTerminals" class="summary-box-input"></div>
+        <div class="summary-box-label"># Upgraded:</div>     <div data-editable="InforTerminalUpgradesNumUpgraded" class="summary-box-input"></div>
+        <div class="summary-box-label">Ordered:</div>       <div data-editable="InforTerminalUpgradesOrdered" class="summary-box-input"></div>
+        <div class="summary-box-label">Delivery:</div>       <div data-editable="InforTerminalUpgradesDelivery" class="summary-box-input"></div>
+        <div class="summary-box-label">Go-Live:</div>            <div data-editable="InforTerminalUpgradesGoLive" class="summary-box-input"></div>
+        <div class="summary-box-label">HDD Type:</div>            <div data-editable="InforServerHDDUpgradeType" class="summary-box-input"></div>
+        <div class="summary-box-label">Ordered:</div>            <div data-editable="InforServerHDDUpgradeOrdered" class="summary-box-input"></div>
+        <div class="summary-box-label">Delivered:</div>            <div data-editable="InforServerHDDUpgradeDelivered" class="summary-box-input"></div>
+        <div class="summary-box-label">Go-Live:</div>            <div data-editable="InforServerHDDUpgradeGoLive" class="summary-box-input"></div>
+        <div class="summary-box-label">IT PM:</div>            <div data-editable="InforTerminalUpgradesProjectManager" class="summary-box-input"></div>
+    </div>
+    <div class="summary-box summary-box-middle" style="height:550px;">
+        <div class="summary-box-title">Oracle Server Upgrade</div>
+        <div class="summary-box-label" style="width:180px;">Server Type:</div>        <div data-editable="OracleServerUpgradeServerType" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">Ordered:</div>     <div data-editable="OracleServerUpgradeOrdered" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">Delivery:</div>       <div data-editable="OracleServerUpgradeDelivery" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">Go-Live:</div>       <div data-editable="OracleServerUpgradeGoLive" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">Installer:</div>            <div data-editable="OracleServerUpgradeInstaller" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">Serial #:</div>            <div data-editable="OracleServerUpgradeSerialNum" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">Windows Upgrade:</div>            <div data-editable="OracleServerUpgradeWindowsUpgrade" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">Go-Live:</div>            <div data-editable="OracleServerUpgradeGoLive2" class="summary-box-input" style="width:150px;"></div>
+        <div class="summary-box-label" style="width:180px;">Win.10 Upgrade Installer:</div>            <div data-editable="InstallerForWindows10Upgrade" class="summary-box-input" style="width:150px; border: 1px solid gray; box-shadow: none;"></div>
+        <div class="summary-box-label" style="width:180px;">Project Manager:</div>            <div data-editable="OracleServerUpgradePM" class="summary-box-input" style="width:150px;"></div>
+        <hr style="clear:both;" />
+
+        <div class="summary-box-label" style="width:180px;">Warranty Exp. Date:</div>            <div data-editable="OracleServerWarrantyExpDate" class="summary-box-input" style="width: 150px; border: 1px solid gray; box-shadow: none;"></div>
+        <div class="summary-box-label" style="width:180px;">Contract Status:</div>            <div data-editable="OracleServerContractStatus" class="summary-box-input" style="width: 150px; border: 1px solid gray; box-shadow: none;"></div>
+        <div class="summary-box-label" style="width:180px;">Contract Sub-Status:</div>            <div data-editable="OracleServerContractSubStatus" class="summary-box-input" style="width: 150px; border: 1px solid gray; box-shadow: none;"></div>
+        <div class="summary-box-label" style="width:180px;">Schedule Status:</div>            <div data-editable="OracleServerScheduleStatus" class="summary-box-input" style="width: 150px; border: 1px solid gray; box-shadow: none;"></div>
+        <div class="summary-box-label" style="width:180px;">Logistics Status:</div>            <div data-editable="OracleServerLogisticsStatus" class="summary-box-input" style="width: 150px; border: 1px solid gray; box-shadow: none;"></div>
+        <div class="summary-box-label" style="width:180px;">Upgrade Nightly Status:</div>            <div data-editable="OracleServerUpgradeNightlyStatus" class="summary-box-input" style="width: 150px; border: 1px solid gray; box-shadow: none;"></div>
+        <div class="summary-box-label" style="width:180px;">Upgrade Final Status:</div>            <div data-editable="OracleServerUpgradeFinalStatus" class="summary-box-input" style="width: 150px; border: 1px solid gray; box-shadow: none;"></div>
+        <div class="summary-box-label" style="width:180px;">Source of Upgrade:</div>            <div data-editable="OracleServerSourceOfUpgrade" class="summary-box-input" style="width: 150px; border: 1px solid gray; box-shadow: none;"></div>
+        <div class="summary-box-label" style="width:180px;">First Date Scheduled:</div>            <div data-editable="OracleServerFirstDateScheduled" class="summary-box-input" style="width: 150px; border: 1px solid gray; box-shadow: none;"></div>
+        <div class="summary-box-label" style="width:180px;">Reason for Schedule Change:</div>            <div data-editable="OracleServerReasonForScheduleChange" class="summary-box-input" style="width: 150px; border: 1px solid gray; box-shadow: none;"></div>
+        <div class="summary-box-label" style="width:180px;">RFC:</div>            <div data-editable="OracleServerRFC" class="summary-box-input" style="width: 150px; border: 1px solid gray; box-shadow: none;"></div>
+        <div class="summary-box-label" style="width:180px;">Opened on Time:</div>            <div data-editable="OracleServerOpenedOnTime" class="summary-box-input" style="width: 150px; border: 1px solid gray; box-shadow: none;"></div>
+
+    </div>
+    <div class="summary-box summary-box-side" style="height:550px;">
+        <div class="summary-box-title">HME Integration</div>
+        <div class="summary-box-label">Type:</div>        <div data-editable="HMEIntegrationType" class="summary-box-input"></div>
+        <div class="summary-box-label">Go-Live:</div>     <div data-editable="HMEIntegrationGoLive" class="summary-box-input"></div>
+        <div class="summary-box-label">Installer:</div>       <div data-editable="HMEIntegrationInstaller" class="summary-box-input"></div>
+        <div class="summary-box-label">IT PM:</div>       <div data-editable="HMEIntegrationITPM" class="summary-box-input"></div>
+
+        <div class="summary-box-title">Firewall/AP/Backup Replacement</div>
+        
+        <div class="summary-box-label">Installer:</div>       <div data-editable="FirewallInstaller" class="summary-box-input"></div>
+        <div class="summary-box-label">Go-Live:</div>     <div data-editable="FirewallGoLive" class="summary-box-input"></div>
+        <div class="summary-box-label">PM:</div>       <div data-editable="FirewallITPM" class="summary-box-input"></div>
+        <div class="summary-box-label">Notes:</div>       <div data-editable="FirewallNotes" class="summary-box-input"></div>
+        
+    </div>
+</div>
+
+<div class="summary-row">
+    <div class="summary-box summary-box-side" style="height:550px;">
+        <div class="summary-box-title">Next Gen Pays Project</div>
+        <div class="summary-box-label">Go-Live:</div>        <div data-editable="VP6800GoLive" class="summary-box-input"></div>
+        <div class="summary-box-label">Remediation Date:</div>        <div data-editable="VP6800RemediationDate" class="summary-box-input"></div>
+        <div class="summary-box-label"># of Terminals:</div>     <div data-editable="VP6800NumOfTerminals" class="summary-box-input"></div>
+        <div class="summary-box-label"># of 45 Units:</div>       <div data-editable="VP6800NumOf45Units" class="summary-box-input"></div>
+        <div class="summary-box-label"># of 90 Units:</div>       <div data-editable="VP6800NumOf90Units" class="summary-box-input"></div>
+        <div class="summary-box-label">DT Window:</div>            <div data-editable="VP6800DTWindow" class="summary-box-input"></div>
+        <div class="summary-box-label">Sunshield:</div>            <div data-editable="VP6800Sunshield" class="summary-box-input"></div>
+        <div class="summary-box-label">Ordered:</div>            <div data-editable="VP6800Ordered" class="summary-box-input" id="VP6800Ordered"></div>
+
+        <div class="summary-box-label">Delivery:</div>            <div data-editable="VP6800Delivery" class="summary-box-input"></div>
+        <div class="summary-box-label">Tracking #:</div>            <div data-editable="VP6800TrackingNum" class="summary-box-input"></div>
+        <div class="summary-box-label">Level 10 Track. #:</div>            <div data-editable="VP6800Level10TrackingNum" class="summary-box-input"></div>
+        <div class="summary-box-label">Installer:</div>
+
+        <div style="width:90px;" class="summary-box-input">
+
+
+            <select id="VP6800Installer">
+                <option value=""></option>
+                <option value="ATI">ATI</option>
+                <option value="AVA">AVA</option>
+                <option value="AVIT">AVIT</option>
+                <option value="BUCHANAN">BUCHANAN</option>
+                <option value="ITFORP">ITFORP</option>
+                <option value="Level 10">Level 10</option>
+                <option value="MCG">MCG</option>
+                <option value="MIRA">MIRA</option>
+
+                <option value="MSIT">MSIT</option>
+                <option value="RH">RH</option>
+                <option value="SELF">SELF</option>
+            </select>
+
+        </div>
+        <div class="summary-box-label">Installer Lead:</div>            <div data-editable="VP6800InstallerLead" class="summary-box-input"></div>
+        <div class="summary-box-label">PO Number:</div>            <div data-editable="VP6800PONum" class="summary-box-input" id="VP6800PONum"></div>
+        <div class="summary-box-label">IT PM:</div>            <div data-editable="VP6800ITPM" class="summary-box-input"></div>
+        <div class="summary-box-label">Comcast Switch:</div>            <div data-editable="HughesSwitchUpgradeOrdered2" class="summary-box-input"></div>
+
+        <table>
+            <tr>
+                <td>
+                    <div class="summary-box-label" style="width:160px;">Server Cabinet 6u:</div>
+                </td>
+                <td>QTY:</td>
+                <td>
+                    <div style="width:70px;" class="summary-box-input">
+
+
+                        <select id="VP6800ServerCabinetNumber">
+                            <option value=""></option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="summary-box-label" style="width:160px;">Server Cabinet 12u:</div>
+                </td>
+                <td>QTY:</td>
+                <td>
+                    <div class="summary-box-input" style="width:70px;">
+
+                        <select id="VP6800ServerCabinet12uQTY">
+                            <option value=""></option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+
+
+        <div class="summary-box-label" style="width:160px;">Server Cabinet Shelf:</div>
+        <div style="width:90px;" class="summary-box-input">
+
+            <select id="VP6800ServerCabinetShelf">
+                <option value=""></option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+
+
+        </div>
+
+
+        <div class="summary-box-label" style="width:160px;">Store Close Time:</div>            <div data-editable="VP6800StoreCloseTime" class="summary-box-input" style="width:90px;"></div>
+    </div>
+    <div class="summary-box summary-box-middle" style="height:550px;">
+        <div class="summary-box-title">Next Gen Pays Project</div>
+
+        <div class="summary-box-label">Switch 1 Serial #:</div>       <div data-editable="VP6800ProjectSwitchSerialNum" class="summary-box-input"></div>
+        <div class="summary-box-label">Switch 2 Serial #:</div>       <div data-editable="VP6800ProjectSwitchSerialNumTwo" class="summary-box-input"></div>
+        <div class="summary-box-label">UPS Serial #:</div>       <div data-editable="VP6800ProjectSwitchUPSSerialNum" class="summary-box-input"></div>
+        <table>
+            <tr>
+                <td><div class="summary-box-label" style="width:auto;">PAY Ser #:</div><div style="width:109px;" data-editable="VP6800ProjectPaymentSerialNum1" class="summary-box-input"></div></td>
+                <td><div class="summary-box-label" style="width:auto;">Ln #:</div><div style="width:70px;" data-editable="VP6800ProjectLaneNum1" class="summary-box-input"></div></td>
+                <td>
+                    <div class="summary-box-label" style="width:auto;">Facing:</div>
+                    <select id="PaymentTerminalAndInfoLane50Facing">
+                        <option value=""></option>
+                        <option value="Customer">Customer</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><div class="summary-box-label" style="width:auto;">PAY Ser #:</div><div style="width:90px;" data-editable="VP6800ProjectPaymentSerialNum2" class="summary-box-input"></div></td>
+                <td><div class="summary-box-label" style="width:auto;">Ln #:</div><div style="width:70px;" data-editable="VP6800ProjectLaneNum2" class="summary-box-input"></div></td>
+                <td>
+                    <div class="summary-box-label" style="width:auto;">Facing:</div>
+                    <select id="PaymentTerminalAndInfoLane91Facing">
+                        <option value=""></option>
+                        <option value="Customer">Customer</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><div class="summary-box-label" style="width:auto;">PAY Ser #:</div><div style="width:90px;" data-editable="VP6800ProjectPaymentSerialNum3" class="summary-box-input"></div></td>
+                <td><div class="summary-box-label" style="width:auto;">Ln #:</div><div style="width:70px;" data-editable="VP6800ProjectLaneNum3" class="summary-box-input"></div></td>
+                <td>
+                    <div class="summary-box-label" style="width:auto;">Facing:</div>
+                    <select id="PaymentTerminalAndInfoLane92Facing">
+                        <option value=""></option>
+                        <option value="Customer">Customer</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><div class="summary-box-label" style="width:auto;">PAY Ser #:</div><div style="width:90px;" data-editable="VP6800ProjectPaymentSerialNum4" class="summary-box-input"></div></td>
+                <td><div class="summary-box-label" style="width:auto;">Ln #:</div><div style="width:70px;" data-editable="VP6800ProjectLaneNum4" class="summary-box-input"></div></td>
+                <td>
+                    <div class="summary-box-label" style="width:auto;">Facing:</div>
+                    <select id="PaymentTerminalAndInfoLane93Facing">
+                        <option value=""></option>
+                        <option value="Customer">Customer</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><div class="summary-box-label" style="width:auto;">PAY Ser #:</div><div style="width:90px;" data-editable="VP6800ProjectPaymentSerialNum5" class="summary-box-input"></div></td>
+                <td><div class="summary-box-label" style="width:auto;">Ln #:</div><div style="width:70px;" data-editable="VP6800ProjectLaneNum5" class="summary-box-input"></div></td>
+                <td>
+                    <div class="summary-box-label" style="width:auto;">Facing:</div>
+                    <select id="PaymentTerminalAndInfoLane94Facing">
+                        <option value=""></option>
+                        <option value="Customer">Customer</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><div class="summary-box-label" style="width:auto;">PAY Ser #:</div><div style="width:90px;" data-editable="VP6800ProjectPaymentSerialNum6" class="summary-box-input"></div></td>
+                <td><div class="summary-box-label" style="width:auto;">Ln #:</div><div style="width:70px;" data-editable="VP6800ProjectLaneNum6" class="summary-box-input"></div></td>
+                <td>
+                    <div class="summary-box-label" style="width:auto;">Facing:</div>
+                    <select id="PaymentTerminalAndInfoLane95Facing">
+                        <option value=""></option>
+                        <option value="Customer">Customer</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><div class="summary-box-label" style="width:auto;">PAY Ser #:</div><div style="width:90px;" data-editable="VP6800ProjectPaymentSerialNum7" class="summary-box-input"></div></td>
+                <td><div class="summary-box-label" style="width:auto;">Ln #:</div><div style="width:70px;" data-editable="VP6800ProjectLaneNum7" class="summary-box-input"></div></td>
+                <td>
+                    <div class="summary-box-label" style="width:auto;">Facing:</div>
+                    <select id="PaymentTerminalAndInfoLane96Facing">
+                        <option value=""></option>
+                        <option value="Customer">Customer</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><div class="summary-box-label" style="width:auto;">PAY Ser #:</div><div style="width:90px;" data-editable="VP6800ProjectPaymentSerialNum8" class="summary-box-input"></div></td>
+                <td><div class="summary-box-label" style="width:auto;">Ln #:</div><div style="width:70px;" data-editable="VP6800ProjectLaneNum8" class="summary-box-input"></div></td>
+                <td>
+                    <div class="summary-box-label" style="width:auto;">Facing:</div>
+                    <select id="PaymentTerminalAndInfoLane97Facing">
+                        <option value=""></option>
+                        <option value="Customer">Customer</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><div class="summary-box-label" style="width:auto;">PAY Ser #:</div><div style="width:90px;" data-editable="VP6800ProjectPaymentSerialNum9" class="summary-box-input"></div></td>
+                <td><div class="summary-box-label" style="width:auto;">Ln #:</div><div style="width:70px;" data-editable="VP6800ProjectLaneNum9" class="summary-box-input"></div></td>
+                <td>
+                    <div class="summary-box-label" style="width:auto;">Facing:</div>
+                    <select id="PaymentTerminalAndInfoLane98Facing">
+                        <option value=""></option>
+                        <option value="Customer">Customer</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><div class="summary-box-label" style="width:auto;">PAY Ser #:</div><div style="width:90px;" data-editable="VP6800ProjectPaymentSerialNum10" class="summary-box-input"></div></td>
+                <td><div class="summary-box-label" style="width:auto;">Ln #:</div><div style="width:70px;" data-editable="VP6800ProjectLaneNum10" class="summary-box-input"></div></td>
+                <td>
+                    <div class="summary-box-label" style="width:auto;">Facing:</div>
+                    <select id="PaymentTerminalAndInfoLane99Facing">
+                        <option value=""></option>
+                        <option value="Customer">Customer</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+
+
+    </div>
+    <div class="summary-box summary-box-side" style="height:550px;">
+
+        <div class="summary-box-title">Next Gen Pays Project</div>
+
+
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Intro Call to FEE:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800IntroCallToFee" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Site Survey Requested:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800SiteSurveyRequested" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Comcast Doc to FEE:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800HughesDoctoFEE" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Comcast Doc to Comcast:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800HughesDoctoHughes" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Site Survey Confirmed by Installer:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800SiteSurveyConfirmedbyInstaller" class="summary-box-input"></div>
+
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Site Survey Date:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800ProjectSiteSurveyDate" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Site Survey Company:</div>     <div style="width:90px;border:1px solid gray;" data-editable="VP6800ProjectSiteSurveyCompany" class="summary-box-input"></div>
+
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Site Survey Date Comm to FEE:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800SiteSurveyDateCommtoFEE" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Site Survey Tech:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800SSTech" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Site Survey Results Rev. with FRAN:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800SiteSurveyResultsReviewed" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Site Survey Completed:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800SiteSurveyCompleted" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Parts Call:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800PartsCall" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Order Doc Sent to Fee:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800OrderDocSenttoFee" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Signature Page Received:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800SignaturePageReceived" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Install Scheduled:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800InstallScheduled" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">30 Day Comm:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP680030DayComm" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">2 Week Comm:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP68002WeekComm" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Action Item Call to FEE from SS:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800ActionItemCalltoFEEfromSS" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">1 Week Comm:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP68001WeekComm" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Day Before Install Comm:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800DayBeforeInstallComm" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Review Sign-Offs:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800ReviewSignOffs" class="summary-box-input"></div>
+
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Deliverables to FEE:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800DeliverablestoFEE" class="summary-box-input"></div>
+        <div class="summary-box-label" style="width:230px;font-size:14px;">ServiceNow #:</div>        <div style="width:90px;border:1px solid gray;" data-editable="VP6800ProjectServiceNowNum" class="summary-box-input"></div>
+
+        <div class="summary-box-label" style="width:230px;font-size:14px;">Sign Offs Complete:</div>       <div style="width:90px;border:1px solid gray;" data-editable="VP6800ProjectSignOffsComplete" class="summary-box-input"></div>
+
+
+
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="full-width-box" style="text-align: center;">
+
+    <div id="notes">Loading Notes...</div>
+    <textarea data-editable="VP6800ProjectNotes" id="VP6800ProjectNotes" style="width:100%;"></textarea>
+</div>
+<div class="full-width-box" style="text-align: center;">
+    <div id="issues">Loading Issues...</div>
+</div>
+<div style="text-align: center" class="pure-form">
+    <div class="notes-box-title">Workflows</div>
+    <div id="workflow-button"></div>
+    <select id="workflows">
+        <option value="select-workflow">Select Workflow</option>
+        <option value="audio-quote-request">HME/Audio Quote Request</option>
+        <option value="micros-audio-quote-request">Micros Audio Quote Request</option>
+        <!--<option value="fabcon-commworks-pops">FabCon/CommWorks POPS Purchase Order Request</option>-->
+        <!--<option value="fabcon-commworks-dt-base">FabCon/CommWorks DT Base Purchase Order Request</option>-->
+        
+        <option value="fabcon-create-purchase-order">FabCon ONLY - Create Purchase Order</option>
+        <option value="idtech-create-purchase-order">ID Tech ONLY - Create Purchase Order</option>
+        <option value="fabcon-dtpops-create-purchase-order">FabCon - DT POPS Base - Create Purchase Order</option>
+        <option value="level-ten-data-order">Level 10 Order</option>
+        <option value="pos-data-order">POS Data Order</option>
+        <option value="servereps-setup">ServerEPS Setup Request</option>
+        <option value="promotion-order">ProMotion Order</option>
+        <option value="sonic-radio-order">Sonic Radio Order</option>
+        <option value="installer-quote-request">Installer Quote Request</option>
+        <option value="generate-pro-forma">Generate Summary</option>
+        <option value="updated-dates">Notify Date Changes</option>
+        <option value="hughes-request">Comcast Request</option>
+        <option value="payment-monetization-summary">Next Gen Pays Summary (roll out)</option>
+        <option value="payment-monetization-order">Next Gen Pays Order (roll out)</option>
+        <option value="hme-loop-request">HME Loop Request</option>
+        <option value="submit-em-survey">Submit EM Survey</option>
+
+    </select>
+</div>
+<br />
+<table style="width:100%;border-top:1px solid gray;">
+    <tr>
+        <td valign="top" style="vertical-align:top;border-right:1px solid gray;width:50%;">
+            <div>
+                <br />
+                <div class="notes-box-title">Documents</div>
+                <div id="document-manage"></div>
+                <div id="document-tree" style="box-sizing: border-box; border: 5px #FFF solid">
+                    <ul id="documents">
+                        <!--<li><a id="documents-link" href=''>Documents Folder</a>(Right click, copy shortcut, paste into windows explorer)</li> -->
+                    </ul>
+                </div>
+            </div>
+
+        </td>
+
+        <td valign="top" style="vertical-align:top;width:50%;">
+            <div style="text-align: center;border-bottom:1px solid gray;">
+                <br />
+                <div class="notes-box-title">Sharepoint Links</div>
+                <a id="construction-calls" style="margin-left:10px;">Construction Calls</a> - <a id="combined-schedule">Combined Schedule</a> - <a id="master-portal">Readiness Schedule</a>
+                <br /><br />
+            </div>
+            <div style="text-align: center; margin-top: 10px;">
+                <div class="notes-box-title"><u>Go Live Changes:</u> <span id="go-live-change-count"></span></div>
+                <table class="pure-table-striped" style="margin-left: auto; margin-right: auto;">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 150px;">New Date</th>
+                            <th style="min-width: 150px;">Modified On</th>
+                            <th style="min-width: 150px;">Modified By</th>
+                        </tr>
+                    </thead>
+                    <tbody id="go-live-changes"></tbody>
+                </table>
+            </div>
+            <div style="text-align: center; margin-top: 10px;">
+                <div class="notes-box-title"><u>Next Gen Pays Project - Go Live Changes:</u> <span id="go-live-change-extend-count"></span></div>
+                <table class="pure-table-striped" style="margin-left: auto; margin-right: auto;">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 150px;">New Date</th>
+                            <th style="min-width: 150px;">Modified On</th>
+                            <th style="min-width: 150px;">Modified By</th>
+                        </tr>
+                    </thead>
+                    <tbody id="go-live-changes-extend"></tbody>
+                </table>
+
+            </div>
+
+
+            <div style="text-align: center; margin-top: 10px;">
+                <div class="notes-box-title"><u>PM Changes:</u> <span id="pm-change-count"></span></div>
+                <table class="pure-table-striped" style="margin-left: auto; margin-right: auto;">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 150px;">New PM</th>
+                            <th style="min-width: 150px;">Modified On</th>
+                            <th style="min-width: 150px;">Modified By</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pm-changes"></tbody>
+                </table>
+
+            </div>
+
+
+            <div style="text-align: center; margin-top: 10px;">
+                <div class="notes-box-title"><u>Next Gen Pays Project - PM Changes:</u> <span id="pm-change-extend-count"></span></div>
+                <table class="pure-table-striped" style="margin-left: auto; margin-right: auto;">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 150px;">New PM</th>
+                            <th style="min-width: 150px;">Modified On</th>
+                            <th style="min-width: 150px;">Modified By</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pm-changes-extend"></tbody>
+                </table>
+                <br /><br /><br /><br /><br /><br /><br />
+            </div>
+        </td>
+    </tr>
+</table>
+
+

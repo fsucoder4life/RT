@@ -1,0 +1,929 @@
+function ApplyFilters() {
+
+    var startDate = "";
+    var endDate = "";
+    var itpm = "";
+    var sortByGoLiveDate = "";
+    var franchisee = "";
+    var sitesurveycompleted = "";
+    var orderdocsent = "";
+
+    if ($("#start-date").val().length > 0) {
+        var m = moment($("#start-date").val(), 'MM/DD/YYYY');
+        startDate = "/start/" + m.format('YYYY-MM-DD');
+    }
+
+    if ($("#end-date").val().length > 0) {
+        var m = moment($("#end-date").val(), 'MM/DD/YYYY');
+        endDate = "/end/" + m.format('YYYY-MM-DD');
+    }
+    if ($("#itpm option:selected").val() !== "ALL")
+        itpm = "/itpm/" + $("#itpm option:selected").val();
+
+    if ($("input[name='golivedate']:checked").val() === "descending")
+        sortByGoLiveDate = "/golivedate/" + "descending";
+
+    if ($("#Franchisee").val().length > 0)
+        franchisee = "/franchisee/" + $("#Franchisee").val();
+
+    if ($("input[name='sitesurveycompleted']:checked").val() !== "ALL")
+        sitesurveycompleted = "/sitesurveycompleted/" + $("input[name='sitesurveycompleted']:checked").val();
+
+    if ($("input[name='orderdocsent']:checked").val() !== "ALL")
+        orderdocsent = "/orderdocsent/" + $("input[name='orderdocsent']:checked").val();
+
+
+    window.location.href = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/index.aspx#project-review-paymod" + itpm + startDate + endDate + sortByGoLiveDate + franchisee + sitesurveycompleted + orderdocsent;
+    window.location.reload();
+}
+
+define([
+        'app/store/construction',
+        'dojo/text!app/view/project-review-paymod/table4.html',
+        'dojo/text!app/view/project-review-paymod/row.html',
+        'app/widget/dropdown',
+        'app/widget/datepicker',
+        'app/widget/textfield',
+        'app/widget/numberfield',
+        'app/widget/widgetHelper',
+        "dojo/number"
+], function (construction, tableTemplate, rowTemplate, dropdown, datePicker, textfield, numberfield, widgetHelper, dNumber) {
+
+    return {
+        render: function (options) {
+            //required options:  construction || combined query, columns, title, target
+            options.callback = options.callback || function () { };
+
+            //Turn the tableTemplate into a dom element
+            var table = $($.parseHTML(tableTemplate));
+
+            //Set the date
+            $('#current-date').html(moment().format('dddd, MMMM Do YYYY - h:mm A'));
+            //Set the title
+            $('#sub-title').html(options.title);
+
+            //Get the data - pass the whole options object, only requires the combined/construction queries
+
+
+            //Grab the report sort and filter options so we don't do it twice (once here and once in the store
+            var sort = options.sort,
+                filter = options.filter;
+            options.sort = undefined;
+            options.filter = undefined;
+
+            if (options.data) {
+
+                processData(options.data);
+            } else {
+
+                //construction.loadData(options, processData);
+                processData();
+            }
+
+            function formatDate(dateString, formatString) {
+                formatString = formatString || "l";
+
+                if (typeof dateString !== 'undefined' && dateString.split("-").length > 1) {
+                    return moment(dateString).format("l");
+                } else {
+                    return "";
+                }
+            }
+
+            function formatDateSort(dateString, formatString) {
+                formatString = formatString || "l";
+
+                if (typeof dateString !== 'undefined' && dateString.split("-").length > 1) {
+                    return moment(dateString).format("YYYY-MM-DD");
+                } else {
+                    return "";
+                }
+            }
+
+            //Process the data
+            function processData(data) {
+
+                //Stop if another route has registered
+                if (!options.routeCheck()) {
+                    return;
+                }
+                //console.log("made it past routeCheck");
+                //Turn it into an array to filter and sort
+                var arr = [];
+
+
+                var startDate = "";
+                var endDate = "";
+                var itpm = "";
+                var sortByGoLiveDate = "";
+                var franchisee = "";
+                var sitesurveycompleted = "";
+                var orderdocsent = "";
+                var hashURL = window.location.hash.substr(1);
+                var hashes = hashURL.split('/');
+
+                if (hashes.length > 1) {
+
+                    // Typical For loop. We start at 1 and not 0 since the array length starts counting at 1 but the array counts positions starting at 0
+                    for (var i = 1; i < hashes.length; i++) {
+
+                        // Run the function. We run the # value through the window to grab the function. This is a bit harder to explain so just take my word for it
+                        if (hashes[i] === "start")
+                            startDate = hashes[i + 1];
+                        else if (hashes[i] === "end")
+                            endDate = hashes[i + 1];
+                        else if (hashes[i] === "itpm")
+                            itpm = hashes[i + 1];
+                        else if (hashes[i] === "golivedate")
+                            sortByGoLiveDate = hashes[i + 1];
+                        else if (hashes[i] === "franchisee")
+                            franchisee = hashes[i + 1];
+                        else if (hashes[i] === "sitesurveycompleted")
+                            sitesurveycompleted = hashes[i + 1];
+                        else if (hashes[i] === "orderdocsent")
+                            orderdocsent = hashes[i + 1];
+                    }
+                }
+
+                var CAMLQuery = "";
+                if (startDate.length > 0 && endDate.length > 0)
+                    CAMLQuery = "<Query><Where><And><Geq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'>" + startDate + "</Value></Geq><Leq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'>" + endDate + "</Value></Leq></And></Where><OrderBy><FieldRef Name='VP6800_x0020_Go_x0020_Live'  /></OrderBy></Query>";
+                else if (startDate.length > 0)
+                    CAMLQuery = "<Query><Where><Geq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'>" + startDate + "</Value></Geq></Where><OrderBy><FieldRef Name='VP6800_x0020_Go_x0020_Live'  /></OrderBy></Query>";
+                else if (endDate.length > 0)
+                    CAMLQuery = "<Query><Where><Leq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'>" + endDate + "</Value></Leq></Where><OrderBy><FieldRef Name='VP6800_x0020_Go_x0020_Live'  /></OrderBy></Query>";
+                else
+                    CAMLQuery = "<Query><Where><Geq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'><Today /></Value></Geq></Where><OrderBy><FieldRef Name='VP6800_x0020_Go_x0020_Live'  /></OrderBy></Query>";
+
+
+
+                var CSquery = "<Query><Where><In><FieldRef Name='Title' /><Values>";
+                $().SPServices({
+                    operation: "GetListItems",
+                    listName: "Combined Construction Extend",
+                    CAMLQuery: CAMLQuery,
+                    CAMLViewFields: "<ViewFields Properties='True' />",
+                    async: false,
+                    completefunc: function (xData, Status) {
+
+                        $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                            //console.log("store num:" + $(this).attr("ows_Store_x0020_Number") + "-go live:" + $(this).attr("ows_VP6800_x0020_Go_x0020_Live"));
+                            var store = {};
+                            var storeNum = $(this).attr("ows_Store_x0020_Number");
+                            storeNum = storeNum.substring(storeNum.indexOf(";#") + ";#".length);
+                            store.StoreNumber = storeNum;
+                            //store.VP6800GoLive = $(this).attr("ows_VP6800_x0020_Go_x0020_Live");
+
+                            store.VP6800GoLive = formatDate($(this).attr("ows_VP6800_x0020_Go_x0020_Live"));
+                            store.VP6800GoLiveDate = formatDateSort($(this).attr("ows_VP6800_x0020_Go_x0020_Live"));
+
+                            store.VP6800ITPM = $(this).attr("ows_VP6800_x0020_IT_x0020_PM");
+                            if (!store.VP6800ITPM)
+                                store.VP6800ITPM = "";
+
+                            store.VP6800Installer = $(this).attr("ows_VP6800_x0020_Installer");
+                            if (!store.VP6800Installer)
+                                store.VP6800Installer = "";
+
+
+
+                            store.VP6800IntroCallToFee = formatDate($(this).attr("ows_VP6800_x0020_Intro_x0020_Call_x0"));
+
+                            store.VP6800ProjectSiteSurveyCompany = $(this).attr("ows_VP6800_x0020_Project_x0020_Site_0");
+                            if (!store.VP6800ProjectSiteSurveyCompany)
+                                store.VP6800ProjectSiteSurveyCompany = "";
+
+                            store.VP6800SSTech = $(this).attr("ows_VP6800_x0020_SS_x0020_Tech");
+                            if (!store.VP6800SSTech)
+                                store.VP6800SSTech = "";
+
+                            store.VP6800ProjectNotes = $(this).attr("ows_VP6800_x0020_Project_x0020_Notes");
+                            if (!store.VP6800ProjectNotes)
+                                store.VP6800ProjectNotes = "";
+
+
+
+
+                            store.VP6800HughesDoctoFEE = formatDate($(this).attr("ows_VP6800_x0020_Hughes_x0020_Doc_x0"));
+
+
+                            store.VP6800HughesDoctoHughes = formatDate($(this).attr("ows_VP6800_x0020_Hughes_x0020_Doc_x00"));
+
+
+                            store.VP6800SiteSurveyConfirmedbyInstaller = formatDate($(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x0"));
+
+
+                            store.VP6800ProjectSiteSurveyDate = formatDate($(this).attr("ows_VP6800_x0020_Project_x0020_Site_"));
+
+
+                            store.VP6800ReviewSignOffs = formatDate($(this).attr("ows_VP6800_x0020_Review_x0020_Sign_x"));
+
+
+                            store.VP6800OrderDocSenttoFee = formatDate($(this).attr("ows_VP6800_x0020_Order_x0020_Doc_x00"));
+
+
+                            store.VP6800Ordered = formatDate($(this).attr("ows_VP6800_x0020_Ordered"));
+
+
+                            store.VP6800InstallScheduled = formatDate($(this).attr("ows_VP6800_x0020_Install_x0020_Sched"));
+
+
+                            store.VP680030DayComm = formatDate($(this).attr("ows_VP6800_x0020_30_x0020_Day_x0020_"));
+
+
+                            store.VP68002WeekComm = formatDate($(this).attr("ows_VP6800_x0020_2_x0020_Week_x0020_"));
+
+
+                            store.VP68001WeekComm = formatDate($(this).attr("ows_VP6800_x0020_1_x0020_Week_x0020_"));
+
+
+                            store.VP6800DayBeforeInstallComm = formatDate($(this).attr("ows_VP6800_x0020_Day_x0020_Before_x0"));
+
+                            store.VP6800TrackingNum = $(this).attr("ows_VP6800_x0020_Tracking_x0020_Num");
+                            if (!store.VP6800TrackingNum)
+                                store.VP6800TrackingNum = "";
+
+                            store.VP6800PONum = $(this).attr("ows_VP6800_x0020_PO_x0020_Num");
+                            if (!store.VP6800PONum)
+                                store.VP6800PONum = "";
+                            else
+                                store.VP6800PONum = store.VP6800PONum.substr(0, store.VP6800PONum.indexOf("."));
+
+                            store.VP6800Delivery = formatDate($(this).attr("ows_VP6800_x0020_Delivery"));
+
+                            store.VP6800Level10TrackingNum = $(this).attr("ows_Level_x0020_10_x0020_Tracking_x0");
+                            if (!store.VP6800Level10TrackingNum)
+                                store.VP6800Level10TrackingNum = "";
+
+                            store.VP6800StoreCloseTime = $(this).attr("ows_VP6800_x0020_Store_x0020_Close_x");
+                            if (!store.VP6800StoreCloseTime)
+                                store.VP6800StoreCloseTime = "";
+
+
+                            store.VP6800InstallerLead = $(this).attr("ows_VP6800_x0020_Installer_x0020_Lea");
+                            if (!store.VP6800InstallerLead)
+                                store.VP6800InstallerLead = "";
+
+                            store.VP6800PartsCall = formatDate($(this).attr("ows_VP6800_x0020_Parts_x0020_Call"));
+
+
+                            store.VP6800SignaturePageReceived = formatDate($(this).attr("ows_VP6800_x0020_Signature_x0020_Pag"));
+
+                            store.VP6800SiteSurveyRequested = formatDate($(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x"));
+
+                            store.VP6800SiteSurveyDateCommtoFEE = formatDate($(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x1"));
+
+
+                            var startDate = "";
+                            var endDate = "";
+                            var itpm = "";
+                            var sortByGoLiveDate = "";
+                            var franchisee = "";
+                            var sitesurveycompleted = "";
+                            var orderdocsent = "";
+                            var hashURL = window.location.hash.substr(1);
+                            var hashes = hashURL.split('/');
+
+                            if (hashes.length > 1) {
+
+                                // Typical For loop. We start at 1 and not 0 since the array length starts counting at 1 but the array counts positions starting at 0
+                                for (var i = 1; i < hashes.length; i++) {
+
+                                    // Run the function. We run the # value through the window to grab the function. This is a bit harder to explain so just take my word for it
+                                    if (hashes[i] === "start")
+                                        startDate = hashes[i + 1];
+                                    else if (hashes[i] === "end")
+                                        endDate = hashes[i + 1];
+                                    else if (hashes[i] === "itpm")
+                                        itpm = hashes[i + 1];
+                                    else if (hashes[i] === "golivedate")
+                                        sortByGoLiveDate = hashes[i + 1];
+                                    else if (hashes[i] === "franchisee")
+                                        franchisee = hashes[i + 1];
+                                    else if (hashes[i] === "sitesurveycompleted")
+                                        sitesurveycompleted = hashes[i + 1];
+                                    else if (hashes[i] === "orderdocsent")
+                                        orderdocsent = hashes[i + 1];
+                                }
+                            }
+
+                            if (itpm.length > 0) {
+                                if (store.VP6800ITPM.toUpperCase().indexOf(itpm.toUpperCase()) > -1)
+                                { }
+                                else
+                                    return true;
+                            }
+                            if (sitesurveycompleted.length > 0) {
+                                if (sitesurveycompleted.toUpperCase() === "YES") {
+                                    //if not blank, show record
+                                    if (store.VP6800ProjectSiteSurveyDate.length > 0)
+                                    { }
+                                    else
+                                        return true;
+                                }
+                                else if (sitesurveycompleted.toUpperCase() === "NO") {
+                                    if (store.VP6800ProjectSiteSurveyDate.length > 0)
+                                        return true;
+                                }
+                            }
+                            if (orderdocsent.length > 0) {
+                                if (orderdocsent.toUpperCase() === "YES") {
+                                    //if not blank, show record
+                                    if (store.VP6800OrderDocSenttoFee.length > 0)
+                                    { }
+                                    else
+                                        return true;
+                                }
+                                else if (orderdocsent.toUpperCase() === "NO") {
+                                    if (store.VP6800OrderDocSenttoFee.length > 0)
+                                        return true;
+                                }
+                            }
+
+
+
+                            arr.push(store);
+                            CSquery += "<Value Type='Text'>" + storeNum + "</Value>";
+
+                        });
+                    }
+                });
+                CSquery += "</Values></In></Where></Query>";
+
+                function insert(str, index, value) {
+                    return str.substr(0, index) + value + str.substr(index);
+                }
+
+                if (CSquery.length > 3000) {
+                    CSquery = CSquery.replace("<Where><In>", "<Where><Or><In>");
+                    CSquery = CSquery.replace("</In></Where>", "</In></Or></Where>");
+
+                    var query1 = CSquery.substring(0, CSquery.length / 2);
+                    var query2 = CSquery.substring(CSquery.length / 2);
+
+                    query1loc = query1.lastIndexOf("</Value>") + "</Value>".length;
+                    CSquery = insert(query1, query1loc, '</Values></In><In><FieldRef Name="Title" /><Values>') + query2;
+                }
+
+                $().SPServices({
+                    operation: "GetListItems",
+                    listName: "Combined Schedule",
+                    CAMLQuery: CSquery,
+                    async: false,
+                    completefunc: function (xData, Status) {
+                        $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                            var storeNum = $(this).attr("ows_Title");
+
+                            for (var i = 0; i < arr.length; i++) {
+                                if (arr[i].StoreNumber == storeNum) {
+                                    arr[i].CombinedId = $(this).attr("ows_ID");
+
+                                    arr[i].FranchiseGroup = $(this).attr("ows_Franchise_x0020_Group");
+                                    if (!arr[i].FranchiseGroup)
+                                        arr[i].FranchiseGroup = "";
+
+                                    var franchisee = "";
+                                    var hashURL = window.location.hash.substr(1);
+                                    var hashes = hashURL.split('/');
+
+                                    if (hashes.length > 1) {
+                                        for (var j = 1; j < hashes.length; j++) {
+                                            if (hashes[j] === "franchisee")
+                                                franchisee = hashes[j + 1];
+                                        }
+                                    }
+
+                                    if (franchisee.length > 0 && arr[i].FranchiseGroup.length > 0) {
+                                        if (arr[i].FranchiseGroup.toUpperCase().indexOf(franchisee.toUpperCase()) > -1)
+                                        {
+                                            
+                                        }
+                                        else
+                                            arr[i].StoreNumber = "XXXX"; //later this will remove the record from array
+                                    }
+
+
+                                    arr[i].City = $(this).attr("ows_City");
+                                    if (!arr[i].City)
+                                        arr[i].City = "";
+
+                                    arr[i].State = $(this).attr("ows_State_x0020_");
+                                    if (!arr[i].State)
+                                        arr[i].State = "";
+
+                                    break;
+                                }
+                            }
+                        });
+                    }
+                });
+
+                var i = arr.length
+                while (i--) {
+                    if (arr[i].StoreNumber === "XXXX") {
+                        arr.splice(i, 1);
+                    }
+                }
+
+                //Filter
+                if (typeof filter === 'function') {
+                    arr = filter(arr);
+                }
+
+                if (window.location.hash.substr(1).indexOf("golivedate") > -1)
+                    arr.reverse();
+
+
+
+                //old one:
+
+                //_.forIn(data, function (store, storeNumber) {
+                //    arr.push(store);
+                //});
+
+
+                //1st box:
+                //arr[0].VP6800ITPM = "VP6800ITPM";
+                //arr[0].VP6800GoLive = "VP6800GoLive";
+                //arr[0].VP6800StoreCloseTime = "VP6800StoreCloseTime";
+                //arr[0].VP6800Installer = "VP6800Installer";
+                //arr[0].VP6800InstallerLead = "VP6800InstallerLead";
+
+                ////2nd box:
+                //arr[0].VP6800IntroCallToFee = "VP6800IntroCallToFee";
+                ////arr[0].VP6800SiteSurveyDateCommtoFEE = "VP6800SiteSurveyDateCommtoFEE";
+                //arr[0].VP680030DayComm = "VP680030DayComm";
+                //arr[0].VP68002WeekComm = "VP68002WeekComm";
+                //arr[0].VP68001WeekComm = "VP68001WeekComm";
+                //arr[0].VP6800DayBeforeInstallComm = "VP6800DayBeforeInstallComm";
+
+                ////3rd box:
+                //arr[0].VP6800SiteSurveyRequested = "VP6800SiteSurveyRequested";
+                //arr[0].VP6800ProjectSiteSurveyCompany = "VP6800ProjectSiteSurveyCompany";
+                //arr[0].VP6800SSTech = "VP6800SSTech";
+                //arr[0].VP6800ProjectSiteSurveyDate = "VP6800ProjectSiteSurveyDate";
+                //arr[0].VP6800SiteSurveyDateCommtoFEE = "VP6800SiteSurveyDateCommtoFEE";
+
+                ////4th box:
+                //arr[0].VP6800PartsCall = "VP6800PartsCall";
+                //arr[0].VP6800OrderDocSenttoFee = "VP6800OrderDocSenttoFee";
+                //arr[0].VP6800SignaturePageReceived = "VP6800SignaturePageReceived";
+                //arr[0].VP6800Ordered = "VP6800Ordered";
+                //arr[0].VP6800PONum= "VP6800PONum";
+                //arr[0].VP6800Delivery= "VP6800Delivery";
+                //arr[0].VP6800ProjectNotes = "VP6800ProjectNotes";
+                //arr[0].VP6800Level10Tracking = "VP6800Level10Tracking";
+
+                //Build the store data
+                _.forEach(arr, function (store, storeIndex) {
+
+                    //_.forEach(store, function (store2, storeIndex2) {
+                    //    console.log("value:" + store2 + " index:" + storeIndex2);
+                    //});
+
+
+                    //Go and add a row for each store, set an id so you can find it later
+                    var $tr = $(rowTemplate);
+                    $tr.attr('id', "number" + store.StoreNumber);
+
+                    //make the title link have an href
+                    $tr.find('#store-link').attr('href', '#summary/' + store.StoreNumber);
+
+                    //Add view to callback for value changes
+                    function beforeChange(key, newValue, revertBackground, oldValue, el) {
+                        //If function is passed, call on each value change and return the value in this callback - allows business logic before field change
+                        if (options.beforeChange) return options.beforeChange(me, key, newValue, revertBackground, oldValue, el);
+                    }
+                    //Add view to callback for value changes
+                    function afterChange(key, value, store, revertBackground, response) {
+                        //If function is passed, call on each value change and return the value in this callback - allows business logic after field change/save
+                        if (options.afterChange) return options.afterChange(me, key, value, store, revertBackground, response);
+                        else revertBackground();
+                    }
+
+                    //Activate all the fields marked as display or editable
+                    widgetHelper.activate($tr, store, beforeChange, afterChange);
+
+                    //Remove the data-display values from the row summaries and headers so the business rules don't run twice
+                    $tr.find('.row-summary div[data-display]')
+                        .removeData('display')
+                        .removeAttr('data-display');
+
+                    table.children('table').children('tbody').append($tr);
+
+                    //Apply an event listener to the plus/minus button
+                    var expanded = false,
+                        startHeight;
+                    $tr.find('.expander').click(function () {
+                        if (expanded) {
+                            //Show the summary and collapse the details
+                            $tr.find('.row-summary').show();
+                            $tr.find('.row-details').slideUp(500, function (e) {
+                                $tr.find('i.fa-minus-circle')
+                                    .removeClass('fa-minus-circle')
+                                    .addClass('fa-plus-circle');
+                                expanded = false;
+                            });
+                            //Fix the height of the absolute positioned cell at left
+                            $tr.find('td:nth-child(1)').animate({ 'height': startHeight });
+                        } else {
+                            //Grab start height
+                            startHeight = $tr.find('td:nth-child(1)').height();
+
+                            //Hide the details
+                            $tr.find('.row-summary').hide();
+
+                            //Show/hide the element to get it's computed height, then slide the first cell to the same height
+                            $tr.find('.row-details').show();
+                            $tr.find('td:nth-child(1)').animate({ 'height': $tr.find('td:nth-child(2)').height() }, 500);
+                            $tr.find('.row-details').hide();
+
+                            //Expand the details
+                            $tr.find('.row-details').slideDown(500, function (e) {
+                                //Swap the plus/minus
+                                $tr.find('i.fa-plus-circle')
+                                    .removeClass('fa-plus-circle')
+                                    .addClass('fa-minus-circle');
+                                expanded = true;
+                            });
+                        }
+                    });
+
+                });
+
+                //Add the export to csv link as a full length row
+                var link = $("<a id='csv-export' href='#'>Export as CSV File (doesn't work in IE)</a>");
+                var link2 = $("<a id='csv-export2' href='#'>Export as CSV File (doesn't work in IE)</a>");
+                var excelLink = $("<a id='excel-export' href='#'>Export as Excel File (IE 10+)</a>");
+
+                link2.on('click', function (evt) {
+                    var colDelim = '","',
+                      rowDelim = '"\r\n"';
+
+                    var rowHeading = "\"Franchise Group" + colDelim + "Store" + colDelim + "PM" + colDelim + "Go-Live" + colDelim + "Store Close" + colDelim + "Installer" + colDelim + "Tech" + colDelim + "Comm. Intro" + colDelim + "Comm. 30 Day" + colDelim + "Comm. 2 Week" + colDelim + "Comm. 1 Week" + colDelim + "Comm. Day Before" + colDelim + "Site Survey Requested" + colDelim + "Site Survey Company" + colDelim + "Site Survey Tech" + colDelim + "Site Survey Date" + colDelim + "Site Survey Comm to Fee." + colDelim + "Parts Call" + colDelim + "Parts Signature Page Sent" + colDelim + "Parts Signature Page Recvd" + colDelim + "Parts Ordered" + colDelim + "Parts PO #" + colDelim + "Parts Delivery" + colDelim + "Tracking Level 10" + colDelim + "Notes" + rowDelim;
+
+                    var csv = rowHeading;
+                    _.forEach(arr, function (store, storeIndex) {
+
+                        csv += store.FranchiseGroup + colDelim + store.StoreNumber + colDelim + store.VP6800ITPM + colDelim + store.VP6800GoLive + colDelim + store.VP6800StoreCloseTime + colDelim + store.VP6800Installer + colDelim + store.VP6800InstallerLead + colDelim + store.VP6800IntroCallToFee + colDelim + store.VP680030DayComm + colDelim + store.VP68002WeekComm + colDelim + store.VP68001WeekComm + colDelim + store.VP6800DayBeforeInstallComm + colDelim + store.VP6800SiteSurveyRequested + colDelim + store.VP6800ProjectSiteSurveyCompany + colDelim + store.VP6800SSTech + colDelim + store.VP6800ProjectSiteSurveyDate + colDelim + store.VP6800SiteSurveyDateCommtoFEE + colDelim + store.VP6800PartsCall + colDelim + store.VP6800OrderDocSenttoFee + colDelim + store.VP6800SignaturePageReceived + colDelim + store.VP6800Ordered + colDelim + store.VP6800PONum + colDelim + store.VP6800Delivery + colDelim + store.VP6800Level10TrackingNum + colDelim + store.VP6800ProjectNotes + rowDelim;
+                    });
+                    var csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv + '"');
+                    $(this)
+                      .attr({
+                          'download': "Export.csv",
+                          'href': csvData,
+                          'target': '_blank'
+                      });
+                });
+
+                //Turn on the click event for the csv export
+                link.on('click', function (evt) {
+                    //Grab the data and remove the click link
+                    var $rows = table.find('tr');
+
+                    // Temporary delimiter characters unlikely to be typed by keyboard
+                    // This is to avoid accidentally splitting the actual contents
+                    var tmpColDelim = String.fromCharCode(11), // vertical tab character
+                      tmpRowDelim = String.fromCharCode(0); // null character
+
+                    // actual delimiter characters for CSV format
+                    var colDelim = '","',
+                      rowDelim = '"\r\n"';
+
+                    // Grab text from table into CSV formatted string
+                    var rowCount = 0;
+                    var rowHeading = "Franchise Group" + colDelim + "Store" + colDelim + "PM" + colDelim + "Go-Live" + colDelim + "Store Close" + colDelim + "Installer" + colDelim + "Tech" + colDelim + "Comm. Intro" + colDelim + "Comm. 30 Day" + colDelim + "Comm. 2 Week" + colDelim + "Comm. 1 Week" + colDelim + "Comm. Day Before" + colDelim + "Site Survey Requested" + colDelim + "Site Survey Company" + colDelim + "Site Survey Tech" + colDelim + "Site Survey Date" + colDelim + "Site Survey Comm to Fee." + colDelim + "Parts Call" + colDelim + "Parts Signature Page Sent" + colDelim + "Parts Signature Page Recvd" + colDelim + "Parts Ordered" + colDelim + "Parts PO #" + colDelim + "Parts Delivery" + colDelim + "Tracking Level 10" + colDelim + "Notes" + rowDelim;
+                    var csv = '"' + $rows.map(function (i, row) {
+                        rowCount++;
+                        var FranchiseGroup;
+                        var StoreNumber;
+                        var VP6800ITPM;
+                        var VP6800GoLive;
+                        var VP6800StoreCloseTime;
+                        var VP6800Installer;
+                        var VP6800InstallerLead;
+
+                        var VP6800IntroCallToFee;
+                        var VP680030DayComm;
+                        var VP68002WeekComm;
+                        var VP68001WeekComm;
+                        var VP6800DayBeforeInstallComm;
+
+                        var VP6800SiteSurveyRequested;
+                        var VP6800ProjectSiteSurveyCompany;
+                        var VP6800SSTech;
+                        var VP6800ProjectSiteSurveyDate;
+                        var VP6800SiteSurveyDateCommtoFEE;
+
+                        var VP6800PartsCall;
+                        var VP6800OrderDocSenttoFee;
+                        var VP6800SignaturePageReceived;
+                        var VP6800Ordered;
+                        var VP6800PONum;
+                        var VP6800Delivery;
+
+                        var VP6800Level10TrackingNum;
+
+                        var VP6800ProjectNotes;
+
+
+                        var $row = $(row),
+                          $cols = $row.find('td');
+
+                        var colCount = 0;
+                        return $cols.map(function (j, col) {
+                            //If column has a line break, replace it with a space!
+                            var $col = $(col);
+
+                            $col.find('br').replaceWith('\r\n');
+
+
+                            //Grab the text
+                            var text = $col.text();
+
+                            var allDivElements = $("div");
+                            var divElements = $col.find(allDivElements).toArray();
+
+
+                            $(divElements).each(function (index) {
+                                if (index === 0)
+                                    colCount++;
+                                //console.log(colCount + " - " + index + ": " + $(this).text());
+                                if (colCount === 1) {
+                                    switch (index) {
+                                        case 1:
+                                            FranchiseGroup = $(this).text();
+                                            break;
+                                        case 2:
+                                            StoreNumber = $(this).text();
+                                            break;
+                                        case 9:
+                                            VP6800ITPM = $(this).text();
+                                            break;
+                                        case 12:
+                                            VP6800GoLive = $(this).text();
+                                            break;
+                                        case 15:
+                                            VP6800StoreCloseTime = $(this).text();
+                                            break;
+                                        case 18:
+                                            VP6800Installer = $(this).text();
+                                            break;
+                                        case 21:
+                                            VP6800InstallerLead = $(this).text();
+                                            break;
+                                    }
+                                }
+                                else if (colCount === 2) {
+                                    switch (index) {
+                                        case 6:
+                                            VP6800IntroCallToFee = $(this).text();
+                                            break;
+                                        case 9:
+                                            VP680030DayComm = $(this).text();
+                                            break;
+                                        case 12:
+                                            VP68002WeekComm = $(this).text();
+                                            break;
+                                        case 15:
+                                            VP68001WeekComm = $(this).text();
+                                            break;
+                                        case 18:
+                                            VP6800DayBeforeInstallComm = $(this).text();
+                                            break;
+                                    }
+                                }
+                                else if (colCount === 3) {
+                                    switch (index) {
+                                        case 6:
+                                            VP6800SiteSurveyRequested = $(this).text();
+                                            break;
+                                        case 9:
+                                            VP6800ProjectSiteSurveyCompany = $(this).text();
+                                            break;
+                                        case 12:
+                                            VP6800SSTech = $(this).text();
+                                            break;
+                                        case 15:
+                                            VP6800ProjectSiteSurveyDate = $(this).text();
+                                            break;
+                                        case 18:
+                                            VP6800SiteSurveyDateCommtoFEE = $(this).text();
+                                            break;
+                                    }
+                                }
+                                else if (colCount === 4) {
+                                    switch (index) {
+                                        case 6:
+                                            VP6800PartsCall = $(this).text();
+                                            break;
+                                        case 9:
+                                            VP6800OrderDocSenttoFee = $(this).text();
+                                            break;
+                                        case 12:
+                                            VP6800SignaturePageReceived = $(this).text();
+                                            break;
+                                        case 15:
+                                            VP6800Ordered = $(this).text();
+                                            break;
+                                        case 18:
+                                            VP6800PONum = $(this).text();
+                                            break;
+                                        case 21:
+                                            VP6800Delivery = $(this).text();
+                                            break;
+                                    }
+                                }
+                                else if (colCount === 5) {
+                                    switch (index) {
+                                        case 6:
+                                            VP6800Level10TrackingNum = $(this).text();
+                                            break;
+                                    }
+                                }
+                                else if (colCount === 6) {
+                                    switch (index) {
+                                        case 2:
+                                            VP6800ProjectNotes = $(this).text();
+                                            break;
+                                    }
+                                }
+                            });
+
+                            //console.log(text);
+                            //If column has a dropdown, only grab the value, not the list
+                            //if ($col.find('.dropdown').length === 1) {
+                            //    text = $col.find('[contenteditable=true]').text();
+                            //}
+
+                            //TODO - HACK - if there is a quote at the end of a value, the csv export doesn't add one, have to triple quote it - remove the replace function to undo this
+                            // escape double quotes
+                            var textColumns = FranchiseGroup + colDelim + StoreNumber + colDelim + VP6800ITPM + colDelim + VP6800GoLive + colDelim + VP6800StoreCloseTime + colDelim + VP6800Installer + colDelim + VP6800InstallerLead + colDelim + VP6800IntroCallToFee + colDelim + VP680030DayComm + colDelim + VP68002WeekComm + colDelim + VP68001WeekComm + colDelim + VP6800DayBeforeInstallComm + colDelim + VP6800SiteSurveyRequested + colDelim + VP6800ProjectSiteSurveyCompany + colDelim + VP6800SSTech + colDelim + VP6800ProjectSiteSurveyDate + colDelim + VP6800SiteSurveyDateCommtoFEE + colDelim + VP6800PartsCall + colDelim + VP6800OrderDocSenttoFee + colDelim + VP6800SignaturePageReceived + colDelim + VP6800Ordered + colDelim + VP6800PONum + colDelim + VP6800Delivery + colDelim + VP6800Level10TrackingNum + colDelim + VP6800ProjectNotes + rowDelim;
+                            if (rowCount > 1)
+                                rowHeading = "";
+                            if (colCount === 6)
+                                return rowHeading + textColumns;
+                        }).get().join(tmpColDelim);
+
+                    }).get().join(tmpRowDelim)
+                        .split(tmpRowDelim).join(rowDelim)
+                        .split(tmpColDelim).join(colDelim) + '"';
+
+                    // Data URI
+                    var csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+
+                    $(this)
+                      .attr({
+                          'download': "Export.csv",
+                          'href': csvData,
+                          'target': '_blank'
+                      });
+                });
+
+                //Turn on the click event for the excel export
+                excelLink.on('click', function (evt) {
+                    //Grab the data and transform it a bit
+                    var $rows = table.find('tr');
+
+                    // Do some formatting
+                    $rows.each(function (i, row) {
+                        var $row = $(row),
+                          $cols = $row.find('td');
+
+                        if ($cols.length === 0) {
+                            $cols = $row.find('th');
+                        }
+
+                        $cols.each(function (j, col) {
+                            //If column has a line break, replace it with a space!
+                            var $col = $(col);
+                            $col.find('br').replaceWith('\r\n');
+
+                            //Grab the text
+                            var text = $col.text();
+
+                            //If column has a dropdown, only grab the value, not the list
+                            //if ($col.find('.dropdown').length === 1) {
+                            //    text = $col.html($col.find('[contenteditable=true]').text());
+                            //}
+                        });
+                    });
+
+                    //Add table export links:
+                    var tableContent = "<table><thead><th>TEST COL</th><th>TEST COL2</th></thead><tr><td>TEST DATA</td><td>TEST DATA2</td></tr></table>";
+
+                    $(table).each(function (j, item) {
+                        var $item = $(item);
+                        console.log($item);
+                    });
+                    //table = $($.parseHTML(tableContent));
+                    var tx = table.tableExport({ formats: ["xlsx"] });
+                    $('.btn-toolbar button.xlsx')[0].click()
+                    $('.btn-toolbar').remove();
+
+
+                });
+
+
+                
+
+                var me = {
+                    el: table,
+                    stores: arr,
+                    el: table
+                };
+
+                //Insert the table into the target element
+
+                var m = moment();
+
+                var startDate = "";
+                var endDate = "";
+                var itpm = "";
+                var sortByGoLiveDate = "";
+                var franchisee = "";
+                var sitesurveycompleted = "";
+                var orderdocsent = "";
+                var hashURL = window.location.hash.substr(1);
+                var hashes = hashURL.split('/');
+
+                if (hashes.length > 1) {
+
+                    // Typical For loop. We start at 1 and not 0 since the array length starts counting at 1 but the array counts positions starting at 0
+                    for (var i = 1; i < hashes.length; i++) {
+
+                        // Run the function. We run the # value through the window to grab the function. This is a bit harder to explain so just take my word for it
+                        if (hashes[i] === "start")
+                            startDate = hashes[i + 1];
+                        else if (hashes[i] === "end")
+                            endDate = hashes[i + 1];
+                        else if (hashes[i] === "itpm")
+                            itpm = hashes[i + 1];
+                        else if (hashes[i] === "golivedate")
+                            sortByGoLiveDate = hashes[i + 1];
+                        else if (hashes[i] === "franchisee")
+                            franchisee = hashes[i + 1];
+                        else if (hashes[i] === "sitesurveycompleted")
+                            sitesurveycompleted = hashes[i + 1];
+                        else if (hashes[i] === "orderdocsent")
+                            orderdocsent = hashes[i + 1];
+
+                    }
+
+                }
+
+                if (startDate.length > 0) {
+                    var m2 = moment(startDate, 'YYYY-MM-DD');
+                    table.find('#start-date').val(m2.format('MM/DD/YYYY'));
+                }
+                else
+                    table.find('#start-date').val(m.format('MM/DD/YYYY'));
+
+                if (endDate.length > 0) {
+                    var m2 = moment(endDate, 'YYYY-MM-DD');
+                    table.find('#end-date').val(m2.format('MM/DD/YYYY'));
+                }
+                else
+                    table.find('#end-date').val(m.add(150, 'days').format('MM/DD/YYYY'));
+
+                if (itpm.length > 0)
+                    table.find('#itpm option[value="' + itpm + '"]').attr('selected', 'selected');
+
+                if (franchisee.length > 0)
+                    table.find('#Franchisee').val(franchisee);
+
+                if (sortByGoLiveDate.length > 0)
+                    table.find('input[name=golivedate][value=' + sortByGoLiveDate + ']').prop('checked', 'checked');
+
+                if (sitesurveycompleted.length > 0)
+                    table.find('input[name=sitesurveycompleted][value=' + sitesurveycompleted + ']').prop('checked', 'checked');
+
+                if (orderdocsent.length > 0)
+                    table.find('input[name=orderdocsent][value=' + orderdocsent + ']').prop('checked', 'checked');
+
+
+                $(options.target).html(table);
+                $(options.target).append(link2);
+
+                //Callback
+                options.callback(me);
+            }
+        }
+    };
+
+    //Utility function
+    //TODO Put this somewhere to be accesed by all views that use sharepoint data
+    function formatDate(dateString, formatString) {
+        formatString = formatString || "l";
+
+        if (typeof dateString !== 'undefined' && dateString.split("-").length > 1) {
+            return moment(dateString).format("l");
+        } else {
+            return "";
+        }
+    }
+
+    function ExpandAll() {
+        alert('expand all');
+    }
+});

@@ -1,0 +1,282 @@
+function ApplyFilters() {
+
+    var type = "";
+    var stallRange = "";
+    var driveThru = "";
+    var POS = "";
+    var audio = "";
+    var dinein = "";
+
+    
+    if ($("#type option:selected").val() !== "ALL")
+        type = "/type/" + $("#type option:selected").val();
+
+    if ($("#stallRange option:selected").val() !== "ALL")
+        stallRange = "/stallRange/" + $("#stallRange option:selected").val();
+    if ($("#driveThru option:selected").val() !== "ALL")
+        driveThru = "/driveThru/" + $("#driveThru option:selected").val();
+    if ($("#pos option:selected").val() !== "ALL")
+        POS = "/pos/" + $("#pos option:selected").val();
+    if ($("#audio option:selected").val() !== "ALL")
+        audio = "/audio/" + $("#audio option:selected").val();
+    if ($("#dineIn option:selected").val() !== "ALL")
+        dinein = "/dinein/" + $("#dineIn option:selected").val();
+
+    //if ($("input[name='golivedate']:checked").val() === "descending")
+    //    sortByGoLiveDate = "/golivedate/" + "descending";
+
+    //if ($("#Franchisee").val().length > 0)
+    //    franchisee = "/franchisee/" + $("#Franchisee").val();
+
+    //if ($("input[name='sitesurveycompleted']:checked").val() !== "ALL")
+    //    sitesurveycompleted = "/sitesurveycompleted/" + $("input[name='sitesurveycompleted']:checked").val();
+
+    //if ($("input[name='orderdocsent']:checked").val() !== "ALL")
+    //    orderdocsent = "/orderdocsent/" + $("input[name='orderdocsent']:checked").val();
+
+
+    window.location.href = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/index.aspx#reports/storeconfigurationsearch" + type + stallRange + driveThru + POS + audio + dinein ;
+    window.location.reload();
+}
+
+define(['app/view/reportStoreconfigurationsearch', 'app/store/combined', 'app/store/construction', 'app/store/combinedconstructionextend', 'app/rules/paymentmod'], function (report, combined, construction, combinedconstructionextend, paymentmodRules) {
+    return {
+        show: function (target, routeCheck, options) {
+            var stores2 = [];
+
+            var type = "";
+            var stallRange = "";
+            var driveThru = "";
+            var POS = "";
+            var audio = "";
+            var dinein = "";
+            
+            var hashURL = window.location.hash.substr(1);
+            var hashes = hashURL.split('/');
+
+            if (hashes.length > 2) {
+
+                // Typical For loop. We start at 1 and not 0 since the array length starts counting at 1 but the array counts positions starting at 0
+                for (var i = 1; i < hashes.length; i++) {
+                    console.log(hashes[i]);
+                    // Run the function. We run the # value through the window to grab the function. This is a bit harder to explain so just take my word for it
+                    if (hashes[i] === "type")
+                        type = hashes[i + 1];
+                    else if (hashes[i] === "stallRange")
+                        stallRange = hashes[i + 1];
+                    else if (hashes[i] === "driveThru")
+                        driveThru = hashes[i + 1];
+                    else if (hashes[i] === "pos")
+                        POS = hashes[i + 1];
+                    else if (hashes[i] === "audio")
+                        audio = hashes[i + 1];
+                    else if (hashes[i] === "dinein")
+                        dinein = hashes[i + 1];
+                    
+                }
+                var CAMLQuery = "";
+                console.log("type:" + type);
+                console.log("stallRange:" + stallRange);
+                //var CAMLQuery = "<Query><Where><Leq><FieldRef Name='GO_x0020_LIVE_x0020_DATE' /><Value IncludeTimeValue='False' Type='DateTime'><Today /></Value></Leq></Where><OrderBy><FieldRef Name='GO_x0020_LIVE_x0020_DATE'  /></OrderBy></Query>";
+                
+                if (stallRange === "0")
+                    CAMLQuery = "<Query><Where><Or><Eq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>0</Value></Eq><IsNull><FieldRef Name='Stall_x0020_Count'/></IsNull></Or></Where></Query>";
+                else if (stallRange === "5")
+                    CAMLQuery = "<Query><Where><And><Geq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>1</Value></Geq><Leq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>5</Value></Leq></And></Where></Query>";
+                else if (stallRange === "10")
+                    CAMLQuery = "<Query><Where><And><Geq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>6</Value></Geq><Leq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>10</Value></Leq></And></Where></Query>";
+                else if (stallRange === "15")
+                    CAMLQuery = "<Query><Where><And><Geq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>11</Value></Geq><Leq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>15</Value></Leq></And></Where></Query>";
+                else if (stallRange === "20")
+                    CAMLQuery = "<Query><Where><And><Geq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>16</Value></Geq><Leq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>20</Value></Leq></And></Where></Query>";
+                else if (stallRange === "25")
+                    CAMLQuery = "<Query><Where><And><Geq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>21</Value></Geq><Leq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>25</Value></Leq></And></Where></Query>";
+                else if (stallRange === "30")
+                    CAMLQuery = "<Query><Where><And><Geq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>26</Value></Geq><Leq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>30</Value></Leq></And></Where></Query>";
+                else if (stallRange === "31")
+                    CAMLQuery = "<Query><Where><Geq><FieldRef Name='Stall_x0020_Count'/><Value Type='Number'>31</Value></Geq></And></Where></Query>";
+                else if (type !== "")
+                    CAMLQuery = "<Query><Where><Contains><FieldRef Name='Project_x0020_Type'/><Value Type='Text'>" + type + "</Value></Contains></Where></Query>";
+                else if (driveThru !== "")
+                    CAMLQuery = "<Query><Where><Contains><FieldRef Name='Drive_x002d_Thru_x0020_Format'/><Value Type='Text'>" + driveThru + "</Value></Contains></Where></Query>";
+                else if (POS !== "")
+                    CAMLQuery = "<Query><Where><Contains><FieldRef Name='POS_x0020_Selection'/><Value Type='Text'>" + POS + "</Value></Contains></Where></Query>";
+                else if (audio !== "")
+                    CAMLQuery = "<Query><Where><Contains><FieldRef Name='Audio_x0020_Type'/><Value Type='Text'>" + audio + "</Value></Contains></Where></Query>";
+                else if (dinein !== "")
+                    CAMLQuery = "<Query><Where><Contains><FieldRef Name='Inside_x0020_Dining'/><Value Type='Text'>" + dinein + "</Value></Contains></Where></Query>";
+
+                console.log("audio::" + audio);
+
+                $().SPServices({
+                    operation: "GetListItems",
+                    listName: "Combined Schedule",
+                    CAMLQuery: CAMLQuery,
+                    CAMLViewFields: "<ViewFields><FieldRef Name='ID' /><FieldRef Name='StoreConfigurationCost' /><FieldRef Name='Inside_x0020_Dining' /><FieldRef Name='Audio_x0020_Type' /><FieldRef Name='POS_x0020_Selection' /><FieldRef Name='Project_x0020_Type' /><FieldRef Name='Stall_x0020_Count' /><FieldRef Name='Drive_x002d_Thru_x0020_Format' /><FieldRef Name='Title' /><FieldRef Name='Franchise_x0020_Group' /><FieldRef Name='Market_x0020_DMA_x0020_Name_x002' /><FieldRef Name='City' /><FieldRef Name='State_x0020_' /></ViewFields>",
+                    async: false,
+                    
+                    completefunc: function (xData, Status) {
+                        $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                            var store = {};
+                            var storeNum = $(this).attr("ows_Title");
+                            store.StoreNumber = storeNum;
+                            store.CombinedId = $(this).attr("ows_ID");
+
+                            store.StallCount = $(this).attr("ows_Stall_x0020_Count");
+                            if (!store.StallCount)
+                                store.StallCount = "";
+                            else {
+                                store.StallCount = store.StallCount.substr(0, store.StallCount.indexOf("."));
+                            }
+
+                            store.DriveThruFormat = $(this).attr("ows_Drive_x002d_Thru_x0020_Format");
+                            if (!store.DriveThruFormat)
+                                store.DriveThruFormat = "";
+                            store.ProjectType = $(this).attr("ows_Project_x0020_Type");
+                            if (!store.ProjectType)
+                                store.ProjectType = "";
+                            store.Pos = $(this).attr("ows_POS_x0020_Selection");
+                            if (!store.Pos)
+                                store.Pos = "";
+                            store.FranchiseGroup = $(this).attr("ows_Franchise_x0020_Group");
+                            if (!store.FranchiseGroup)
+                                store.FranchiseGroup = "";
+                            store.AudioType = $(this).attr("ows_Audio_x0020_Type");
+                            if (!store.AudioType)
+                                store.AudioType = "";
+                            store.InsideDining = $(this).attr("ows_Inside_x0020_Dining");
+                            if (!store.InsideDining)
+                                store.InsideDining = "";
+                            store.StoreConfigurationCost = $(this).attr("ows_StoreConfigurationCost");
+                            if (!store.StoreConfigurationCost)
+                                store.StoreConfigurationCost = "";
+
+                            store.DMA = $(this).attr("ows_Market_x0020_DMA_x0020_Name_x002");
+                            if (!store.DMA)
+                                store.DMA = "";
+
+                            store.City = $(this).attr("ows_City");
+                            if (!store.City)
+                                store.City = "";
+
+                            store.State = $(this).attr("ows_State_x0020_");
+                            if (!store.State)
+                                store.State = "";
+
+
+                            //Always filters by stallRange
+                            //filter by other UI form selections
+                            
+                            if (type !== "")
+                                if (store.ProjectType.indexOf( type) === -1)
+                                    return true;
+                            if (driveThru !== "")
+                                if (store.DriveThruFormat.indexOf(driveThru) === -1)
+                                    return true;
+                            if (POS !== "")
+                                if (store.Pos.indexOf (POS) === -1)
+                                    return true;
+                            if (audio !== "")
+                                if (store.AudioType.indexOf(audio) === -1)
+                                    return true;
+                            if (dinein !== "")
+                                if (store.InsideDining.indexOf(dinein) === -1)
+                                    return true;
+
+                            stores2.push(store);
+
+                            
+                        });
+                    }
+                });
+            }
+
+            
+
+            console.log("stores2 length:" + stores2.length);
+
+
+
+            //Define Report Columns
+            var columns = [
+
+                { key: 'StoreNumber', title: 'No.' },
+                { key: 'City', title: 'City' },
+                { key: 'State', title: 'State' },
+                { key: 'ProjectType', title: 'Type' },
+                { key: 'StallCount', title: 'Stalls' },
+                { key: 'DriveThruFormat', title: 'Drive Thru' },
+                { key: 'Pos', title: 'POS' },
+                { key: 'AudioType', title: 'Audio' },
+                { key: 'InsideDining', title: 'Dine-In' },
+                { key: 'FranchiseGroup', title: 'Franchisee' },
+                { key: 'StoreConfigurationCost', title: 'Total Cost' },
+
+
+                {
+                    key: 'StoreNumber', title: 'Details', transform: function (value, row, data, index) {
+                        return "<a href='#summary/" + value + "'>more</a>"
+                    }
+                }
+
+
+
+
+
+
+
+
+
+            ];
+
+            //Define report title
+            var title = 'Next Gen Pays Readiness Report';
+
+            /* Define sorting
+                This will first find the lowest date that's greater than today, then compare it to the same in the second date and return the appropriate integer to sort by
+             */
+
+            var sort;
+            var hashLoc = window.location.hash;
+            if (hashLoc.indexOf("sort") > -1) {
+                hashSort = hashLoc.substring(hashLoc.indexOf("sort") + 5);
+                sort = {
+                    key: hashSort,
+                    direction: 'DESC'
+                };
+            }
+
+            else if (hashLoc.indexOf("golivedate") > -1) {
+                hashSort = hashLoc.substring(hashLoc.indexOf("golivedate") + 5);
+                sort = {
+                    key: 'VP6800GoLive',
+                    direction: 'ASC'
+                };
+            }
+            else
+                sort = {
+                    key: 'StoreNumber',
+                    direction: 'DESC'
+                };
+            complete();
+            function complete() {
+
+
+                var afterRender = function (view) {
+                    paymentmodRules.tableHelper(view);
+                };
+                //Build report if complete
+                report.render({
+                    data: stores2,
+                    columns: columns,
+                    title: title,
+                    target: target,
+                    sort: sort,
+                    routeCheck: routeCheck,
+                    callback: afterRender
+                });
+
+            }
+        }
+    };
+});

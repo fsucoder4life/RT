@@ -1,0 +1,85 @@
+﻿
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery-1.11.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery.SPServices-2014.01.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/moment.min.js"></script>
+    <title>GET VERSIONS</title>
+</head>
+<body>
+
+    <table class="pure-table-striped" style="margin-left: auto; margin-right: auto;">
+        <thead>
+            <tr>
+                <th style="min-width: 150px;">Item ID</th>
+                <th style="min-width: 150px;">Version Count</th>
+
+            </tr>
+        </thead>
+        <tbody id="goLiveChangeRow"></tbody>
+    </table>
+
+
+
+    <script>
+
+
+        $().SPServices({
+            operation: "GetListItems",
+            async: false,
+            listName: "Construction_Calls",
+            CAMLViewFields: "<ViewFields><FieldRef Name='ID' /></ViewFields>", // Retrieving only the ID field
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                    var itemID = $(this).attr("ows_ID");
+
+
+                    $("#goLiveChangeRow").append('<tr>' +
+                        '<td >' + itemID + '</td><td id="col' + itemID + '"></td>' +
+                        '</tr>');
+
+                    // For each item, get its version history
+                    
+                });
+            }
+        });
+
+
+        $('[id^="col"]').each(function () {
+            // 'this' refers to the current element in the loop
+            var itemID = $(this).attr('id');  // for example, you can log the element
+            itemID = itemID.replace("col", "");
+
+
+
+
+            $().SPServices({
+                operation: "GetVersionCollection",
+                async: false,
+                strlistID: "Construction_Calls",
+                strlistItemID: itemID,
+                strFieldName: "Title",  // You can use any field. We're just using this to get the version history.
+                completefunc: function (versionData, versionStatus) {
+                    var versionCount = $(versionData.responseText).find("Version").length;
+                    console.log("Item ID: " + itemID + ", Version Count: " + versionCount);
+
+                    $("#col" + itemID).text(versionCount);
+
+
+
+                }
+            });
+
+        });
+
+
+
+
+
+    </script>
+</body>
+</html>

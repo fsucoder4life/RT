@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery-1.11.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery.SPServices-2014.01.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/moment.min.js"></script>
+    <title>GET VERSIONS</title>
+</head>
+<body>
+
+    <table class="pure-table-striped" style="margin-left: auto; margin-right: auto;">
+        <thead>
+            <tr>
+                <th style="min-width: 150px;">Store</th>
+                <th style="min-width: 150px;">Field</th>
+                <th style="min-width: 150px;">Change</th>
+                <th style="min-width: 150px;">Modified On</th>
+                <th style="min-width: 150px;">Modified By</th>
+            </tr>
+        </thead>
+        <tbody id="goLiveChangeRow"></tbody>
+    </table>
+
+
+
+    <script>
+
+        $().SPServices({
+            operation: "GetListItems",
+            listName: "Combined Schedule",
+            CAMLViewFields: "<ViewFields><FieldRef Name='Title' /></ViewFields>",
+            CAMLQuery: "<Query><Where><IsNotNull><FieldRef Name='Title' /></IsNotNull></Where></Query>",
+            CAMLRowLimit: 0,
+            async: false,
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                    GetRecords($(this).attr("ows_Title"));
+                });
+            }
+        });
+
+        function GetRecords(storeNum) {
+            //console.log("store: " + storeNum);
+            var recordID;
+            $().SPServices({
+                operation: "GetListItems",
+                listName: "Combined Schedule",
+                CAMLViewFields: "<ViewFields><FieldRef Name='ID' /></ViewFields>",
+                CAMLQuery: "<Query><Where><Eq><FieldRef Name='Title' /><Value Type='Text'>" + storeNum + "</Value></Eq></Where></Query>",
+                CAMLRowLimit: 1,
+                async: false,
+                completefunc: function (xData, Status) {
+                    $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                        recordID = $(this).attr("ows_ID");
+                        $("#goLiveChangeRow").append('<tr>' +
+                                 '<td>' + storeNum + '</td><td></td>' +
+                                 '<td></td>' +
+                                 '<td></td>' +
+                                 '</tr>');
+                    });
+                }
+            });
+
+            if (recordID) {
+
+                $().SPServices({
+                    operation: "GetList",
+                    async: false,
+                    listName: "Combined Schedule",
+                    completefunc: function (xData, Status) {
+                        //console.log(xData.responseText);
+                        $(xData.responseXML).find("Fields > Field").each(function () {
+                            var $node = $(this);
+                            var type = $node.attr("Type");
+                            var name = $node.attr("StaticName");
+                            if (name === 'Modified' || name === 'Created')
+                                return;
+                            var displayName = $node.attr("DisplayName");
+                            if (type.toLowerCase().indexOf("date") > -1 || name.toLowerCase().indexOf("date") > -1 || displayName.toLowerCase().indexOf("date") > -1) {
+                                //console.log("Type: " + type + " StaticName: " + name + " DisplayName:" + displayName);
+                                //console.log("Checking: " + displayName);
+                                GetRevisionsByField(recordID, name, displayName);
+
+                            }
+                        });
+                    }
+                });
+                console.log("finished store: " + storeNum);
+            }
+        }
+        function GetRevisionsByField(recordID, name, displayName) {
+            $().SPServices({
+                operation: "GetVersionCollection",
+                async: false,
+                strlistID: "Combined Schedule",
+                strlistItemID: recordID,
+                strFieldName: name,
+                completefunc: function (xData, Status) {
+                    var changes = [],
+                      lastDate = '';
+                    $($(xData.responseText).find("Version").get().reverse()).each(function (i) {
+                        var date = $(this).attr(name),
+                          modified = $(this).attr("Modified"),
+                          modifiedBy = $(this).attr("Editor").replace(/.*;#/, '').replace(/,.*/, '');
+                        console.log("Checking: " + name);
+                        if (date !== lastDate) {
+                            //changes.push({ change: change, modified: modified, modifiedBy: modifiedBy });
+                            lastDate = date;
+                            if (modifiedBy.toLowerCase().indexOf("coffman") > -1) {
+                                $("#goLiveChangeRow").append('<tr>' +
+                              '<td></td><td>' + displayName + '</td><td>' + date + '</td>' +
+                              '<td>' + moment(modified).format('l') + '</td>' +
+                              '<td>' + modifiedBy + '</td>' +
+                              '</tr>');
+                            }
+                        }
+                    });
+
+                }
+            });
+        }
+    </script>
+</body>
+</html>

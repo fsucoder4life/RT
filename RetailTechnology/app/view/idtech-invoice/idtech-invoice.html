@@ -1,0 +1,67 @@
+<div id="po-editor" style="font-size:.8em">
+    <div style="float:left;">
+        <img src="resources/images/id-tech.png" /><br/>
+        <span style="font-size: 9px">A Division of International Technologies & Systems Corporation</span><br/>
+        10721 Walker Street<br/>
+        Cypress, CA 90630-4270<br/>
+        Voice: (714) 761-6368<br/>
+        Fax: (714) 761-8880
+    </div>
+
+    <table id="po-details" style="float:right;">
+        <tr>
+            <td>Date: </td>
+            <td id="today"></td>
+        </tr>
+        <tr>
+            <td>Invoice Number: </td>
+            <td>ID-<span data-display="StoreNumber"></span>-<span data-display="PurchaseOrderId"></span></td>
+        </tr>
+        <tr>
+            <td>Delivery: </td>
+            <td data-display="DeliveryDate" ></td>
+        </tr>
+    </table>
+    <div style="clear: both;"></div>
+
+    <div id="po-billing" style="float:left">
+        <h3 style="margin: 3px 0px 5px 0px;">Billing</h3>
+        Sonic Store #<span data-display="StoreNumber"></span><br/>
+        <span data-display="Address"></span><br/>
+        <span data-display="City"></span>,&nbsp;&nbsp;<span data-display="State"></span>&nbsp;&nbsp;<span data-display="Zip"></span>
+    </div>
+    <div id="po-shipping" style="float:right">
+        <h3 style="margin: 3px 0px 5px 0px;">Shipping</h3>
+        Sonic Store #<span data-display="StoreNumber"></span><br/>
+        <span data-display="Address"></span><br/>
+        <span data-display="City"></span>,&nbsp;&nbsp;<span data-display="State"></span>&nbsp;&nbsp;<span data-display="Zip"></span>
+    </div>
+    <div style="clear: both;"></div>
+
+    <div id="po-items" style="width: 97%;"></div>
+
+    <table id="po-details">
+        <tr>
+            <td>Total*: </td>
+            <td id="po-total"></td>
+        </tr>
+    </table>
+
+    <div>
+        <h4>Payment Remittance Information</h4>
+        <h5>Check Payment Info</h5>
+        International Technologies & Systems Corp. (dba ID TECH)<br/>
+        10721 Walker Street<br/>
+        Cypress, CA 90630<br/>
+        <h5>ACH Payment Info</h5>
+        International Technologies & Systems Corp. (dba ID TECH)<br/>
+        Bank Info<br/>
+        Wells Fargo Bank<br/>
+        18401 Von Karman Ave, Suite 400<br/>
+        Irvine, CA 92612<br/><br/>
+        Account Info<br/>
+        Routing #122000247<br/>
+        Account #1298589589<br/><br/>
+        *NO SALES TAX HAS BEEN ASSESSED ON THIS INVOICE.  YOU MAY HAVE A STATUTORY OBLIGATION TO REMIT USE TAX  (AT A RATE SIMILAR TO YOUR LOCATIONS SALE TAX RATE) ON THIS INVOICE AS REQUIRED BY THE LAWS GOVERNING THE JURISDICTION OF FINAL USE.  PLEASE CONSULT YOUR TAX ADVISOR.
+    </div>
+</div>

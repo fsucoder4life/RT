@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery-1.11.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery.SPServices-2014.01.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/moment.min.js"></script>
+</head>
+<body>
+    <table id="tasksUL" />
+
+    <script>
+        var stores2 = [];
+        var stores = [];
+        $().SPServices({
+            async:false,
+            operation: "GetListItems",
+            listName: "Combined Schedule",
+            CAMLViewFields: "<ViewFields><FieldRef Name='Title' /><FieldRef Name='POPS_x0020_Delivery_x0020_Date' /></ViewFields>",
+            CAMLQuery: "<Query><Where><Geq><FieldRef Name='ID' /><Value Type='Counter'>0</Value></Geq></Where><OrderBy><FieldRef Name='Title' Ascending='True' /></OrderBy></Query>",
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+                    
+                    var store = {};
+                    var today = moment().format('YYYY-MM-DD');
+
+                    
+                    var popsDeliveryDate = moment($(this).attr("ows_POPS_x0020_Delivery_x0020_Date")).format('YYYY-MM-DD');
+                    if (popsDeliveryDate >= today)
+                    {
+                        var storeNum = $(this).attr("ows_Title");
+                        //storeNum = storeNum.substring(storeNum.indexOf(";#") + ";#".length);
+                        store.StoreNumber = storeNum;
+                        store.popsDeliveryDate = popsDeliveryDate;
+                        stores.push(store);
+                    }
+                    
+                    
+                });
+            }
+        });
+
+        function compareSecondColumn(a, b) {
+            
+            if (a.popsDeliveryDate === b.popsDeliveryDate) {
+                return 0;
+            }
+            else {
+                return (a.popsDeliveryDate < b.popsDeliveryDate) ? -1 : 1;
+            }
+        }
+
+        stores.sort(compareSecondColumn);
+
+        for (var i = 0; i < stores.length; i++) {
+            $("#tasksUL").append("<tr><td>" + stores[i].StoreNumber + "</td><td>" + stores[i].popsDeliveryDate + "</td></tr>");
+        }
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery-1.11.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery.SPServices-2014.01.min.js"></script>
+
+</head>
+<body>
+    <table id="tasksUL">
+        <tr><td>Store</td><td>Address</td><td>City</td><td>State</td><td>Zip</td><td>Store Phone</td><td>Store Manager</td><td>Primary Contact</td><td>Primary Contact Email</td><td>Primary Contact Phone</td><td>Company Bill To</td><td>Address Bill To</td><td>City Bill To</td><td>State Bill To</td><td>Zip Bill To</td><td>Bill To Email</td></tr>
+    </table>
+
+    <script>
+        var stores2 = [];
+        $().SPServices({
+            async: false,
+            operation: "GetListItems",
+            listName: "Combined Schedule",
+            CAMLViewFields: "<ViewFields><FieldRef Name='Title' /><FieldRef Name='Address_x0020_Full' /><FieldRef Name='City' /><FieldRef Name='State_x0020_' /><FieldRef Name='Zipcode' /><FieldRef Name='Store_x0020_Phone' /><FieldRef Name='Store_x0020_Manager' /><FieldRef Name='Primary_x0020_Contact' /><FieldRef Name='Primary_x0020_Contact_x0020_Emai' /><FieldRef Name='Primary_x0020_Contact_x0020_Phon' /></ViewFields>",
+            CAMLQuery: "<Query><Where><Geq><FieldRef Name='ID' /><Value Type='Counter'>0</Value></Geq></Where><OrderBy><FieldRef Name='Title' Ascending='True' /></OrderBy></Query>",
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+
+                    var store = {};
+                    var storeNum = $(this).attr("ows_Title");
+                    var address = $(this).attr("ows_Address_x0020_Full");
+                    var city = $(this).attr("ows_City");
+                    var state = $(this).attr("ows_State_x0020_");
+                    var zip = $(this).attr("ows_Zipcode");
+                    var storePhone = $(this).attr("ows_Store_x0020_Phone");
+                    var storeManager = $(this).attr("ows_Store_x0020_Manager");
+                    var primaryContact = $(this).attr("ows_Primary_x0020_Contact");
+                    var primaryContactEmail = $(this).attr("ows_Primary_x0020_Contact_x0020_Emai");
+                    var primaryContactPhone = $(this).attr("ows_Primary_x0020_Contact_x0020_Phon");
+
+                    //storeNum = storeNum.substring(storeNum.indexOf(";#") + ";#".length);
+                    store.StoreNumber = storeNum;
+                    store.Address = address;
+                    store.City = city;
+                    store.State = state;
+                    store.Zip = zip;
+                    store.storePhone = storePhone;
+                    store.storeManager = storeManager;
+                    store.primaryContact = primaryContact;
+                    store.primaryContactEmail = primaryContactEmail;
+                    store.primaryContactPhone = primaryContactPhone;
+
+                    stores2.push(store);
+                });
+            }
+        });
+
+        $().SPServices({
+            async: false,
+            operation: "GetListItems",
+            listName: "Combined Construction Extend",
+            //CAMLViewFields: "<ViewFields><FieldRef Name='Store_x0020_Number' /><FieldRef Name='VP6800_x0020_Go_x0020_Live' /></ViewFields>",
+            CAMLQuery: "<Query><Where><Geq><FieldRef Name='ID' /><Value Type='Counter'>0</Value></Geq></Where><OrderBy><FieldRef Name='Store_x0020_Number' Ascending='True' /></OrderBy></Query>",
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function () {
+
+                    var storeNum = $(this).attr("ows_Store_x0020_Number");
+                    if (storeNum) {
+                        storeNum = storeNum.substring(storeNum.indexOf(";#") + ";#".length);
+
+
+                        for (var i = 0; i < stores2.length; i++) {
+                            if (stores2[i].StoreNumber == storeNum) {
+                                stores2[i].CompanyBillTo = $(this).attr("ows_CompanyBillTo");
+                                stores2[i].AddressBillTo = $(this).attr("ows_AddressBillTo");
+                                stores2[i].CityBillTo = $(this).attr("ows_CityBillTo");
+                                stores2[i].StateBillTo = $(this).attr("ows_StateBillTo");
+                                stores2[i].ZipBillTo = $(this).attr("ows_ZipBillTo");
+                                stores2[i].EmailBillTo = $(this).attr("ows_EmailBillTo");
+                            }
+                        }
+
+
+                        var store = {};
+
+                        //storeNum = storeNum.substring(storeNum.indexOf(";#") + ";#".length);
+                        store.StoreNumber = storeNum;
+                        stores2.push(store);
+                    }
+                });
+            }
+        });
+
+        for (var i = 0; i < stores2.length; i++) {
+            $("#tasksUL").append("<tr><td>" + stores2[i].StoreNumber + "</td><td>" + stores2[i].Address + "</td><td>" + stores2[i].City + "</td><td>" + stores2[i].State + "</td><td>" + stores2[i].Zip + "</td><td>" + stores2[i].storePhone + "</td><td>" + stores2[i].storeManager + "</td><td>" + stores2[i].primaryContact + "</td><td>" + stores2[i].primaryContactEmail + "</td><td>" + stores2[i].primaryContactPhone + "</td><td>" + stores2[i].CompanyBillTo + "</td><td>" + stores2[i].AddressBillTo + "</td><td>" + stores2[i].CityBillTo + "</td><td>" + stores2[i].StateBillTo + "</td><td>" + stores2[i].ZipBillTo + "</td><td>" + stores2[i].EmailBillTo + "</td></tr>");
+        }
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+﻿<div class="dijitTitlePane" id="filters" widgetid="filters" style="width: 555px; margin: 0px 10px 10px;">
+    <div data-dojo-attach-event="ondijitclick:_onTitleClick, onkeydown:_onTitleKey" class="dijitTitlePaneTitle dijitTitlePaneTitleOpen dijitOpen" data-dojo-attach-point="titleBarNode" id="filters_titleBarNode">
+        <div class="dijitTitlePaneTitleFocus" data-dojo-attach-point="focusNode" aria-pressed="true" role="button" aria-controls="filters_pane" tabindex="0">
+            <span data-dojo-attach-point="arrowNode" class="dijitInline dijitArrowNode" role="presentation"></span><span data-dojo-attach-point="arrowNodeInner" class="dijitArrowNodeInner">-</span><span data-dojo-attach-point="titleNode" class="dijitTitlePaneTextNode" style="user-select: none;">Report Filters</span>
+        </div>
+    </div>
+    <div class="dijitTitlePaneContentOuter" data-dojo-attach-point="hideNode" role="presentation">
+        <div class="dijitReset" data-dojo-attach-point="wipeNode" role="presentation">
+            <div class="dijitTitlePaneContentInner" data-dojo-attach-point="containerNode" role="region" id="filters_pane" aria-labelledby="filters_titleBarNode" aria-hidden="false">
+                <table id="tablePayment">
+                    <tbody>
+                        <tr>
+                            <td style="width: 60px;"><label for="start-date">From:</label></td>
+                            <td><div class="dijit dijitReset dijitInline dijitLeft dijitTextBox dijitComboBox dijitDateTextBox dijitValidationTextBox" id="widget_start-date" role="combobox" aria-haspopup="true" data-dojo-attach-point="_popupStateNode" widgetid="start-date" style="width: 200px; margin: 5px 0px;"><div class="dijitReset dijitValidationContainer"><input class="dijitReset dijitInputField dijitValidationIcon dijitValidationInner" value="Χ " type="text" tabindex="-1" readonly="readonly" role="presentation"></div><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" type="text" autocomplete="off" data-dojo-attach-point="textbox,focusNode" role="textbox" tabindex="0" id="start-date" value="" required><input type="hidden"></div></div></td>
+                            <td style="width: 60px; padding-left: 20px;"><label for="end-date">To:</label></td>
+                            <td><div class="dijit dijitReset dijitInline dijitLeft dijitTextBox dijitComboBox dijitDateTextBox dijitValidationTextBox" id="widget_end-date" role="combobox" aria-haspopup="true" data-dojo-attach-point="_popupStateNode" widgetid="end-date" style="width: 200px; margin: 5px 0px;"><div class="dijitReset dijitValidationContainer"><input class="dijitReset dijitInputField dijitValidationIcon dijitValidationInner" value="Χ " type="text" tabindex="-1" readonly="readonly" role="presentation"></div><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" type="text" autocomplete="off" data-dojo-attach-point="textbox,focusNode" role="textbox" tabindex="0" id="end-date" value="" required><input type="hidden"></div></div></td>
+                        </tr>
+                        <tr><td colspan="4"><br /></td></tr>
+                        <tr>
+                            <td colspan="2" style="width: 60px;"><label for="itpm">Select PM:</label></td>
+                            <td colspan="2">
+                                <select id="itpm">
+                                    <option value="ALL" checked>ALL</option>
+                                    <option value="ankita" >Ankita Patel</option>
+                                    <option value="parish">Dustin Parish</option>
+                                    <option value="coffman">Michele Coffman</option>
+                                    <option value="desai">Neal Desai</option>
+                                    <option value="wright">Renee Wright</option>
+                                    <option value="over">Cory Van Over</option>
+                                    <option value="srader">Jason Srader</option>
+                                    
+                                </select>
+                            </td>
+                        </tr>
+                        <tr><td colspan="4"><br /></td></tr>
+                        <tr>
+                            <td colspan="2" style="width: 60px;"><label for="golivedate">Sort By Go-Live Date:</label></td>
+                            <td colspan="2">
+                                <input type="radio" name="golivedate" value="ascending" checked="checked"> Ascending<br>
+                                <input type="radio" name="golivedate" value="descending" > Descending
+                            </td>
+                        </tr>
+                        <tr><td colspan="4"><br /></td></tr>
+                        <tr>
+                            <td colspan="2" style="width: 60px;"><label for="Franchisee">Franchisee:</label></td>
+                            <td colspan="2">
+                                <div class="dijit dijitReset dijitInline dijitLeft dijitTextBox" id="widget_pos" role="presentation" widgetid="Franchisee" style="width: 200px; margin: 5px 0px;"><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" data-dojo-attach-point="textbox,focusNode" autocomplete="off" type="text" tabindex="0" id="Franchisee" value=""></div></div>
+                            </td>
+                        </tr>
+                        <tr><td colspan="4"><br /></td></tr>
+                        <tr>
+                            <td colspan="2" style="width: 60px;"><label for="sitesurveycompleted">Site Survey Completed:</label></td>
+                            <td colspan="2">
+                                <input type="radio" name="sitesurveycompleted" value="ALL" checked="checked"> Include All<br>
+                                <input type="radio" name="sitesurveycompleted" value="Yes"> Yes<br>
+                                <input type="radio" name="sitesurveycompleted" value="No"> No
+                            </td>
+                        </tr>
+                        <tr><td colspan="4"><br /></td></tr>
+                        <tr>
+                            <td colspan="2" style="width: 60px;"><label for="orderdocsent">Order Documents Sent:</label></td>
+                            <td colspan="2">
+                                <input type="radio" name="orderdocsent" value="ALL" checked="checked"> Include All<br>
+                                <input type="radio" name="orderdocsent" value="Yes"> Yes<br>
+                                <input type="radio" name="orderdocsent" value="No"> No
+                            </td>
+                        </tr>
+                        <tr><td colspan="4"><br /></td></tr>
+                        <tr>
+                            <td colspan="2" style="width: 60px;"></td>
+                            <td colspan="2"><span class="dijit dijitReset dijitInline dijitButton" role="presentation" widgetid="filter-button"><span class="dijitReset dijitInline dijitButtonNode" role="presentation"><span class="dijitReset dijitStretch dijitButtonContents" data-dojo-attach-point="titleNode,focusNode" role="button" aria-labelledby="filter-button_label" tabindex="0" id="filter-button" style="user-select: none;"><span class="dijitReset dijitInline dijitIcon dijitNoIcon" data-dojo-attach-point="iconNode"></span><span class="dijitReset dijitToggleButtonIconChar">●</span><span class="dijitReset dijitInline dijitButtonText" id="filter-button_label" data-dojo-attach-point="containerNode" onclick="javascript: ApplyFilters();">Apply Filters</span></span></span><input type="button" value="" class="dijitOffScreen" data-dojo-attach-event="onclick:_onClick" tabindex="-1" role="presentation" aria-hidden="true" data-dojo-attach-point="valueNode"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<table id="stores" class="pure-table pure-table-striped" style="width:100%;">
+    <thead>
+    </thead>
+    <tbody id="storesTBody"></tbody>
+</table>

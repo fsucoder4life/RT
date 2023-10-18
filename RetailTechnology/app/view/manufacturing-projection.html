@@ -1,0 +1,35 @@
+<!--<fieldset style="width: 533px; height: 75px; margin: 0 10px 10px 10px;">-->
+    <!--<legend class="header">Filters</legend>-->
+<div id="filters">
+    <table>
+        <tr>
+            <td style="width: 60px;"><label for="start-date">From:</label></td>
+            <td id="start-date"></td>
+            <td style="width: 60px; padding-left: 20px;"><label for="end-date">To:</label></td>
+            <td id="end-date"></td>
+        </tr>
+        <tr>
+            <td style="width: 60px;"><label for="project-type">Type:</label></td>
+            <td>
+                <select style="height: 58px" id="project-type" name="project-type" size="3">
+                    <option value="construction">Construction</option>
+                    <option value="pos-conversion">POS Conversion</option>
+                    <option value="pops-conversion">POPS Conversion</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 60px;"></td>
+            <td><button id="filter-button">Apply Filters</button></td>
+        </tr>
+    </table>
+</div>
+<div style="clear: both;"></div>
+<div style="margin: 0 10px 10px 10px;">
+    <div style="background-color: #666666; color: #DDDDDD; text-align: center; font-size: larger;">Installs for the days from <span id="installs-header"></span></div>
+    <div id="installs"></div>
+</div>
+<div style="margin: 0px 10px 10px 10px">
+    * All construction install lengths are estimated to take 5 days.  Installs that take longer are not represented here, and those that are completed in fewer days will remain on the schedule.<br/>
+    ** Conversion projects only show up on the schedule for the day they begin even though they continue through to the next morning.
+</div>

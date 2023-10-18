@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script language="javascript" type="text/javascript" src="/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/resources/lib/jquery-1.11.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/resources/lib/jquery.SPServices-2014.01.min.js"></script>
+    <script>
+
+        function getParam(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        };
+        var itemURL = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Level%2010%20Orders/" + getParam('id') + "_.000";
+        console.log(itemURL);
+        $().SPServices({
+            operation: "GetTemplatesForItem",
+            item: itemURL,
+            async: true,
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).find("WorkflowTemplates > WorkflowTemplate").each(function (i, e) {
+                    if ($(this).attr("Name") == "Cancel Level 10 Order") {
+                        var guid = $(this).find("WorkflowTemplateIdSet").attr("TemplateId");
+                        console.log(guid);
+                        if (guid != null) {
+                            //Fire the workflow on the construction list
+                            $().SPServices({
+                                operation: "StartWorkflow",
+                                item: itemURL,
+                                templateId: "{" + guid + "}",
+                                workflowParameters: "<Data>" +
+                                "<eFrom>spadmin@Sonicdrivein.com</eFrom>" +
+                                "</Data>",
+                                completefunc: function () {
+                                    alert('Level 10 PO Canceled');
+                                    window.location = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/index.aspx";
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>

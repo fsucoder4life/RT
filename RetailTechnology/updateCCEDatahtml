@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <script type="text/javascript" src="/_layouts/NewScoop/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="/_layouts/NewScoop/jquery.SPServices-0.7.2.min.js"></script>
+    <script language="javascript" type="text/javascript" src="/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/resources/lib/moment.min.js"></script>
+
+    <script>
+        var counter = 1;
+        function GetCCEID(StoreNumber) {
+            var CCEID = 0;
+            $().SPServices({
+                operation: "GetListItems",
+                listName: "Combined Construction Extend",
+                CAMLViewFields: "<ViewFields><FieldRef Name='ID' /></ViewFields>",
+                CAMLQuery: "<Query><Where><Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Text'>" + StoreNumber + "</Value></Eq></Where></Query>",
+                async: false,
+                completefunc: function (xData2, Status2) {
+                    $(xData2.responseXML).SPFilterNode("z:row").each(function () {
+                        CCEID = $(this).attr("ows_ID");
+                    })
+                }
+            });
+            return CCEID;
+        }
+
+
+$().SPServices({operation: 'UpdateListItems',async: false,batchCmd: 'Update',ID: GetCCEID('3059'),listName: 'Combined Construction Extend',valuepairs: [['VP6800_x0020_Go_x0020_Live', '2019-07-29T05:00:00.000Z'],['VP6800_x0020_Site_x0020_Survey_x', '2019-06-26T05:00:00.000Z'],['VP6800_x0020_Hughes_x0020_Doc_x0', '2019-06-12T05:00:00.000Z'],['VP6800_x0020_Hughes_x0020_Doc_x00', '2019-06-26T05:00:00.000Z'],['VP6800_x0020_Site_x0020_Survey_x0', '2019-07-24T05:00:00.000Z'],['VP6800_x0020_SITE_x0020_SURVEY_x2', '2019-06-12T05:00:00.000Z'],['VP6800_x0020_Site_x0020_Survey_x3', '2019-07-16T05:00:00.000Z'],['VP6800_x0020_Order_x0020_Doc_x00', '2019-07-18T05:00:00.000Z'],['VP6800_x0020_Install_x0020_Sched', '2019-07-18T05:00:00.000Z'],['VP6800_x0020_Ordered', '2019-06-14T05:00:00.000Z'],['VP6800_x0020_30_x0020_Day_x0020_', '2019-07-23T05:00:00.000Z'],['VP6800_x0020_2_x0020_Week_x0020_', '2019-06-27T05:00:00.000Z'],['VP6800_x0020_1_x0020_Week_x0020_', '2019-07-11T05:00:00.000Z'],['VP6800_x0020_Day_x0020_Before_x0', '2019-07-22T05:00:00.000Z']],completefunc: function (xData, Status) {var foundError = 0;var errorText = '';$(xData.responseXML).SPFilterNode('ErrorText').each(function () {errorText = $(this).html();foundError = 1; });if (foundError === 1){$(xData.responseXML).SPFilterNode('z:row').each(function () {console.log($(this).attr('ows_Store_x0020_Number') + ' - ' + errorText);})}}});
+
+
+    </script>
+</head>
+<body>
+
+
+
+</body>
+</html>

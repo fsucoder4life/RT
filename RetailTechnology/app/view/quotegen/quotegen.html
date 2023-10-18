@@ -1,0 +1,187 @@
+<div class="proforma">
+    <div class="proforma-title" style="width: 575px; padding: 10px; background-color: #333333; color:#EEEEEE; font-size:22px; float: left;">Technology Installation Quote - Store #<span data-editable="StoreNumber"></span></div>
+    <img style="width: 100px; float:right; margin: 5px;" src="https://d1bczdvydwfy0q.cloudfront.net/images/inside-scoop/YJmj1I_Logo.png" alt="Sonic Logo" />
+    <!--<table class="proforma-addresses">-->
+    <!--<thead>-->
+    <!--<tr>-->
+    <!--<th>BILL TO:</th>-->
+    <!--<th style="align:left;">Sonic Drive In #<span data-display="StoreNumber"></span></th>-->
+    <!--</tr>-->
+    <!--</thead>-->
+    <!--<tbody>-->
+    <!--<tr>-->
+    <!--<td>Company Name:</td>-->
+    <!--<td data-display="FranchiseGroup" contenteditable="true"></td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+    <!--<td>Address:</td>-->
+    <!--<td data-display="Address" contenteditable="true"></td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+    <!--<td>&nbsp;</td>-->
+    <!--<td contenteditable="true"><span data-display="City"></span> <span data-display="State"></span>, <span data-display="Zip"></span></td>-->
+    <!--</tr>-->
+    <!--</tbody>-->
+    <!--</table>-->
+    <!--<div class="proforma-float quarter">-->
+    <!--<span>Ship Via:</span>-->
+    <!--<div contenteditable="true">Ground</div>-->
+    <!--</div>-->
+    <!--<div class="proforma-float quarter">-->
+    <!--<span>Delivery Date:</span>-->
+    <!--<div data-display="PopsDeliveryDate" contenteditable="true"></div>-->
+    <!--</div>-->
+    <!--<div class="proforma-float half">-->
+    <!--<span>Remarks:</span>-->
+    <!--<div contenteditable="true"></div>-->
+    <!--</div>-->
+
+    <div style="clear:both;"></div>
+    <div id="po-editor">
+        <table id="po-billing">
+            <tr><td colspan="2"><h3>Store Address and Contact Information</h3></td></tr>
+            <tr>
+                <td> Name:</td>
+                <td id="BillingName" data-editable="BillingName"></td>
+            </tr>
+            <tr>
+                <td> Phone:</td>
+                <td id="BillingPhone" data-editable="BillingPhone"></td>
+            </tr>
+            <tr>
+                <td> Email:</td>
+                <td id="BillingEmail" data-editable="BillingEmail"></td>
+            </tr>
+            <tr>
+                <td>Address:</td>
+                <td id="BillingAddress" data-editable="BillingAddress"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><span id="BillingCity" data-editable="BillingCity"></span>,&nbsp;&nbsp;<span id="BillingState" data-editable="BillingState"></span>&nbsp;&nbsp;<span id="BillingZip" data-editable="BillingZip"></span></td>
+            </tr>
+        </table>
+        <table id="po-billing">
+            <tr><td colspan="2"><h3>Bill To</h3></td></tr>
+            <tr>
+                <td> Name:</td>
+                <td id="ShippingName" data-editable="ShippingName"></td>
+            </tr>
+            <tr>
+                <td> Phone:</td>
+                <td id="ShippingPhone" data-editable="ShippingPhone"></td>
+            </tr>
+            <tr>
+                <td> Email:</td>
+                <td id="ShippingEmail" data-editable="ShippingEmail"></td>
+            </tr>
+            <tr>
+                <td>Address:</td>
+                <td id="ShippingAddress" data-editable="ShippingAddress"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><span id="ShippingCity" data-editable="ShippingCity"></span>,&nbsp;&nbsp;<span id="ShippingState" data-editable="ShippingState"></span>&nbsp;&nbsp;<span id="ShippingZip" data-editable="ShippingZip"></span></td>
+            </tr>
+        </table>
+    </div>
+    <div style="clear: both;"></div>
+    <table class="proforma-items pure-table pure-table-striped" style="clear: both;margin-top:30px;">
+        <thead>
+            <tr>
+
+                <th style="width: 385px;">DESCRIPTION</th>
+                <th style="width: 85px;">PRICE</th>
+                <th style="width: 85px;">QUANTITY</th>
+                <th style="width: 85px;">TOTAL</th>
+                <th style="width: 485px;">NOTE/QUESTION</th>
+                <th style=""></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div class="proforma-disclaimer">
+        <table style="width: 342px;">
+            <tr><td></td></tr>
+        </table>
+
+    </div>
+    <table class="pure-table proforma-totals" style="width: 246px; border-top: none;">
+        <tbody>
+            <tr>
+                <td style="width: 97px;">Total:</td>
+                <td class="proforma-sub"><div class="proforma-dollar">$</div><div></div></td>
+            </tr>
+            <tr style="display:none;">
+                <td>Taxes<span style="font-size: 12px;"> (8.5%)</span>**:</td>
+                <td class="proforma-tax"><div class="proforma-dollar">$</div><div></div></td>
+            </tr>
+            <tr style="display:none;">
+                <td>Shipping**:</td>
+                <td class="proforma-shipping"><div class="proforma-dollar">$</div><div></div></td>
+            </tr>
+
+        </tbody>
+    </table>
+
+
+    <table class="proforma-items2 pure-table pure-table-striped" style="clear: both;margin-top:20px;">
+        <thead>
+            <tr>
+
+                <th style="width: 224px;">Installer Quote</th>
+                <th style="width: 168px;"></th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><div>POS</div></td><td><div class="proforma-dollar2" style="float:left;">$</div><div id="POSTotal"></div></td></tr>
+            <tr><td>Audio Total</td><td><div class="proforma-dollar2" style="float:left;">$</div><div id="AudioTotal"></div></td></tr>
+            <tr><td>POPS Total</td><td><div class="proforma-dollar2" style="float:left;">$</div><div id="POPSTotal"></div></td></tr>
+            <tr><td>Permit FEE</td><td><div class="proforma-dollar2" style="float:left;">$</div><div id="PermitFeeTotal"></div></td></tr>
+            <tr><td>Sonic Radio Total</td><td><div class="proforma-dollar2" style="float:left;">$</div><div id="SonicRadioTotal"></div></td></tr>
+            <tr><td>PAYS Total</td><td><div class="proforma-dollar2" style="float:left;">$</div><div id="PAYSTotal"></div></td></tr>
+            <tr><td>Digital Menu Boards</td><td><div class="proforma-dollar2" style="float:left;">$</div><div id="DigitalMenuBoardsTotal"></div></td></tr>
+            <tr><td>Miscellaneous Labor</td><td><div class="proforma-dollar2" style="float:left;">$</div><div id="MiscellaneousLaborTotal"></div></td></tr>
+            <tr><td>Travel</td><td><div class="proforma-dollar2" style="float:left;">$</div><div id="TravelTotal"></div></td></tr>
+
+        </tbody>
+    </table>
+    <div class="proforma-disclaimer">
+        <table style="width: 142px;">
+            <tr><td></td></tr>
+        </table>
+
+    </div>
+    <table class="pure-table proforma-totals2" style="width: 246px; border-top: none;">
+        <tbody>
+
+            <tr style="font-weight: bold">
+                <td>Total:</td>
+                <td class="proforma-total2"><div class="proforma-dollar2" style="display: block;float:left;">$&nbsp;&nbsp;</div><div id="InstallerQuoteTotal"></div></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div style="clear: both;"><br /><br /></div>
+
+    <div id="po-buttons" style="text-align:center;clear:both;margin:10px 10px 0 10px;">
+        <select class="pure-button" id="po-add-item" style="margin-right:20px;width:200px;margin-bottom:20px;" >
+            <option value="0">Add Item</option>
+            <option value="1" >POS - Other</option>
+            <option value="2" >Audio - Other</option>
+            <option value="3" >POPS - Other</option>
+            <option value="4" >Permit FEE - Other</option>
+            <option value="5" >Sonic Radio - Other</option>
+            <option value="6" >PAYS - Other</option>
+            <option value="7" >DMB - Other</option>
+            <option value="8" >Misc. Labor - Other</option>
+            <option value="9" >Travel - Other</option>
+        </select>
+        <button id="po-send-po" class="pure-button pure-button-primary" style="width:200px;margin-bottom:20px;">Email Quote</button>
+    </div>
+
+
+
+</div>
+

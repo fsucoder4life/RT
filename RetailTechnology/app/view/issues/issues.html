@@ -1,0 +1,56 @@
+<!--<fieldset style="width: 533px; height: 75px; margin: 0 10px 10px 10px;">-->
+    <!--<legend class="header">Filters</legend>-->
+<div id="filters" style="margin: 0 10px 10px 10px; width: 600px;">
+    <h3 id="filter-header" style=""><span style="display: inline-block; margin-left: 10px;">Filters</span></h3>
+    <form id="filter-form" class="pure-form" style="padding: 3px;"><table>
+        <tr>
+            <td style="width: 200px;"><label for="live-start-date">From:</label></td>
+            <td ><input type="text" id="live-start-date"></td>
+            <td style="width: 60px; padding-left: 20px;"><label for="live-end-date">To:</label></td>
+            <td ><input type="text" id="live-end-date"></td>
+        </tr>
+        <tr>
+            <td style="width: 150px;"><label for="issue-status">Issue Status:</label></td>
+            <td><select id="issue-status" class="pure-input-1">
+                <option value="Open">Open</option>
+                <option value="Closed">Closed</option>
+                <option value="All">All</option>
+            </select></td>
+        </tr>
+        <tr>
+            <td ><label for="order-by">Order By:</label></td>
+            <td><select id="order-by" class="pure-input-1">
+                <option value="InstallDate">Install Date</option>
+                <option value="GoLiveDate">Go-Live Date</option>
+                <option value="Severity">Severity</option>
+            </select></td>
+        </tr>
+        <tr>
+            <td ><label for="project-manager" class="pure-input-1">Project Manager:</label></td>
+            <td ><input type="text" id="project-manager"/></td>
+        </tr>
+        <!--<tr>-->
+            <!--<td ><label for="assigned">Assigned:</label></td>-->
+            <!--<td id="assigned"></td>-->
+        <!--</tr>-->
+        <!--<tr>-->
+            <!--<td ><label for="show-date-conflicts">Show Date Conflicts:</label></td>-->
+            <!--<td id="show-date-conflicts"></td>-->
+        <!--</tr>-->
+        <!--<tr>-->
+            <!--<td ><label for="title">Title:</label></td>-->
+            <!--<td id="title"></td>-->
+        <!--</tr>-->
+        <tr>
+            <td ></td>
+            <td><button type="button" class="pure-button" id="filter-button"><i class="fa fa-search"></i> Apply Filters</button></td>
+        </tr>
+    </table></form>
+</div>
+<div style="clear: both;"></div>
+<div style="margin: 0 10px 10px 10px;">
+    <div style="background: #b9c9fe; padding: 3px 3px 0px 3px;">
+        <h3 style="margin: 0 auto; color: #2c4c78;">Projects<span style="float: right; display: inline-block; font-size: 14px;"><a id="expand-all" href="#">expand all</a> / <a href="#" id="collapse-all">collapse all</a></span></h3>
+    </div>
+    <div id='store-container'></div>
+</div>

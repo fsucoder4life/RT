@@ -1,0 +1,20 @@
+define(function(){
+    //Setup
+    //Turn Cross Origin Resource Sharing On to get sharepoint data from outside site
+    $.support.cors = true;
+
+    //Point towards the sharepoint site
+    $().SPServices.defaults.webURL = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out";  // URL of the target Web
+
+    function loadData () {
+        //Load the user data
+        return $().SPServices.SPGetCurrentUser({
+            fieldNames: ["FirstName", "LastName", "UserName"],
+            debug: false
+        });
+    }
+
+    return {
+        loadData: loadData
+    };
+});
