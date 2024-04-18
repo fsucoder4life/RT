@@ -1,0 +1,1017 @@
+body {
+    height: 100%;
+}
+
+#main {
+    min-width:1000px;
+    margin: 5px;
+    border: 1px solid #666;
+    display: inline-block;
+}
+
+#stores {
+    font-size: 14px;
+}
+
+body, input, textarea, select, option  {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #444;
+}
+
+/************************************* Links ***********************/
+a {
+    transition: color .4s;
+    color: #265C83;
+}
+
+a:link,
+a:visited { color: #265C83; }
+a:hover   { color: #408fd4; }
+a:active  {
+    transition: color .3s;
+    color: #007BE6;
+}
+
+.link { text-decoration: none; }
+
+
+/************************************* Project Review ***********************/
+.project-quarterly-table {
+    width: 100%;
+    height: 100%;
+    font-family: Segoe UI, Arial, Sans-Serif;
+}
+.project-quarterly-table  th {
+    font-size: 22px;
+}
+.project-quarterly-table tbody tr {
+    font-size: 18px;
+}
+.project-quarterly-table td {
+    padding: 0px;
+}
+.project-quarterly-table td > div {
+    border: 1px darkgrey solid;
+    margin: 0px 10px 3px 10px;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    border-radius: 3px;
+    font-weight: bold;
+}
+.project-quarterly-table td div.project-quarterly-modal {
+    position: absolute;
+    z-index: 1000;
+    background-color: black;
+    opacity: 0.5;
+}
+
+/************************************* Project Review ***********************/
+#project-review-container {
+    overflow-x:scroll;
+    margin-left:284px;
+    overflow-y:visible;
+    padding-bottom:1px;
+}
+
+#project-review {
+    border: none;
+    border-right: 1px solid #cbcbcb;
+}
+
+
+#project-review > tbody > tr > td {
+    margin:0;
+    white-space:nowrap;
+    font-size: 13px;
+    height: 31px;
+    position:relative;
+}
+
+#project-review > tbody > tr > td:nth-child(1) {
+    position:absolute;
+    width:260px;
+    left:0;
+    top:auto;
+}
+
+.row-summary {
+    text-align: center;
+}
+
+.expander {
+    transition: color .4s;
+}
+
+.expander:hover   {
+    color: #777;
+    cursor: hand;
+    cursor: pointer;
+}
+
+.review-row {
+    display: table-row
+}
+
+.review-label {
+    display:table-cell;
+    white-space:nowrap;
+    padding-right: 10px;
+}
+
+.review-value {
+    display:table-cell;
+    white-space:nowrap;
+    min-width: 70px;
+}
+
+/************************************* Summary View ***********************/
+#stakeholders {
+    text-align: right;
+    padding-left: 0;
+    padding-right: 10px;
+}
+
+#sub-title,
+#current-date {
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+#search-container {
+    margin-left: 10px;
+    clear: left;
+    display: none;
+}
+
+#content {
+    clear: both;
+}
+
+.summary-row {
+    clear: both;
+    page-break-inside:avoid;
+    page-break-after:auto
+}
+
+.summary-box {
+    float: left;
+    width: 340px;
+    height: 262px;
+    padding: 5px 0 0 10px;
+}
+
+.summary-box-middle {
+    border-top: 1px solid #666;
+    border-left: 1px solid #666;
+    border-right: 1px solid #666;
+}
+
+.summary-box-side {
+    border-top: 1px solid #666;
+}
+
+.notes-box {
+    padding: 10px;
+    clear: both;
+    width: 1032px;
+    /*border-top: 1px solid #666;*/
+}
+
+.full-width-box {
+    padding: 10px;
+    clear: both;
+    width: 1032px;
+    border-top: 1px solid #666;
+}
+
+#store-notes {
+    min-height: 100px;
+}
+
+.summary-box-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+}
+
+.notes-box-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    clear: both;
+}
+
+.summary-box-label {
+    width: 140px;
+    float: left;
+    clear: left;
+}
+
+.summary-box-input {
+    width: 200px;
+    float: left;
+    min-height: 18px;
+}
+
+
+.summary-box-input > .dropdown div[contenteditable]{
+    min-height: 18px;
+}
+
+.summary-box-connectivity-fieldset {
+    margin: 5px 0 0 0;
+    padding: 0 0 2px 0;
+    /*font-size: 5px;*/
+    border: none;
+}
+
+.summary-box input, .summary-box textarea {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.summary-box-connectivity-fieldset > input {
+    font-size: 14px;
+    border-bottom: 1px solid lightgrey;
+}
+
+.summary-box-connectivity-fieldset > textarea {
+    font-size: 14px;
+    width: 332px;
+    height: 71px;
+    border-bottom: 1px solid lightgrey;
+}
+
+/*This is the legend*/
+.summary-box-connectivity-fieldset > legend {
+    font-size: 11px;
+}
+
+/*This is the status*/
+.summary-box-connectivity-fieldset > .connectivity-status {
+    width: 155px;
+}
+
+/*This is the date*/
+.summary-box-connectivity-fieldset > .connectivity-date {
+    width: 72px;
+    /*margin: 0 8px;*/
+}
+
+/*This is the date type*/
+.summary-box-connectivity-fieldset > .connectivity-date-type {
+    width: 100px;
+}
+
+/************************************* Weekly POPS***********************/
+table#deliveries {
+    border: 1px solid black;
+}
+
+table#deliveries th, table#deliveries td {
+    border: 1px dotted grey;
+}
+
+/************************************* Issues/Tasks Editor ***********************/
+#issue-editor tr > .dijit {
+    margin-bottom: 5px;
+}
+
+
+
+/************************************* Issues/Tasks (in aggregate view) ***********************/
+#issues-store-table {
+    width: 100%;
+    text-align: left;
+}
+
+/************************************* Issues/Tasks (shared classes?) ***********************/
+
+.issues-table {
+    width: 100%;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 12px;
+    text-align: left;
+    border-collapse: collapse;
+}
+
+.issues-table td{
+    text-align: left;
+}
+
+.issues-table th{
+    text-align: left;
+    font-size: 13px;
+    font-weight: normal;
+    padding: 8px;
+    background: #b9c9fe;
+    border-top: 4px solid #aabcfe;
+    border-bottom: 1px solid #fff;
+    color: #039;
+}
+
+.issues-table tr.issue-row td
+{
+    background: #e8edff;
+    border-bottom: 1px solid #fff;
+    color: #669;
+    border-top: 1px solid transparent;
+}
+.issues-table tr.issue-row:hover td
+{
+    background: #d0dafd;
+    color: #339;
+}
+
+.issues-table .issue-description {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    border-left: 1px solid #aabcfe;
+    border-right: 1px solid #aabcfe;
+    border-bottom: 1px solid #aabcfe;
+    padding: 1px 5px 5px 5px;
+    position: relative;
+    top: -2px;
+}
+
+.issues-table .issue-note {
+    width: 90%;
+    margin: 5px auto;
+    border: 1px solid #aabcfe;
+    padding: 0px 5px 0px 5px;
+    position: relative;
+    top: -2px;
+}
+
+.issues-table .issue-note .issue-note-created {
+    color: #999
+}
+
+.issues-table .issue-note .issue-note-source {
+    color: #999;
+    position: absolute;
+    left: 400px;
+}
+
+.issues-table .issue-note .issue-note-controls a {
+    color: grey;
+    font-family: Verdana, Geneva, sans-serif;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+.issues-table .issue-note .issue-note-controls a:hover {
+    color: black;
+}
+.issues-table .issue-note .issue-note-controls {
+    float: right;
+    display: none;
+}
+.issues-table .issue-note:hover .issue-note-controls {
+    display: block;
+}
+
+/************************************* Issues/Tasks (in summary) ***********************/
+#issues-table {
+    width: 100%;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 12px;
+    text-align: left;
+    border-collapse: collapse;
+}
+
+#issues-table td{
+    text-align: left;
+}
+
+#issues-table th{
+    text-align: left;
+    font-size: 13px;
+    font-weight: normal;
+    padding: 8px;
+    background: #b9c9fe;
+    border-top: 4px solid #aabcfe;
+    border-bottom: 1px solid #fff;
+    color: #039;
+}
+
+#issues-table tr.issue-row td
+{
+    background: #e8edff;
+    border-bottom: 1px solid #fff;
+    color: #669;
+    border-top: 1px solid transparent;
+}
+#issues-table tr.issue-row:hover td
+{
+    background: #d0dafd;
+    color: #339;
+}
+
+#issues-table .issue-description {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    border-left: 1px solid #aabcfe;
+    border-right: 1px solid #aabcfe;
+    border-bottom: 1px solid #aabcfe;
+    padding: 1px 5px 5px 5px;
+    position: relative;
+    top: -2px;
+}
+
+#issues-table .issue-note {
+    width: 90%;
+    margin: 5px auto;
+    border: 1px solid #aabcfe;
+    padding: 0px 5px 0px 5px;
+    position: relative;
+    top: -2px;
+}
+
+#issues-table .issue-note .issue-note-created {
+    color: #999
+}
+
+#issues-table .issue-note .issue-note-source {
+    color: #999;
+    position: absolute;
+    left: 400px;
+}
+
+#issues-table .issue-note .issue-note-controls a {
+    color: grey;
+    font-family: Verdana, Geneva, sans-serif;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+#issues-table .issue-note .issue-note-controls a:hover {
+    color: black;
+}
+#issues-table .issue-note .issue-note-controls {
+    float: right;
+    display: none;
+}
+#issues-table .issue-note:hover .issue-note-controls {
+    display: block;
+}
+
+/************************************* Notes Editor ***********************/
+#note-editor tr > .dijit {
+    margin-bottom: 5px;
+}
+
+/************************************* Notes ***********************/
+#notes-table {
+    width: 100%;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 12px;
+    text-align: left;
+    border-collapse: collapse;
+}
+
+#notes-table td{
+    text-align: left;
+}
+
+#notes-table th{
+    text-align: left;
+    font-size: 13px;
+    font-weight: normal;
+    padding: 8px;
+    background: #b9c9fe;
+    border-top: 4px solid #aabcfe;
+    border-bottom: 1px solid #fff;
+    color: #039;
+}
+
+#notes-table tr.note-row td
+{
+    background: #e8edff;
+    border-bottom: 1px solid #fff;
+    color: #669;
+    border-top: 1px solid transparent;
+}
+
+#notes-table tr.note-row td:nth-child(1)
+{
+    width: 50px;
+}
+
+#notes-table tr.note-row:hover td
+{
+    background: #d0dafd;
+    color: #339;
+}
+
+#notes-table .note-description {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    border-left: 1px solid #aabcfe;
+    border-right: 1px solid #aabcfe;
+    border-bottom: 1px solid #aabcfe;
+    padding: 1px 5px 0px 5px;
+    position: relative;
+    top: -2px;
+}
+
+#notes-table .note-note {
+    width: 90%;
+    margin: 5px auto;
+    border: 1px solid #aabcfe;
+    padding: 0px 5px 0px 5px;
+    position: relative;
+    top: -2px;
+}
+
+#notes-table .note-note .note-note-created {
+    color: #999
+}
+
+#notes-table .note-note .note-note-source {
+    color: #999;
+    position: absolute;
+    left: 400px;
+}
+
+#notes-table .note-note .note-note-controls a {
+    color: grey;
+    font-family: Verdana, Geneva, sans-serif;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+#notes-table .note-note .note-note-controls a:hover {
+    color: black;
+}
+#notes-table .note-note .note-note-controls {
+    float: right;
+    display: none;
+}
+#notes-table .note-note:hover .note-note-controls {
+    display: block;
+}
+
+/************************************* Widgets ***********************/
+.saving-lock, :disabled {
+    background-color: #BBB !important;
+}
+
+/************************************* DROP DOWN MENU ***********************/
+.dropdown {
+    color: #555;
+    /*height: 17px;*/
+}
+
+
+.dropdown > ul, .dropdown-ul {
+    list-style:none;
+    margin:0;
+    font-size: 11px;
+    padding: 0;
+    border: solid #dedede;
+    border-width: 1px 1px 1px 1px;
+    background-color: #eeeeee;
+    border-radius: 2px;
+    display: none;
+    position: absolute;
+    z-index: 10;
+}
+
+.dropdown li, .dropdown-ul li{
+    color: #555555;
+    display: block;
+    padding: 6px 15px;
+    cursor: pointer;
+    text-decoration:none;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+.dropdown li:not(:first-child), .dropdown-ul li:not(:first-child) {
+    border-top:1px solid #dedede;
+}
+
+.dropdown li:hover, .dropdown-ul li:hover {
+    background: #549cb8;
+    color: #FFFFFF;
+    text-decoration: none;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+/************************************* Inputs ***********************/
+.input-widget {
+    height: 100%;
+    width: 100%;
+    border: none;
+    padding: 0px;
+    margin: 0px;
+    background-color: transparent;
+}
+
+.input-widget-table-cell {
+    padding: 0 0 0 10px !important;
+}
+
+/************************************* Load Mask ***********************/
+#loading-mask {
+    height: 300px;
+    background-color: #333333;
+    text-align: center;
+}
+
+#loading-mask img {
+    margin-top: 80px;
+    background-color: #fff;
+    padding: 5px 20px;
+    border-radius: 20px;
+    border: 5px solid lightgray;
+}
+
+/************************************* Printing ***********************/
+table { page-break-inside:auto }
+tr    { page-break-inside:avoid; page-break-after:auto }
+thead { display:table-header-group }
+tfoot { display:table-footer-group }
+
+/************************************* Proforma ***********************/
+.proforma {
+    width: 850px;
+    padding: 10px;
+    page-break-after: always;
+    /*page-break-inside: avoid;*/ /*This made everything start offsetting a half page in chrome*/
+}
+
+.proforma-addresses {
+    margin-top: 15px;
+}
+
+.proforma-addresses thead th {
+    text-align: right;
+    padding-right: 10px;
+}
+
+.proforma-addresses tbody tr td:nth-child(odd) {
+    width:160px;
+    text-align: right;
+    padding-right:10px;
+}
+
+.proforma-addresses tbody tr td:nth-child(even) {
+    width: 225px;
+    border-bottom: 1px solid #333333;
+    font-size: 11px;
+}
+
+.proforma-items {
+    clear: both;
+    margin-top: 5px;
+    width: 100%;
+    font-size: .8em;
+}
+
+.proforma-items tfoot{
+    font-weight: bold;
+}
+
+.proforma-items tbody{
+    font-weight: bold;
+}
+
+.proforma-items tbody tr{
+      height: 25px;
+}
+
+.proforma-items tbody tr td > div{
+    min-height: 20px;
+}
+
+.proforma-dollar {
+    position:relative;
+    margin-left: 5px;
+    float: left;
+    display: none;
+}
+
+.proforma-items tbody tr td:nth-child(1){
+    width: 95px;
+}
+.proforma-items tbody tr td:nth-child(2){
+    width: 300px;
+}
+.proforma-items tbody tr td:nth-child(3){
+    width: 75px;
+}
+.proforma-items tbody tr td:nth-child(3) > div {
+    text-align: right;
+}
+.proforma-items tbody tr td:nth-child(4){
+    width: 70px;
+}
+.proforma-items tbody tr td:nth-child(4) > div{
+    text-align: right;
+}
+.proforma-items tbody tr td:nth-child(5){
+    width: 70px;
+}
+.proforma-items tbody tr td:nth-child(5) > div{
+    text-align: right;
+}
+.proforma-items tfoot tr td:nth-child(5) > div{
+    text-align: right;
+}
+
+
+.proforma-items {
+    clear: both;
+    margin-top: 5px;
+    width: 100%;
+    font-size: .8em;
+}
+
+    .proforma-items tfoot {
+        font-weight: bold;
+    }
+
+    .proforma-items tbody {
+        font-weight: bold;
+    }
+
+        .proforma-items tbody tr {
+            height: 25px;
+        }
+
+            .proforma-items tbody tr td > div {
+                min-height: 20px;
+            }
+
+.proforma-dollar {
+    position: relative;
+    margin-left: 5px;
+    float: left;
+    display: none;
+}
+
+.proforma-totals {
+    font-size: 15px;
+}
+.proforma-totals tbody tr td:nth-child(1) > div{
+    text-align: right;
+}
+.proforma-totals tbody tr td:nth-child(2) > div{
+    text-align: right;
+}
+
+.proforma-float {
+    float: left;
+    font-size: 16px;
+    margin-top: 15px;
+}
+
+.proforma-float > span{
+    font-weight: bold;
+}
+
+.proforma-float div{
+    width: 90%;
+    border-bottom: 1px solid #444;
+    color: #888;
+}
+
+.proforma-disclaimer {
+    margin-top: 15px;
+    font-size: 12px;
+    float: left;
+}
+.proforma-line-description {
+    font-size: 12px;
+    color: #888;
+}
+
+.quarter {
+    width: 25%;
+}
+
+.half {
+    width: 50%
+}
+
+/************************************* CommWorks Sync ***********************/
+.commworks-table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    empty-cells: show;
+    border: 1px solid #cbcbcb;
+}
+
+.commworks-table > tbody > tr > td{
+    border-left: 1px solid #cbcbcb;
+    border-width: 0 0 0 1px;
+    font-size: inherit;
+    margin: 0;
+    overflow: visible;
+    padding: 6px 12px;
+}
+
+.commworks-table > tbody > tr:nth-child(2n-1) td{
+    background-color: #f2f2f2;
+}
+
+/************************************* Data Table Override ***********************/
+table.dataTable tbody th, table.dataTable tbody td {
+    padding: 6px 12px !important;
+}
+
+/************************************* Business Rules Highlighting ***************/
+.green-highlight {
+    color: #006100 !important;
+    background-color: #C6EFCE !important;
+}
+
+.yellow-highlight {
+    color: #9C6500 !important;
+    background-color: #FFEB9C !important;
+}
+
+.red-highlight {
+    color: #9C0006 !important;
+    background-color: #FFC7CE !important;
+}
+
+/************************************* Hughes Workflow ***************/
+#hughes-agreement-upload{
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+#hughes-agreement-upload + label {
+    width: calc(50% - 28px);
+    display: inline-block;
+}
+
+/************************************* Purchase Orders ***********************/
+#po-editor > table#po-billing, #po-editor > table#po-shipping  {
+    float: left;
+    width: calc(50% - 20px);
+}
+
+#po-editor > div, #po-editor > table {
+    margin: 10px 10px 0 10px;
+}
+
+#po-editor  #po-details {
+    border: 1px solid lightgrey;
+    float:right;
+    margin-bottom: 20px;
+}
+
+#po-editor  #po-details td {
+    border: 1px solid lightgrey;
+}
+
+#po-editor  #po-details td:last-child, #po-editor > #po-details td input {
+    text-align: right;
+}
+
+#po-editor  #po-details #po-delivery {
+    width: 100px;
+    border: none;
+}
+
+#po-editor #po-notes > tbody > tr > td:nth-child(2), #po-editor #po-shipping > tbody > tr > td:nth-child(2), #po-editor #po-billing> tbody > tr > td:nth-child(2){
+    border-bottom: 1px solid lightgrey;
+}
+
+#po-editor h3 {
+    margin: 3px 0px 5px 10px;
+}
+
+#po-editor > #po-notes {
+    margin-top: 20px;
+    width: calc(100% - 20px);
+}
+
+#po-editor > #po-notes {
+    margin-top: 20px;
+    width: calc(100% - 20px);
+}
+
+#po-editor > table#po-billing > tbody > tr > td:nth-child(1) , #po-editor > table#po-shipping > tbody > tr > td:nth-child(1), #po-editor > table#po-notes > tbody > tr > td:nth-child(1) {
+    width: 100px;
+}
+
+#po-editor > #po-items {
+    margin-top: 20px;
+    width: calc(100% - 20px);
+}
+
+#po-editor > #po-items > thead > tr > th:nth-last-child {
+    width: 0px;
+}
+
+#po-editor > #po-items .po-delete-item {
+    cursor: pointer;
+    cursor: hand;
+    font-size: 21px;
+    -webkit-transition: color .4s linear;
+    -moz-transition: color .4s linear;
+    -o-transition: color .4s linear;
+    -ms-transition: color .4s linear;
+    transition: color .4s linear;
+}
+
+#po-editor > #po-items .po-delete-item:hover {
+    color: lightgrey;
+}
+
+
+#po-editor > #po-items td:nth-child(n+3):nth-child(n-5){
+    text-align: right;
+}
+
+#po-editor > #po-buttons {
+    text-align: center;
+    clear: both;
+}
+
+#po-editor > #po-buttons > *{
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+#po-editor > #po-buttons > *:not(:last-child) {
+    margin-right: 20px;
+}
+
+#po-editor #po-title-container {
+    text-align: center;
+}
+
+#po-editor #po-title {
+    margin-bottom: 0px;
+}
+
+#po-update table thead th {
+    min-width: 100px;
+    padding-bottom: 10px;
+    vertical-align: bottom;
+}
+
+#po-update table thead th:first-child {
+    min-width: 20px;
+}
+
+.PMOTable
+{
+    width: 100%; vertical-align: top;
+}
+.PMOTableTR
+{
+vertical-align:top;
+}
+
+.PMOTableMessage {
+    min-height: 450px;
+}
+.PMOTableDiv
+{font-family: Arial, Helvetica, sans-serif;}
+.PMOTableSpan
+{font-weight: bold;}
+.PMOTableQuote
+{font-family: Arial, Helvetica, sans-serif;}
+.PMOTableDelivery
+{font-weight: bold;}
+.TablePMOOrderItems
+{border: 1px solid black; border-collapse: collapse; font-family: Arial, Helvetica, sans-serif;}
+.TablePMOOrderItemsTR
+{background-color: #333; color: #DDD;}
+.TablePMOOrderItemsTD1
+{border-top: 1px solid black; width: 45px; text-align: center;}
+
+#CurrentAppTitle{
+    color: rgb(7, 6, 6);
+    margin: 5px 0 0 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.6em;
+    }
+
+.brandTitle{   
+    width: 350px; 
+    /* max-width: 30%;  */
+    float: right; 
+    text-align: right; 
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: .8em;
+}
+
+.brandLogo{
+    float: right; margin: 5px;width:138px; 
+}
+

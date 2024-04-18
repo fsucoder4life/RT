@@ -1,0 +1,75 @@
+{
+    "brands": [
+        {
+            "brandId": "4a60d5d8-dd70-48e5-b1a0-f237d19e909d",
+            "settings": {
+                "brandName": "Arby's Corporate",
+                "brandId": "4a60d5d8-dd70-48e5-b1a0-f237d19e909d",
+                "baseFolder": "app/brand-settings/arbys/",
+                "configFile": "app/brand-settings/arbys/sharePoint-config.json",
+                "imagesFolder": "app/brand-settings/arbys/images/",
+                "cssThemeFile": "app/brand-settings/arbys/css/brand_theme.css"
+            }
+        },
+        {
+            "brandId": "d685bfcf-fda8-450e-9f18-70dc4fd3a665",
+            "settings": {
+                "brandName": "Baskin Robbins Corporate",
+                "baseFolder": "app/brand-settings/baskin-robbins/",
+                "configFile": "app/brand-settings/baskin-robbins/sharePoint-config.json",
+                "imagesFolder": "app/brand-settings/baskin-robbins/images/",
+                "cssThemeFile": "app/brand-settings/baskin-robbins/css/brand_theme.css"
+            }
+        },
+        {
+            "brandId": "b415de8d-1fe9-4499-8545-d8208f574842",
+            "settings": {
+                "brandName": "Buffalo Wild Wings Corporate",
+                "baseFolder": "app/brand-settings/buffalo-wild-wings/",
+                "configFile": "app/brand-settings/buffalo-wild-wings/sharePoint-config.json",
+                "imagesFolder": "app/brand-settings/buffalo-wild-wings/images/",
+                "cssThemeFile": "app/brand-settings/buffalo-wild-wings/css/brand_theme.css"
+            }
+        },
+        {
+            "brandId": "6bca0629-ecd7-4352-984e-93595e14822f",
+            "settings": {
+                "brandName": "Dunkin' Corporate",
+                "baseFolder": "app/brand-settings/dunkin/",
+                "configFile": "app/brand-settings/dunkin/sharePoint-config.json",
+                "imagesFolder": "app/brand-settings/dunkin/images/",
+                "cssThemeFile": "app/brand-settings/dunkin/css/brand_theme.css"
+            }
+        },
+        {
+            "brandId": "5edb6688-0e72-4e66-825d-601f9eb32580",
+            "settings": {
+                "brandName": "Jimmy Johns Corporate",
+                "baseFolder": "app/brand-settings/jimmy-johns/",
+                "configFile": "app/brand-settings/jimmy-johns/sharePoint-config.json",
+                "imagesFolder": "app/brand-settings/jimmy-johns/images/",
+                "cssThemeFile": "app/brand-settings/jimmy-johns/css/brand_theme.css"
+            }
+        },
+        {
+            "brandId": "94263730-d8d9-47f4-b113-f42194fcb009",
+            "settings": {
+                "brandName": "Rusty Taco Corporate",
+                "baseFolder": "app/brand-settings/rusty-taco/",
+                "configFile": "app/brand-settings/rusty-taco/sharePoint-config.json",
+                "imagesFolder": "app/brand-settings/rusty-taco/images/",
+                "cssThemeFile": "app/brand-settings/rusty-taco/css/brand_theme.css"
+            }
+        },
+        {
+            "brandId": "380fb82e-9c79-4903-a65a-425f551a84b1",
+            "settings": {
+                "brandName": "Sonic Drive-In Corporate",
+                "baseFolder": "app/brands/brand-settings/sonic-drive-in/",
+                "configFile": "app/brands/brand-settings/sonic-drive-in/sharePoint-config.json",
+                "imagesFolder": "app/brands/brand-settings/sonic-drive-in/images/",
+                "cssThemeFile": "app/brands/brand-settings/sonic-drive-in/css/brand_theme.css"
+            }
+        }
+    ]
+}

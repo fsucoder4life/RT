@@ -1,19 +1,8 @@
-define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purchaseOrders', 'app/store/fabConIDTechPurchaseOrderItems', 'app/store/products', 'dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-min.css', 'app/store/combined', 'app/store/construction', 'app/utility/sp-utility', 'app/widget/widgetHelper', 'dojo/text!app/view/workflow/fabcon-id-tech-purchase-order.html','app/brands/services/brandServices'],
-  function (summary, purchaseOrderStore, purchaseOrderItemStore, products, mainCss, pureCss, combined, construction, spUtility, widgetHelper, emailTemplate,brandServices) {
-      
-    var purchaseOrderDetails = brandServices.getEmailDistributionDetails("purchaseOrder","fabcon");
-    const valEmailTo = "";
-    const valEmailCC = "";
-    if (purchaseOrderDetails){
-        valEmailTo = purchaseOrderDetails.emailTo;
-        if (purchaseOrderDetails.emailCC){
-            valEmailCC = purchaseOrderDetails.emailCC;
-        }
-        
-    }
-    var self = {
-          emailTo: valEmailTo,//'mperez@fabcon.com; iescobar@fabcon.com; kgelfer@fabcon.com; bjuarez@fabcon.com; justin.ning@idtechproducts.com; sandy.lee@idtechproducts.com; ',
-          emailCc: valEmailCC,//'SDI-NewStoreTechnologyInstallations-DL@Sonicdrivein.com; Post.InstallationManagement@Sonicdrivein.com; ccease@inspirebrands.com; kgreen@inspirebrands.com; ',
+define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purchaseOrders', 'app/store/fabConIDTechPurchaseOrderItems', 'app/store/products', 'dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-min.css', 'app/store/combined', 'app/store/construction', 'app/utility/sp-utility', 'app/widget/widgetHelper', 'dojo/text!app/view/workflow/fabcon-id-tech-purchase-order.html'],
+  function (summary, purchaseOrderStore, purchaseOrderItemStore, products, mainCss, pureCss, combined, construction, spUtility, widgetHelper, emailTemplate) {
+      var self = {
+          emailTo: 'mperez@fabcon.com; iescobar@fabcon.com; kgelfer@fabcon.com; bjuarez@fabcon.com; justin.ning@idtechproducts.com; sandy.lee@idtechproducts.com; ',
+          emailCc: 'SDI-NewStoreTechnologyInstallations-DL@Sonicdrivein.com; Post.InstallationManagement@Sonicdrivein.com; ccease@inspirebrands.com; kgreen@inspirebrands.com; ',
           // emailTo: 'Stephen.Tremaine@sonicdrivein.com; ',
           // emailCc: 'Stephen.Tremaine@sonicdrivein.com; ',
           buildSubject: function (po) {
@@ -173,8 +162,7 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
           }
       };
 
-      self.buildPdf = async function (view, callback) {
-        var pdfAPIUrl = await brandServices.getSharePointUrlByKey('api-pdfGenerator');
+      self.buildPdf = function (view, callback) {
           //Make the date input plain html
           view.html.find('#po-delivery').closest('td').html(view.html.find('#po-delivery').val());
 
@@ -230,7 +218,7 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
           };
 
           //Send request
-          req.open("POST", pdfAPIUrl);
+          req.open("POST", "https://api.html2pdfrocket.com/pdf");
           req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
           req.responseType = "blob";
           req.send("MarginLeft=1&MarginRight=1&MarginTop=1&MarginBottom=1&apikey=dca86da0-12d0-4620-a58b-eb7e1936df7c&value=" + encodeURIComponent(html));
@@ -292,7 +280,7 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
           };
 
           //Send request
-          req2.open("POST", pdfAPIUrl);
+          req2.open("POST", "https://api.html2pdfrocket.com/pdf");
           req2.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
           req2.responseType = "blob";
           req2.send("MarginLeft=1&MarginRight=1&MarginTop=1&MarginBottom=1&apikey=dca86da0-12d0-4620-a58b-eb7e1936df7c&value=" + encodeURIComponent(html));
