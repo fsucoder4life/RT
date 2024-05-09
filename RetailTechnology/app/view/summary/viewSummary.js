@@ -1156,7 +1156,7 @@ define([
 
         return rootNode;
     }
-
+   
     function renderDocuments(store, view) {
         jsTreeDom = view.el.find('#document-tree');
 
@@ -1926,7 +1926,7 @@ define([
 
         //--------------------------------------------------------------Setup SharePoint Links
         summary.find('#construction-calls').prop('href', webUrl + "/Construction%20Calls/DispForm.aspx?ID=" + store.ConstructionId);
-        summary.find('#combined-schedule').prop('href',webUrl +  "/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
+        summary.find('#combined-schedule').prop('href', webUrl + "/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
         summary.find('#master-portal').prop('href', masterPortalUrl.replace('__store.StoreNumber__',store.StoreNumber));
 
         //--------------------------------------------------------------Issues/Tasks

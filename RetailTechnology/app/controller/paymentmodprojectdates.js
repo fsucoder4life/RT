@@ -1,4 +1,4 @@
-function ApplyFilters() {
+async function ApplyFilters() {
 
     var startDate = "";
     var endDate = "";

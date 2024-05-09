@@ -1,11 +1,10 @@
-define(['app/store/combined','app/brands/services/brandServices'], async function(combined,brandServices){
+define(['app/store/combined'], function(combined){
     //Setup
     //Turn Cross Origin Resource Sharing On to get sharepoint data from outside site
     $.support.cors = true;
 
     //Point towards the sharepoint site
-    var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
-    $().SPServices.defaults.webURL = webUrl;//  // URL of the target Web
+    $().SPServices.defaults.webURL = "/Scoop/Information%20Services/PMT/Roll%20Out";  // URL of the target Web
     $().SPServices.defaults.listName = "Combined Construction Extend";  // Name of the list for list
     var today = moment().format('M/D');
     var combinedconstructionextendMapping = {
@@ -32,9 +31,12 @@ define(['app/store/combined','app/brands/services/brandServices'], async functio
         
         ows_VP6800_x0020_Delivery: { mappedName: 'VP6800Delivery', objectType: 'Text', type: 'date' },
         ows_VP6800_x0020_Tracking_x0020_Num: { mappedName: 'VP6800TrackingNum', objectType: 'Text' },
-        ows_VP6800_x0020_Installer: { mappedName: 'VP6800Installer', objectType: 'Text' },
+        ows_Level_x0020_10_x0020_Tracking_x0: { mappedName: 'VP6800Level10TrackingNum', objectType: 'Text' },
+        ows_VP6800_x0020_Installer: { mappedName: 'VP6800Installer', objectType: 'Text', type: 'select', options: ['SELF', 'AVIT', 'ATI', 'MIRA', 'BUCHANAN', 'ITFORP', 'MSIT', 'RH', 'MCG'] },
+        ows_VP6800_x0020_Installer_x0020_Lea: { mappedName: 'VP6800InstallerLead', objectType: 'Text' },
         ows_VP6800_x0020_PO_x0020_Num: { mappedName: 'VP6800PONum', objectType: 'Text' },
         ows_VP6800_x0020_IT_x0020_PM: { mappedName: 'VP6800ITPM', objectType: 'Text' },
+        
         ows_Hughes_x0020_Switch_x0020_Upgrad: { mappedName: 'HughesSwitchUpgradeOrdered2', objectType: 'Text' },
 
         ows_VP6800_x0020_Project_x0020_Site_: { mappedName: 'VP6800ProjectSiteSurveyDate', objectType: 'Text', type: 'date' },
@@ -59,11 +61,16 @@ define(['app/store/combined','app/brands/services/brandServices'], async functio
         ows_VP6800_x0020_Project_x0020_Lane_5: { mappedName: 'VP6800ProjectLaneNum7', objectType: 'Text' },
         ows_VP6800_x0020_Project_x0020_Payme6: { mappedName: 'VP6800ProjectPaymentSerialNum8', objectType: 'Text' },
         ows_VP6800_x0020_Project_x0020_Lane_6: { mappedName: 'VP6800ProjectLaneNum8', objectType: 'Text' },
+        ows_VP6800_x0020_Project_x0020_Payme7: { mappedName: 'VP6800ProjectPaymentSerialNum9', objectType: 'Text' },
+        ows_VP6800_x0020_Project_x0020_Lane_7: { mappedName: 'VP6800ProjectLaneNum9', objectType: 'Text' },
+        ows_VP6800_x0020_Project_x0020_Payme8: { mappedName: 'VP6800ProjectPaymentSerialNum10', objectType: 'Text' },
+        ows_VP6800_x0020_Project_x0020_Lane_8: { mappedName: 'VP6800ProjectLaneNum10', objectType: 'Text' },
         ows_VP6800_x0020_Project_x0020_Notes: { mappedName: 'VP6800ProjectNotes', objectType: 'Text', type: 'textarea' },
         ows_VP6800_x0020_Server_x0020_Cabine: { mappedName: 'VP6800ServerCabinet', objectType: 'Text', type: 'select', options: ['6u', '12u', 'both'] },
         ows_VP6800_x0020_Server_x0020_Cabine0: { mappedName: 'VP6800ServerCabinetShelf', objectType: 'Text' },
         ows_VP6800_x0020_Server_x0020_Cabine1: { mappedName: 'VP6800ServerCabinetNumber', objectType: 'Text' },
         ows_VP6800_x0020_Project_x0020_Servi: { mappedName: 'VP6800ProjectServiceNowNum', objectType: 'Text' },
+        ows_VP6800_x0020_Server_x0020_Cabine2: { mappedName: 'VP6800ServerCabinet12uNumber', objectType: 'Text' },
 
 
         ows_VP6800_x0020_Intro_x0020_Call_x0: { mappedName: 'VP6800IntroCallToFee', objectType: 'Text', type: 'date' },
@@ -85,11 +92,31 @@ define(['app/store/combined','app/brands/services/brandServices'], async functio
         ows_VP6800_x0020_Review_x0020_Sign_x: { mappedName: 'VP6800ReviewSignOffs', objectType: 'Text', type: 'date' },
         ows_VP6800_x0020_Remediation_x0020_D: { mappedName: 'VP6800RemediationDate', objectType: 'Text', type: 'date' },
         ows_VP6800_x0020_Deliverables_x0020_: { mappedName: 'VP6800DeliverablestoFEE', objectType: 'Text', type: 'date' },
+        ows_VP6800_x0020_Store_x0020_Close_x: { mappedName: 'VP6800StoreCloseTime', objectType: 'Text' },
+        ows_VP6800_x0020_SITE_x0020_SURVEY_x2: { mappedName: 'VP6800SiteSurveyCompleted', objectType: 'Text', type:'date' },
+        ows_VP6800_x0020_Site_x0020_Survey_x3: { mappedName: 'VP6800SiteSurveyResultsReviewed', objectType: 'Text', type: 'date' },
+        ows_RMA_x0020_OR_x0020_OPEN_x0020_IT: { mappedName: 'RMAOrOpen', objectType: 'Text' },
+        
 
         ows_AddressBillTo: { mappedName: 'AddressBillTo', objectType: 'Text' },
+        ows_CompanyBillTo: { mappedName: 'CompanyBillTo', objectType: 'Text' },
         ows_CityBillTo: { mappedName: 'CityBillTo', objectType: 'Text' },
         ows_StateBillTo: { mappedName: 'StateBillTo', objectType: 'Text' },
-        ows_ZipBillTo: { mappedName: 'ZipBillTo', objectType: 'Text' }
+        ows_ZipBillTo: { mappedName: 'ZipBillTo', objectType: 'Text' },
+        ows_EmailBillTo: { mappedName: 'EmailBillTo', objectType: 'Text' },
+
+        ows_PaymentTerminalAndInfoLane50Faci: { mappedName: 'PaymentTerminalAndInfoLane50Facing', objectType: 'Text' },
+        ows_PaymentTerminalAndInfoLane91Faci: { mappedName: 'PaymentTerminalAndInfoLane91Facing', objectType: 'Text' },
+        ows_PaymentTerminalAndInfoLane92Faci: { mappedName: 'PaymentTerminalAndInfoLane92Facing', objectType: 'Text' },
+        ows_PaymentTerminalAndInfoLane93Faci: { mappedName: 'PaymentTerminalAndInfoLane93Facing', objectType: 'Text' },
+        ows_PaymentTerminalAndInfoLane94Faci: { mappedName: 'PaymentTerminalAndInfoLane94Facing', objectType: 'Text' },
+        ows_PaymentTerminalAndInfoLane95Faci: { mappedName: 'PaymentTerminalAndInfoLane95Facing', objectType: 'Text' },
+        ows_PaymentTerminalAndInfoLane96Faci: { mappedName: 'PaymentTerminalAndInfoLane96Facing', objectType: 'Text' },
+        ows_PaymentTerminalAndInfoLane97Faci: { mappedName: 'PaymentTerminalAndInfoLane97Facing', objectType: 'Text' },
+        ows_PaymentTerminalAndInfoLane98Faci: { mappedName: 'PaymentTerminalAndInfoLane98Facing', objectType: 'Text' },
+        ows_PaymentTerminalAndInfoLane99Faci: { mappedName: 'PaymentTerminalAndInfoLane99Facing', objectType: 'Text' }
+
+
         
 
     };
@@ -138,7 +165,7 @@ define(['app/store/combined','app/brands/services/brandServices'], async functio
                 completefunc: function (xData, Status) {
                     //console.log(xData);
                     console.log("status: " + Status);
-                    console.log("completefunc1 in 2");
+                    console.log("completefunc1");
                     //Convert to JSON object for easier access
                     var construction = $(xData.responseXML).SPFilterNode("z:row").SPXmlToJson({
                         mapping: combinedconstructionextendMapping,
@@ -157,21 +184,20 @@ define(['app/store/combined','app/brands/services/brandServices'], async functio
                     } else {
                         query = "<Query>" + new CamlBuilder().Where().TextField('Title').In(_.map(construction, function (store) {return store.StoreNumber})).ToString() + "</Query>";
                     }
-                    console.log("combined.loadData - query 2: " + query);
+                    console.log("combined.loadData - query: " + query);
 
-                    //Lookup combined list info by store number list
+                    if (query.length > 3000)
+                    {
+                        query = query.replace("<Where><In>", "<Where><Or><In>");
+                        query = query.replace("</In></Where>", "</In></Or></Where>");
 
+                        var query1 = query.substring(0, query.length / 2);
+                        var query2 = query.substring(query.length / 2);
 
-                    query = query.replace("<Where><In>", "<Where><Or><In>");
-                    query = query.replace("</In></Where>", "</In></Or></Where>");
-
-                    var query1 = query.substring(0, query.length / 2);
-                    var query2 = query.substring(query.length / 2);
-
-                    query1loc = query1.lastIndexOf("</Value>") + "</Value>".length;
-                    var queryComplete = insert(query1, query1loc, '</Values></In><In><FieldRef Name="ID" /><Values>') + query2;
-
-                    combined.loadData({ query: queryComplete }, function (combined) {
+                        query1loc = query1.lastIndexOf("</Value>") + "</Value>".length;
+                        query = insert(query1, query1loc, '</Values></In><In><FieldRef Name="ID" /><Values>') + query2;
+                    }
+                    combined.loadData({ query: query }, function (combined) {
                         console.log("combined.loadData: ");
                         //Combine data
                         _.forEach(construction, function (item, index) {
@@ -301,7 +327,8 @@ define(['app/store/combined','app/brands/services/brandServices'], async functio
         }
     }
 
-    function changeValue (key, value, store, callback) {
+    function changeValue(key, value, store, callback) {
+        console.log("changeValue CCE");
         var internalName = lookupKey(key);
         if (internalName) {
             //Convert date if necessary

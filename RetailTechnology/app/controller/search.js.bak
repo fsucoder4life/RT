@@ -106,7 +106,7 @@ define(['app/view/report', 'dojo/hash', "dojo/store/Memory", "dojo/data/ObjectSt
             //Set the search value to the query if it's empty (fresh page load)
             var val = $('#search').val();
             if (val === '') {
-                $('#search').val(query.replace(/\+/gi, ' '));                
+                $('#search').val(query.replace(/\+/gi, ' '));
             }
 
             if (val.length === 4 && parseInt(val).toString().length === 4 && Number.isInteger(parseInt(val))) {

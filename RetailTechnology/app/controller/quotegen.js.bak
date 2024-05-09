@@ -1,4 +1,4 @@
-define(['app/view/quotegen/quotegen', 'app/store/construction', 'app/store/combined', 'app/store/user', 'dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-min.css', 'app/utility/sp-utility','app/brand/services/brandServices'], function (proforma, construction, combined, user, mainCss, pureCss, spUtility,brandServices) {
+define(['app/view/quotegen/quotegen', 'app/store/construction', 'app/store/combined', 'app/store/user', 'dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-min.css', 'app/utility/sp-utility'], function (proforma, construction, combined, user, mainCss, pureCss, spUtility) {
     var me = {
         storeData: {}       //this is so other controllers can pass in some data before this controller is hit - right now just POS amounts
     };
@@ -90,7 +90,7 @@ define(['app/view/quotegen/quotegen', 'app/store/construction', 'app/store/combi
 
         require(['app/view/workflow/email'], function (form) {
             //mask.html('Loading Store Data');
-            construction.loadData({ combinedQuery: "<Query>" + new CamlBuilder().Where().TextField('Title').EqualTo(storeNumberHash).ToString() + "</Query>" }, async function (stores) {
+            construction.loadData({ combinedQuery: "<Query>" + new CamlBuilder().Where().TextField('Title').EqualTo(storeNumberHash).ToString() + "</Query>" }, function (stores) {
                 var store = stores[0];
                 //Close the modal
                 $.modal.close();
@@ -167,7 +167,7 @@ define(['app/view/quotegen/quotegen', 'app/store/construction', 'app/store/combi
                     CC += "skalisek@avitprousa.com";
 
 
-                let baseUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+
                 //Show the quote
                 form.render({
                     subject: 'Sonic #' + store.StoreNumber + ' Technology Installation Quote Request',
@@ -195,7 +195,7 @@ define(['app/view/quotegen/quotegen', 'app/store/construction', 'app/store/combi
                             //Find the template id - this is a long story but a problem with the template id changing everytime a workflow is updated
                             $().SPServices({
                                 operation: "GetTemplatesForItem",
-                                item: baseUrl + "/InstallQuoteGen/1_.000",
+                                item: "http://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/InstallQuoteGen/1_.000",
                                 async: true,
                                 completefunc: function (xData, Status) {
                                     $(xData.responseXML).find("WorkflowTemplates > WorkflowTemplate").each(function (i, e) {
@@ -205,7 +205,7 @@ define(['app/view/quotegen/quotegen', 'app/store/construction', 'app/store/combi
                                                 //Fire the workflow on the construction list
                                                 $().SPServices({
                                                     operation: "StartWorkflow",
-                                                    item: baseUrl + "/InstallQuoteGen/1_.000",
+                                                    item: "http://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/InstallQuoteGen/1_.000",
                                                     templateId: "{" + guid + "}",
                                                     workflowParameters: "<Data>" +
                                                     "<eTo>" + spUtility.escapeXml(mailView.to.getValue()) + "</eTo>" +

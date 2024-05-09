@@ -1,4 +1,5 @@
-define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues', 'app/store/notes', 'app/store/combined', 'app/rules/construction'], function (summary, construction, issueStore, noteStore, combined, constructionRules) {
+define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues', 'app/store/notes', 'app/store/combined', 'app/rules/construction'], 
+function (summary, construction, issueStore, noteStore, combined, constructionRules) {
     function applyIssueEventListeners(view) {
         var store = view.store;
         var promotionOrderDisplaySize = 55;
@@ -1195,64 +1196,74 @@ define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues'
                     break;
 
                 case 'updated-dates':
-                    require(['app/view/workflow/email', 'dojo/text!app/view/workflow/updated-dates.html', 'app/widget/widgetHelper', 'dojo/text!app/view/workflow/update-purchase-order.html', 'app/store/purchaseOrders', 'app/controller/purchase-order'], function (form, template, widgetHelper, purchaseOrderUpdateTemplate, purchaseOrderStore, poController) {
-                        //Create list to email to based on parameters
-                        var CDEmail = '';
-                        if (store.ConstructionManager.toUpperCase().indexOf('TRAINER') !== -1)
-                            CDEmail += 'atrainer-murray@inspirebrands.com;';
-                        if (store.ConstructionManager.toUpperCase().indexOf('ROWAN') !== -1)
-                            CDEmail += 'browan@inspirebrands.com;';
-                        if (store.ConstructionManager.toUpperCase().indexOf('BRUNTON') !== -1)
-                            CDEmail += 'bbrunton@inspirebrands.com;';
-                        if (store.ConstructionManager.toUpperCase().indexOf('PIPITONE') !== -1)
-                            CDEmail += 'ipipitone@inspirebrands.com;';
-                        if (store.ConstructionManager.toUpperCase().indexOf('CULBERTSON') !== -1)
-                            CDEmail += 'jculbertson@inspirebrands.com;';
-                        if (store.ConstructionManager.toUpperCase().indexOf('PUENTE') !== -1)
-                            CDEmail += 'jpuente@inspirebrands.com;';
-                        if (store.ConstructionManager.toUpperCase().indexOf('CHISM') !== -1)
-                            CDEmail += 'jchism@inspirebrands.com;';
-                        if (store.ConstructionManager.toUpperCase().indexOf('RICE') !== -1)
-                            CDEmail += 'nrice@inspirebrands.com;';
+                    require(['app/view/workflow/email', 'dojo/text!app/view/workflow/updated-dates.html', 'app/widget/widgetHelper', 'dojo/text!app/view/workflow/update-purchase-order.html', 'app/store/purchaseOrders', 'app/controller/purchase-order','app/brands/services/brandServices'], 
+                    function (form, template, widgetHelper, purchaseOrderUpdateTemplate, purchaseOrderStore, poController, brandServices) {
+                        
+                    //Create email variables
+                    const CDEmail = "";
+                    const valEmailTo = "";
+                    const valEmailCC = "";
+                    const valConstructionManagerEmailTo = "";
+                    const valProjectManagerEmailTo = "";
+                    const valProjectManagerPhone = "";
+                    const valConstructionProjectManagerEmailTo = "";
+                    const valInstallerEmailTo = "";
+                    const valDefaultEmailFrom = "";
+                    const additionalEmailDetails = "";
+                    const valAdditionalEmailTo = "";
 
-                        var email = CDEmail + 'Daniel_smith2@comcast.com;randy_gersten@comcast.com;Tracy.Kapka@sonicdrivein.com; ',
-                        from = 'NSTI@sonicdrivein.com; ';
+
+                    //retrieve the default email address(es) for every instance of an update email
+                    var updatedDateEmails = brandServices.getEmailDistributionDetails("workflow","updated-dates");
+                    if (updatedDateEmails){
+                        valEmailTo += updatedDateEmails.emailTo;
+                        if (updatedDateEmails.emailCC){
+                            valEmailCC += updatedDateEmails.emailCC;
+                        }
+                        
+                    }
+
+                    //The constructionManager email is now dynamic so this code doesn't have to be updated if the manager changes, only the sharepoint list has to be updated
+                    var constructionManager = store.ConstructionManager.toUpperCase();
+                    if (constructionManager){
+                         //retrieve the email address(es) for the construction manager assigned to the location
+                        var constructionManagerEmail = brandServices.getEmailDistributionDetails("notification","constructionManager",constructionManager);
+                        if (constructionManagerEmail){
+                            valConstructionManagerEmailTo += constructionManagerEmail.emailTo;
+                        }
+                    }
+
+                    var projectManager = store.ProjectManager.toUpperCase();
+                    if (projectManager){
+                         //retrieve the email address and phone number for the project manager assigned to the location
+                        var projectManagerDetails = brandServices.getEmailDistributionDetails("notification","projectManager",projectManager);
+                        if (projectManagerDetails){
+                            valProjectManagerEmailTo += projectManagerDetails.emailTo;
+                            valProjectManagerPhone += projectManagerDetails.phone;
+                        }
+                    }
+
+                     //retrieve the default email address for sending sending emails
+                     var defaultSenderDetails = brandServices.getEmailDistributionDetails("notification","default");
+                     if (defaultSenderDetails){
+                         valDefaultEmailFrom = defaultSenderDetails.emailFrom;  
+                                                   
+                     }
+                        //Create list to email to based on parameters                        
+                         CDEmail += valConstructionManagerEmailTo;
+
+                        
+
+                        var email = CDEmail + valEmailTo,
+                        from = valDefaultEmailFrom;
                         template = $(template);
                         //Edit template fields for the PM signature:
+                         //The projectManager template update is now dynamic and based on data from the sharepoint list
                         template.find('#pm').html(store.ProjectManager);
-                        if (store.ProjectManager.toUpperCase().indexOf('JASON') !== -1) {
-                            template.find('#phone').html('918.269.1657');
-                            template.find('#email').html('Jason.Srader@sonicdrivein.com');
-                        } else if (store.ProjectManager.toUpperCase().indexOf('LIZ') !== -1) {
-                            template.find('#phone').html('405-641-2374');
-                            template.find('#email').html('Elizabeth.Sannes@sonicdrivein.com');
-                        }
-                        else if (store.ProjectManager.toUpperCase().indexOf('KATIGAN') !== -1) {
-                            template.find('#phone').html('405-919-6342');
-                            template.find('#email').html('Russell.Katigan@Sonicdrivein.com');
-                        }
-
-                        else if (store.ProjectManager.toUpperCase().indexOf('BARRETT') !== -1) {
-                            template.find('#phone').html('918.760.8023');
-                            template.find('#email').html('Barrett.Seal@Sonicdrivein.com');
-                        }
-                        else if (store.ProjectManager.toUpperCase().indexOf('PAIGE') !== -1) {
-                            template.find('#phone').html('918.760.8023');
-                            template.find('#email').html('Paige.Bailey@Sonicdrivein.com');
-                        }
-
-                        else if (store.ProjectManager.toUpperCase().indexOf('DYLAN') !== -1) {
-                            template.find('#phone').html('303-437-8623');
-                            template.find('#email').html('Dylan.Gehlbach@Sonicdrivein.com');
-                        }
-                        else if (store.ProjectManager.toUpperCase().indexOf('REGINA') !== -1) {
-                            template.find('#phone').html('405-201-1235');
-                            template.find('#email').html('Regina.Pannell@Sonicdrivein.com');
-                        }
-                        else if (store.ProjectManager.toUpperCase().indexOf('BJ') !== -1) {
-                            template.find('#phone').html('405-202-2965');
-                            template.find('#email').html('BJ.Bryant@Sonicdrivein.com');
-                        }
+                        template.find('#phone').html(valProjectManagerPhone);
+                        template.find('#email').html(valProjectManagerEmailTo);
+                      
+                       
 
                         if (store.PaysType === 'VP6800')
                         {
@@ -1309,95 +1320,140 @@ define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues'
                             'padding-right': '20px'
                         });
 
-                        if (store.ConstructionManager)
-                            if (store.ConstructionManager.toUpperCase().indexOf('JULIEN') !== -1) {
-                            email += 'djulien@InspireBrands.com;';
+
+                        //The store.Installer email is now dynamic so this code doesn't have to be updated if the manager changes, only the sharepoint list has to be updated
+                        //retrieve the email address(es) for the installer assigned to the location
+                        var installer = store.Installer.toUpperCase();
+                        if (installer){
+                            var installerDetails = brandServices.getEmailDistributionDetails("notification","installer",installer);
+                            if (installerDetails){
+                                valInstallerEmailTo = installerDetails.emailTo;         
+                                  //Add installer PM
+                                email += valInstallerEmailTo;                     
+                            }
+                        }                 
+                       
+                        //retrieve the email address(es) for the construction PM
+                        var constructionProjectManagerDetails = brandServices.getEmailDistributionDetails("notification","ConstructionProjectManager");
+                        if (constructionProjectManagerDetails){
+                            valConstructionProjectManagerEmailTo = constructionProjectManagerDetails.emailTo;  
+                            //Add construction PM's
+                            email += valConstructionProjectManagerEmailTo;                          
                         }
-
-                        //Add installer PM
-                        switch (store.Installer) {
-                            case 'IST':
-                            case 'Skinny IT':
-                                email += 'Sonic.installs@skinnyit.com; ';
-                                break;
-                            case 'AVIT':
-                                email += 'skalisek99@gmail.com; amyartibee40@gmail.com; ';
-                                break;
-                            case 'RH Tech':
-                                email += 'Jesse@rhtechservices.com; shane@rhtechservices.com; charlie@rhtechservices.com; lee@rhtechservices.com; ';
-                                break;
-                            case 'AVA':
-                                email += 'rickcrenshaw7777@gmail.com; ';
-                                break;
-                            case 'MSIT':
-                                email += 'ron.schmittou@msit.us; DavidCasishere@yahoo.com; quotes@MSIT.us; ';
-                                break;
-                            case 'MYRA':
-                            case 'MIRA':
-                                email += 'Rachael@miraenterprises.net; mikeb@miraenterprises.net; zachary@miraenterprises.net; dispatchrequest@miraenterprises.net; ';
-                                break;
-                            case 'ATI':
-                                email += 'brfc0316@gmail.com; aticustomerservice2015@gmail.com; ';
-                                break;
-                            case 'CSI':
-                                email += 'Chrissy.Davis@CSICentralStates.com; gabe.marler@CSICentralStates.com; ';
-                                break;
-                        }
-
-                        //Add construction PM's
-                        email += 'Development-ConstructionGroup@Sonicdrivein.com; ';
-
-                        //Add Norbert/Kendra if Micros
+                       
                         if (store.Pos === 'Micros') {
-                            email += 'crussell@inspirebrands.com;lwilliams@inspirebrands.com;mtucker@inspirebrands.com;Hannah.sales@oracle.com;Carol.crory@oracle.com;Blake.webb@oracle.com;erin.mckay@oracle.com;aaron.glosser@oracle.com;dave.p.williams@oracle.com;  ';
+                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","Pos","MICROS");
+                            if (additionalEmailDetails){
+                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
+                                email += valAdditionalEmailTo;                          
+                            }                           
+                            valAdditionalEmailTo = "";
                         } else if (store.Pos === 'Infor') {
-                            email += 'Doug.Gilbert@infor.com; joel.schuler@infor.com; justin.hiller@infor.com;Kevin.oconnor@infor.com; ';
+                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","Pos","INFOR");
+                            if (additionalEmailDetails){
+                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
+                                email += valAdditionalEmailTo;                          
+                            }                           
+                            valAdditionalEmailTo = "";
+                           
                         }
 
                         //Add Paul/Erin if Micros Audio
                         if (store.AudioType === 'Micros') {
-                            email += 'Paul.Fischer@Sonicdrivein.com; inge.smith@sonicdrivein.com; ';
+                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","AudioType","MICROS");
+                            if (additionalEmailDetails){
+                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
+                                email += valAdditionalEmailTo;                          
+                            }                           
+                            valAdditionalEmailTo = "";
+                          
                         }
 
                         //Add Paul/Erin if Micros Audio
                         if (store.AudioType.toUpperCase().indexOf('HME') !== -1) {
-                            email += 'SonicSales@hme.com; ';
+                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","AudioType","HME");
+                            if (additionalEmailDetails){
+                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
+                                email += valAdditionalEmailTo;                          
+                            }                           
+                            valAdditionalEmailTo = "";
+                         
                         }
 
                         //Add FabCon if status isn't not required
-                        if (store.PopsStatus)
+                        if (store.PopsStatus){
                         if (store.PopsStatus.toUpperCase().indexOf('NOT REQUIRED') === -1) {
-                            email += 'kgelfer@fabcon.com; bjuarez@fabcon.com; rdelapena@fabcon.com; kgelfer@fabcon.com; IEscobar@fabcon.com;  ';
+                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","PopsStatus","FABCON");
+                            if (additionalEmailDetails){
+                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
+                                email += valAdditionalEmailTo;                          
+                            }                           
+                            valAdditionalEmailTo = "";
+                        } 
                         }
                         
                         //Add Pos Data if status isn't not required
-                        if (store.CirronetStatus)
+                        if (store.CirronetStatus){
                         if (store.CirronetStatus.toUpperCase().indexOf('NOT REQUIRED') === -1) {
-                            if (store.PaysType === 'VP6800')
-                                email += 'sonicorder@level10.com; gglaze@level10.com; elanglo@level10.com; ';
-                            else
-                                email += 'becky.fighera@posdata.com; Amy.sherrer@posdata.com; ';
+                            if (store.PaysType === 'VP6800'){
+                                additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","CirronetStatus","LEVEL10");
+                                if (additionalEmailDetails){
+                                    valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
+                                    email += valAdditionalEmailTo;                          
+                                }                           
+                                valAdditionalEmailTo = "";
+                            }   
+                            else{
+                                additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","CirronetStatus","POSDATA");
+                                if (additionalEmailDetails){
+                                    valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
+                                    email += valAdditionalEmailTo;                          
+                                }                           
+                                valAdditionalEmailTo = "";                              
+                                }
+                            }
                         }
-                        if (store.PaysType)
-                        if (store.PaysType.indexOf("VP6800") > -1)
-                            email += 'gglaze@level10.com; elanglo@level10.com; ';
-
+                        
+                        if (store.PaysType){
+                        if (store.PaysType.indexOf("VP6800") > -1){
+                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","PaysType","LEVEL10");
+                            if (additionalEmailDetails){
+                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
+                                email += valAdditionalEmailTo;                          
+                            }                           
+                            valAdditionalEmailTo = "";
+                            }
+                           
+                        }
                         //Add ProMotion if status isn't not required
-                        if (store.DmbTvStatus)
+                        if (store.DmbTvStatus){
                         if (store.DmbTvStatus.toUpperCase().indexOf('NOT REQUIRED') === -1) {
-                            email += 'Victoria.wilson@promotion.tech;katelyn.kazanowski@promotion.tech;crystal.kokenos@promotion.tech;Zena.mikha@promotion.tech;ali.kazanowski@promotion.tech; ';
+                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","DmbTvStatus","PROMOTION");
+                            if (additionalEmailDetails){
+                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
+                                email += valAdditionalEmailTo;                          
+                            }                           
+                            valAdditionalEmailTo = "";
+                            }
                         }
                         //Add ProMotion if status isn't not required
-                        if (store.SonicRadioStatus)
+                        if (store.SonicRadioStatus){
                         if (store.SonicRadioStatus.toUpperCase().indexOf('NOT REQUIRED') === -1) {
-                            email += 'dmorris@pamdist.com;  purchasing@pamdist.com; accounting@pamdist.com; JSaunders@pamdist.com; ';
+                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","SonicRadioStatus","PROMOTION");
+                            if (additionalEmailDetails){
+                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
+                                email += valAdditionalEmailTo;                          
+                            }                           
+                            valAdditionalEmailTo = "";
+                           
+                            }
                         }
 
                         //Show the quote
                         form.render({
                             subject: store.City + ', ' + store.State + ' #' + store.StoreNumber + ' - Updated Install & Delivery Dates',
                             to: email,
-                            cc: 'NSTI@sonicdrivein.com; SonicFieldServices@inspirebrands.com; ',
+                            cc: valEmailCC,
                             body: template.html(),
                             button: 'Send Update',
                             title: 'Notify All of Updated Install/Delivery Dates',

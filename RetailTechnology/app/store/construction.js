@@ -1,10 +1,12 @@
-define(['app/store/combined'], function(combined){
+define(['app/store/combined','app/brands/services/brandServices','app/brands/services/logHelper'], function(combined,brandServices,logHelper){
     //Setup
     //Turn Cross Origin Resource Sharing On to get sharepoint data from outside site
     $.support.cors = true;
 
     //Point towards the sharepoint site
-    $().SPServices.defaults.webURL = "/Scoop/Information%20Services/PMT/Roll%20Out";  // URL of the  target Web
+    var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+    $().SPServices.defaults.webURL = webUrl;
+	logHelper.logDebug("construction.js","webUrl: " +  webUrl); // URL of the  target Web
     $().SPServices.defaults.listName = "Construction_Calls";  // Name of the list for list
     var today = moment().format('M/D');
     var constructionMapping = {

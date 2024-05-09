@@ -4,12 +4,9 @@ define([
         'dijit/form/TextBox',
         'dijit/form/Button',
         'app/view/report',
-        'dijit/registry',
-        'app/brands/services/brandServices'
-    ], async function (construction, template, TextBox, Button, report, registry,brandServices) {
-        var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
-        var combinedScheduleUrl = await brandServices.getSharePointUrlByKey("list-CombinedSchedule");
-        $().SPServices.defaults.webURL = webUrl;
+        'dijit/registry'
+    ], function (construction, template, TextBox, Button, report, registry) {
+
         return {
             render: function (options) {
                 var me = {},
@@ -73,7 +70,7 @@ define([
                         {key: 'InstallDate', title: 'Install Start Date', transform: 'date'},
                         {key: 'GoLiveDate', title: 'Go-Live Date', transform: 'date'},
                         {key: 'CombinedId', title: 'Details', transform: function (value, row, data, index) {
-                            return "<a href='" + webUrl + "Combined%20Schedule/DispForm.aspx?ID=" + value + "'>more</a>"
+                            return "<a href='http://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Combined%20Schedule/DispForm.aspx?ID=" + value + "'>more</a>"
                         }}
                     ],
                     sort: {
@@ -101,7 +98,7 @@ define([
                             return hughes.Wireless;
                         }},
                         {key: 'CombinedId', title: 'Details', transform: function (value, row, data, index) {
-                            return "<a href='" + combinedScheduleUrl.replace("__store.CombinedId__",value) + "'>more</a>"
+                            return "<a href='http://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Combined%20Schedule/DispForm.aspx?ID=" + value + "'>more</a>"
                         }}
                     ],
                     sort: {

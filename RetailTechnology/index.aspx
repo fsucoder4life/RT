@@ -1,9 +1,5 @@
 ﻿<!DOCTYPE html>
 
-<%@ Page Language="C#" %>
-
-<%@ Register TagPrefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
-<%@ Register TagPrefix="sld" TagName="PromoDisplay" Src="~/_controltemplates/RetailTechnology/GetCurrentUsersEmail.ascx" %>
 <html dir="ltr" xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -41,9 +37,7 @@
         type="application/opensearchdescription+xml"
         title="Sonic Search" />
     <!--SP Librarires-->
-    <sharepoint:scriptlink name="MicrosoftAjax.js" runat="server" defer="False" localizable="false" />
-    <sharepoint:scriptlink name="SP.core.js" runat="server" defer="False" localizable="false" />
-    <sharepoint:scriptlink name="SP.js" runat="server" defer="True" localizable="false" />
+   
     <!--Libraries-->
     <script language="javascript" type="text/javascript" src="resources/lib/jquery-1.11.1.min.js"></script>
     <script language="javascript" type="text/javascript" src="resources/lib/jquery.SPServices-2014.01.min.js"></script>
@@ -86,7 +80,7 @@
     <%--<script language="javascript" type="text/javascript" src="resources/lib/wkhtmltopdf_tableSplitHack.js"></script>--%>
     <!-- load Dojo -->
     <script type="text/javascript">
-        <sld:PromoDisplay id="PromoDisplay1" runat="server" />
+       
         // Configure DOJO
         // Instead of using data-dojo-config, we're creating a dojoConfig
         // object *before* we load dojo.js; they're functionally identical,
@@ -113,6 +107,73 @@
     <!--Start application-->
     <script language="javascript">
         require(['app/router']);
+    </script>
+    <script>
+        require([
+    
+    
+            'app/brands/services/brandServices',
+            "app/brands/services/logHelper",
+            'dojo/when',
+            'app/brands/services/domServices'
+    
+        ], function (brandServices, logHelper, when, domServices) {
+            const replaceLinkHrefFn = brandServices.replaceLinkHref.bind(this);
+            loadConfigFile: (async function () {
+                let retVal = false;
+                retVal = await brandServices.loadConfigFile();
+                if (retVal) {
+                    logHelper.logInfo("loadConfigFile: Config File Loaded");
+                    logHelper.logInfo("Step 1 Return Value: " + retVal);
+                    retVal = false;
+                    retVal = await brandServices.startApp();
+    
+                    if (retVal) {
+                        logHelper.logInfo("Step 2 Return Value: " + retVal);
+                        retVal = false;
+                        retVal = await brandServices.setCurrentBrandConfig();
+                    }
+    
+                    if (retVal) {
+                        logHelper.logInfo("Step 3 Return Value: " + retVal);
+                        retVal = false;
+                        retVal = await logHelper.logInfo("loadConfigFile: App Started");
+                    }
+    
+                    //Only use if using mock data api
+                    // if (retVal) {
+                    //     logHelper.logInfo("Step 4 Return Value: " + retVal);
+                    //     retVal = await brandServices.refreshCSS();
+                    //     brandServices.getReports();
+                    // }
+    
+                    if (retVal) {
+                        logHelper.logInfo("Step 4 Return Value: " + retVal);
+                        dom.byId("current-date").innerHtml = new Date();
+                        $("#loading-mask").hide();
+    
+                        logHelper.logInfo("before changing link");
+                        await brandServices.getSharePointUrlByKey("sitePage-RetailTechnology").then(async (url) => {
+                            var newUrl = url + "/index.aspx#reports/micros";
+                            logHelper.logInfo("after changing link" + url);
+                            brandServices.replaceLinkHref("posMicros", newUrl);
+                        });
+    
+                    }
+    
+                }
+    
+    
+    
+    
+    
+    
+    
+            })();
+    
+        });
+    
+    
     </script>
 </head>
 <body class="claro">

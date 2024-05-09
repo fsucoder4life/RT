@@ -1,4 +1,4 @@
-async function ApplyFilters() {
+function ApplyFilters() {
 
     var startDate = "";
     var endDate = "";
@@ -32,12 +32,12 @@ async function ApplyFilters() {
     if ($("input[name='orderdocsent']:checked").val() !== "ALL")
         orderdocsent = "/orderdocsent/" + $("input[name='orderdocsent']:checked").val();
 
-var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
-    window.location.href = webUrl + "/index.aspx#reports/paymentmodprojectdates4" + itpm + startDate + endDate + sortByGoLiveDate + franchisee + sitesurveycompleted + orderdocsent;
+
+    window.location.href = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/index.aspx#reports/paymentmodprojectdates" + itpm + startDate + endDate + sortByGoLiveDate + franchisee + sitesurveycompleted + orderdocsent;
     window.location.reload();
 }
 
-define(['app/view/reportPaymentmodprojectdates', 'app/store/combined', 'app/store/construction', 'app/store/combinedconstructionextend', 'app/rules/paymentmod','app/brand/services/brandServices'], function (report, combined, construction, combinedconstructionextend, paymentmodRules,brandServices) {
+define(['app/view/reportPaymentmodprojectdates', 'app/store/combined', 'app/store/construction', 'app/store/combinedconstructionextend', 'app/rules/paymentmod'], function (report, combined, construction, combinedconstructionextend, paymentmodRules) {
     return {
         show: function (target, routeCheck, options) {
             var stores2 = [];
@@ -78,11 +78,11 @@ define(['app/view/reportPaymentmodprojectdates', 'app/store/combined', 'app/stor
             var CSquery = "<Query><Where><In><FieldRef Name='Title' /><Values>";
             var CAMLQuery = "";
             if (startDate.length > 0 && endDate.length > 0)
-                CAMLQuery = "<Query><Where><And><Geq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'>" + startDate + "</Value></Geq><Leq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'>" + endDate + "</Value></Leq></And></Where></Query>";
+                CAMLQuery = "<Query><Where><And><Geq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'>" + startDate + "</Value></Geq><Leq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'>" + endDate + "</Value></Leq></And></Where><OrderBy><FieldRef Name='VP6800_x0020_Go_x0020_Live'  /></OrderBy></Query>";
             else if (startDate.length > 0)
-                CAMLQuery = "<Query><Where><Geq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'>" + startDate + "</Value></Geq></Where></Query>";
+                CAMLQuery = "<Query><Where><Geq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'>" + startDate + "</Value></Geq></Where><OrderBy><FieldRef Name='VP6800_x0020_Go_x0020_Live'  /></OrderBy></Query>";
             else if (endDate.length > 0)
-                CAMLQuery = "<Query><Where><Leq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'>" + endDate + "</Value></Leq></Where></Query>";
+                CAMLQuery = "<Query><Where><Leq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'>" + endDate + "</Value></Leq></Where><OrderBy><FieldRef Name='VP6800_x0020_Go_x0020_Live'  /></OrderBy></Query>";
             else
                 CAMLQuery = "<Query><Where><Geq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'><Today /></Value></Geq></Where><OrderBy><FieldRef Name='VP6800_x0020_Go_x0020_Live'  /></OrderBy></Query>";
 
@@ -91,6 +91,7 @@ define(['app/view/reportPaymentmodprojectdates', 'app/store/combined', 'app/stor
                 listName: "Combined Construction Extend",
                 CAMLRowLimit: 990,
                 CAMLQuery: CAMLQuery,
+                CAMLViewFields: "<ViewFields Properties='True' />",
                 //CAMLQuery: "<Query><Where><Geq><FieldRef Name='VP6800_x0020_Go_x0020_Live' /><Value IncludeTimeValue='False' Type='DateTime'><Today /></Value></Geq></Where><OrderBy><FieldRef Name='VP6800_x0020_Go_x0020_Live'  /></OrderBy></Query>",
                 async: false,
                 completefunc: function (xData, Status) {
@@ -106,6 +107,22 @@ define(['app/view/reportPaymentmodprojectdates', 'app/store/combined', 'app/stor
                         store.VP6800Delivery = $(this).attr("ows_VP6800_x0020_Delivery");
                         if (!store.VP6800Delivery)
                             store.VP6800Delivery = "";
+
+                        store.VP6800SiteSurveyRequested = $(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x");
+                        if (!store.VP6800SiteSurveyRequested)
+                            store.VP6800SiteSurveyRequested = "";
+
+
+                        store.VP6800SiteSurveyResultsReviewed = $(this).attr("ows_VP6800_x0020_Site_x0020_Survey_x3");
+                        if (!store.VP6800SiteSurveyResultsReviewed)
+                            store.VP6800SiteSurveyResultsReviewed = "";
+
+                        store.VP6800SiteSurveyCompleted = $(this).attr("ows_VP6800_x0020_SITE_x0020_SURVEY_x2");
+                        if (!store.VP6800SiteSurveyCompleted)
+                            store.VP6800SiteSurveyCompleted = "";
+
+                        
+                        
 
                         store.VP6800GoLive = $(this).attr("ows_VP6800_x0020_Go_x0020_Live");
                         if (!store.VP6800GoLive)
@@ -174,10 +191,6 @@ define(['app/view/reportPaymentmodprojectdates', 'app/store/combined', 'app/stor
                         store.VP6800DayBeforeInstallComm = $(this).attr("ows_VP6800_x0020_Day_x0020_Before_x0");
                         if (!store.VP6800DayBeforeInstallComm)
                             store.VP6800DayBeforeInstallComm = "";
-
-                        store.VP6800TrackingNum = $(this).attr("ows_VP6800_x0020_Tracking_x0020_Num");
-                        if (!store.VP6800TrackingNum)
-                            store.VP6800TrackingNum = "";
 
                         store.RMAOrOpen = $(this).attr("ows_RMA_x0020_OR_x0020_OPEN_x0020_IT");
                         if (!store.RMAOrOpen)
@@ -300,7 +313,7 @@ define(['app/view/reportPaymentmodprojectdates', 'app/store/combined', 'app/stor
             while (i--) {
                 if (stores2[i].StoreNumber === "XXXX") {
                     stores2.splice(i, 1);
-                } 
+                }
             }
 
             //Define Report Columns
@@ -328,13 +341,13 @@ define(['app/view/reportPaymentmodprojectdates', 'app/store/combined', 'app/stor
 
 
                 { key: 'VP6800IntroCallToFee', title: 'Intro Call', transform: 'date', editable: true },
-                { key: 'VP6800ProjectSiteSurveyCompany', title: 'Site Survey Requested (Installation Company Assigned)', editable: true },
+                { key: 'VP6800SiteSurveyRequested', title: 'Site Survey Requested (Installation Company Assigned)', transform: 'date', editable: true },
                 { key: 'VP6800HughesDoctoFEE', title: 'Hughes Document sent to FRAN', transform: 'date', editable: true },
                 { key: 'VP6800HughesDoctoHughes', title: 'Hughes Document sent to Hughes', transform: 'date', editable: true },
                 { key: 'VP6800SiteSurveyConfirmedbyInstaller', title: 'Site Survey Schedule Confirmed by Installation Company', transform: 'date', editable: true },
 
-                { key: 'VP6800ProjectSiteSurveyDate', title: 'SITE SURVEY COMPLETED', transform: 'date', editable: true },
-                { key: 'VP6800ReviewSignOffs', title: 'Site Survey Results Reviewed with FRAN', transform: 'date', editable: true },
+                { key: 'VP6800SiteSurveyCompleted', title: 'SITE SURVEY COMPLETED', transform: 'date', editable: true },
+                { key: 'VP6800SiteSurveyResultsReviewed', title: 'Site Survey Results Reviewed with FRAN', transform: 'date', editable: true },
                 { key: 'VP6800OrderDocSenttoFee', title: 'Order Documents sent to FRAN', transform: 'date', editable: true },
 
                 { key: 'VP6800InstallScheduled', title: 'INSTALL SCHEDULED', transform: 'date', editable: true },
@@ -346,11 +359,11 @@ define(['app/view/reportPaymentmodprojectdates', 'app/store/combined', 'app/stor
                 { key: 'VP68001WeekComm', title: '1 WEEK COMMS', transform: 'date', editable: true },
                 { key: 'VP6800DayBeforeInstallComm', title: '1 DAY COMMS', transform: 'date', editable: true },
 
-                { key: 'VP6800Level10TrackingNum', title: 'Level 10 Tracking #', transform: 'date', editable: true },
+                { key: 'VP6800Level10TrackingNum', title: 'Level 10 Tracking #', editable: true },
                 { key: 'VP6800Delivery', title: 'DELIVERY<br />DATE', transform: 'date', editable: true },
 
                 { key: 'VP6800ReviewSignOffs', title: 'REVIEW<br />SIGN-OFFS', transform: 'date', editable: true },
-                { key: 'RMAOrOpen', title: 'RMA OR<br />OPEN ITEMS', transform: 'date', editable: true },
+                { key: 'RMAOrOpen', title: 'RMA OR<br />OPEN ITEMS', editable: true },
 
 
 
@@ -369,7 +382,15 @@ define(['app/view/reportPaymentmodprojectdates', 'app/store/combined', 'app/stor
 
             var sort;
             var hashLoc = window.location.hash;
-            if (hashLoc.indexOf("golivedate") > -1) {
+            if (hashLoc.indexOf("sort") > -1) {
+                hashSort = hashLoc.substring(hashLoc.indexOf("sort") + 5);
+                sort = {
+                    key: hashSort,
+                    direction: 'DESC'
+                };
+            }
+            
+            else if (hashLoc.indexOf("golivedate") > -1) {
                 hashSort = hashLoc.substring(hashLoc.indexOf("golivedate") + 5);
                 sort = {
                     key: 'VP6800GoLive',

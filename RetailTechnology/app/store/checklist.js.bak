@@ -1,28 +1,26 @@
-define(['app/brands/services/brandServices'],async function(brandServices){
+define(function(){
     //Setup
     //Turn Cross Origin Resource Sharing On to get sharepoint data from outside site
     $.support.cors = true;
-    var listName = 'Project Issues';
+    var listName = 'Project Checklist';
 
     //Point towards the sharepoint site
-    var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
-    $().SPServices.defaults.webURL = webUrl;//  // URL of the target Web
+    $().SPServices.defaults.webURL = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out";  // URL of the target Web
 
     //Request fields mapping from internal names
     var mapping = {
-        ows_ID: {mappedName: "IssueId", objectType: "Text"},
+        ows_ID: {mappedName: "ChecklistID", objectType: "Text"},
         ows_Store_x0020_Number: {mappedName: 'StoreNumber', objectType: 'Lookup'},
-        ows_Issue_x0020_Type: {mappedName: 'IssueType', objectType: "Text", type: 'select', options: ['General', 'Connectivity', 'POS', 'POPS', 'Audio', 'PAYS', 'DMB/TV', 'Construction', 'Installer', 'Delivery', 'Special Request']},
         ows_Title: {mappedName: 'Title', objectType: 'Text'},
-        ows_Assigned: {mappedName: 'Assigned', objectType: 'Text'},
-        ows_Status: {mappedName: 'Status', objectType: 'Text', type: 'select', options: ['Open', 'Closed']},
-        ows_Severity: {mappedName: 'Severity', objectType: 'Text', type: 'select', options: ['(1) - Optional', '(2) Mandatory', '(3) - Important', '(4) - Severe']},
+        ows_Status: {mappedName: 'Status', objectType: 'Text'},
+        ows_Complete: {mappedName: 'Complete', objectType: 'Boolean'},
+        ows_Warn_x0020_Date: {mappedName: 'WarnDate', objectType: 'Text'},
+        ows_Due_x0020_Date: {mappedName: 'DueDate', objectType: 'Text'},
+        ows_Category: {mappedName: 'Category', objectType: 'Text'},
         ows_Author: {mappedName: 'CreatedBy', objectType: 'Text'},
         ows_Editor: {mappedName: 'ModifiedBy', objectType: 'Text'},
         ows_Created_x0020_Date: {mappedName: 'CreatedOn', objectType: 'Text', type: 'date'},
-        ows_Last_x0020_Modified: {mappedName: 'ModifiedOn', objectType: 'Text', type: 'date'},
-        ows_Description: {mappedName: 'Description', objectType: 'Text'},
-        ows_Waiting_x0020_On: {mappedName: 'WaitingOn', objectType: 'Text'}
+        ows_Last_x0020_Modified: {mappedName: 'ModifiedOn', objectType: 'Text', type: 'date'}
     };
 
     //Build the fields request xml
@@ -42,8 +40,7 @@ define(['app/brands/services/brandServices'],async function(brandServices){
         //Create query by store number if not passed
         if (typeof query === "undefined" && options.store) {
             //Build query
-            query = new CamlBuilder().Where().LookupField('Store_x0020_Number').Value().EqualTo(options.store.StoreNumber)
-                .OrderByDesc('Severity');
+            query = new CamlBuilder().Where().LookupField('Store_x0020_Number').Value().EqualTo(options.store.StoreNumber);
 
             query = "<Query>" + query.ToString() + "</Query>";
         } else if (typeof query === 'undefined') {
@@ -110,11 +107,11 @@ define(['app/brands/services/brandServices'],async function(brandServices){
             valuepairs: [
                 ["Title", issue.Title || ''],
                 ["Store_x0020_Number", store.CombinedId + ";#" + store.StoreNumber],
-                ["Assigned", issue.Assigned || ''],
-                ["Severity", issue.Severity || ''],
-                ["Issue_x0020_Type", issue.IssueType || ''],
-                ["Description", issue.Description || ''],
-                ["Waiting_x0020_On", issue.WaitingOn || '']
+                ["Status", issue.Status || ''],
+                ["Complete", issue.Severity || false],
+                ["Warn_x0020_Date", issue.WarnDate || ''],
+                ["Due_x0020_Date", issue.DueDate || ''],
+                ["Category", issue.Category || '']
             ],
             completefunc: function(xData, Status) {
                 //Convert to JSON object for easier access
@@ -148,7 +145,7 @@ define(['app/brands/services/brandServices'],async function(brandServices){
         $().SPServices({
             operation: "GetListAndView",
             listName: listName,
-            viewName: '078240D7-F45E-413F-AEC5-FE3AAFB98FCE',
+            viewName: 'df436e9d-b152-411d-b593-33d99300a2d8',
             completefunc: function(xData, Status) {
                 $(xData.responseXML).find("Fields > Field").each(function() {
                     var $node = $(this);

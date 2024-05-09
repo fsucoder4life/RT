@@ -1,0 +1,485 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-2931895-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-2931895-1');
+    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="cache-control" content="max-age=0">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="-1">
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 11:00:00 GMT">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta charset="utf-8">
+    <title id="applicationId">Retail Technology HTML</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="shortcut icon" href="resources/images/favicon.ico" type="image/vnd.microsoft.icon" />
+    <!--Styles-->
+    <!-- <link id="CurrentBrandThemeStylesheet" rel="stylesheet" type="text/css" href="resources/style/main.css?version=#" /> -->
+    <link rel="stylesheet" type="text/css" href="resources/style/pure-min.css" />
+    <link rel="stylesheet" type="text/css" href="resources/lib/dijit/themes/claro/claro.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="resources/lib/jquery-ui/jquery-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="resources/lib/DataTables/datatables.min.css" /> -->
+    <link rel="stylesheet" type="text/css" href="resources/lib/date-picker/datepicker.min.css" />
+    <link rel="stylesheet" type="text/css" href="resources/lib/jquery-modal/jquery.modal.min.css" />
+    <link rel="stylesheet" type="text/css" href="resources/style/font-awesome-4.6.2/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="resources/lib/jstree/themes/default/style.min.css">
+    <!--Search-->
+    <link rel="search" href="opensearch.xml" type="application/opensearchdescription+xml" title="Sonic Search" />
+</head>
+
+<body class="claro">
+
+    <!-- <link id="CurrentBrandThemeStylesheet" rel="stylesheet" type="text/css" href="" />
+    -->
+    <div id="main">
+        <div style="float: left; ">
+            <h1 id="CurrentAppTitle" class="currentAppTitle"></h1>
+
+        </div>
+        <div class="brandTitle">
+            <a href="#index">
+                <img id="CurrentCompanyLogo" class="brandLogo" src="" alt="Logo" />
+            </a>
+            <div>
+                <span id="CurrentCompanyName"></span><br />
+                <span id="CurrentCompanyAddress"></span><br />
+                <span id="CurrentCompanyCityState"></span><span id="CurrentCompanyZip"></span><br />
+                <span id="CurrentCompanyPhone"></span>
+            </div>
+
+        </div>
+        <!--Search Box-->
+        <div id="search-container" style="display: block; float: initial;">
+            <span id="sub-title">Search/Reports</span> - <span id="current-date"></span>
+            <div style="display:inline-block;">
+                Search Stores:
+
+                <input id="search" style="display: inline-block; margin-left: 10px; width: 385px;" name="search"
+                    type="text" title="Search">
+                <table
+                    class="dijit dijitReset dijitInline dijitLeft dijitDownArrowButton dijitSelectFixedWidth dijitValidationTextBoxFixedWidth dijitSelect dijitValidationTextBox"
+                    data-dojo-attach-point="_buttonNode,tableNode,focusNode,_popupStateNode" cellspacing="0"
+                    cellpadding="0" role="listbox" aria-haspopup="true" tabindex="0" id="search-type"
+                    widgetid="search-type" aria-expanded="false" aria-invalid="false"
+                    style="user-select: none; display: inline-block; width: 125px; position: relative; top: -1px;">
+                    <tbody role="presentation">
+                        <tr role="presentation">
+                            <td class="dijitReset dijitStretch dijitButtonContents" role="presentation">
+                                <div class="dijitReset dijitInputField dijitButtonText"
+                                    data-dojo-attach-point="containerNode,textDirNode" role="presentation">
+                                    <span role="option"
+                                        class="dijitReset dijitInline dijitSelectLabel dijitValidationTextBoxLabel ">All</span>
+                                </div>
+                                <div class="dijitReset dijitValidationContainer"><input
+                                        class="dijitReset dijitInputField dijitValidationIcon dijitValidationInner"
+                                        value="Χ " type="text" tabindex="-1" readonly="readonly" role="presentation">
+                                </div><input type="hidden" data-dojo-attach-point="valueNode" value="All"
+                                    aria-hidden="true">
+                            </td>
+                            <td class="dijitReset dijitRight dijitButtonNode dijitArrowButton dijitDownArrowButton dijitArrowButtonContainer"
+                                data-dojo-attach-point="titleNode" role="presentation"><input
+                                    class="dijitReset dijitInputField dijitArrowButtonInner" value="▼ " type="text"
+                                    tabindex="-1" readonly="readonly" role="presentation"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="content">
+            <!--Loading Mask-->
+            <!-- <div id="loading-mask">
+                <img src="resources/images/loading.gif" alt="loading image" />
+            </div> -->
+            <div style=" border: 1px solid black; margin: 10px; padding: 5px;">
+                <p>Select a report or workflow tool below or type in the search box above to find information about a
+                    store. The search box supports a combination of city, state, store number, rvp, svp, or franchisee
+                    names.</p>
+            </div>
+            <div style=" border: 1px solid black; margin: 10px; padding: 5px;">
+                <h2>Vendor Reports</h2>
+                <ul>
+                    <li>
+                        POS:
+                        <ul style="margin: 0 0 5px 0;">
+                            <li><a href="https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/index.aspx#reports/micros" id="posMicros">Oracle
+                                    - Construction</a></li>
+                            <li><a href="#reports/micros-conversions">Oracle - Conversion</a></li>
+                            <li><a href="#reports/infor">Infor - Construction</a></li>
+                            <li><a href="#reports/infor-conversions">Infor - Conversion</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        Franchisee Owned POS:
+                        <ul style="margin: 0 0 5px 0;">
+                            <li><a href="#reports/sonicownedmicrosoracle">Oracle/Micros</a></li>
+                            <li><a href="#reports/sonicownedinfor">Infor</a></li>
+                            <li><a href="#reports/sonicownedundecided">Undecided/Other/None</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        Installers:
+                        <ul style="margin: 0 0 5px 0;">
+                            <li><a href="#reports/site-survey">Site Surveys</a></li>
+                            <li><a href="#reports/construction-installers">All Construction</a> <a
+                                    href="#reports/construction-installers/sort/InstallDate">(sort by install)</a></li>
+                            <li><a href="#reports/construction-installers-workload">Construction Installer Workload</a>
+                            </li>
+                            <li><a href="#reports/mira">MIRA - Construction</a></li>
+                            <li><a href="#reports/mira-all">MIRA - All</a> Includes conversion projects and unassigned
+                                projects</li>
+                            <li><a href="#reports/avit">AVIT - Construction</a></li>
+                            <li><a href="#reports/rh-tech">RH Tech - Construction</a></li>
+                            <li><a href="#reports/construction-installer-scorecard">Construction Installer Scorecard (by
+                                    project) - 60 day view</a></li>
+                            <li><a href="#reports/construction-installer-scorecard-by-installer">Construction Installer
+                                    Scorecard (by install group) - 60 day view</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        Audio:
+                        <ul style="margin: 0 0 5px 0;">
+                            <li><a href="#reports/hme">Construction HME</a> <a
+                                    href="#reports/hme/sort/InstallDate">(sort by install)</a></li>
+                            <li><a href="#reports/micros-audio-construction">Construction Oracle</a></li>
+                            <li><a href="#reports/construction-audio">Construction All</a></li>
+                            <li><a href="#reports/micros-audio-conversion">Conversion Oracle</a></li>
+                            <li><a href="#reports/hme-conversion">Conversion HME</a></li>
+                            <li><a href="#reports/micros-audio">Oracle All Future</a></li>
+                            <li><a href="#reports/micros-audio-historical">Oracle Historical &amp; Future</a></li>
+                            <li><a href="#reports/hme-all">HME All</a></li>
+                            <li><a href="#reports/hme-dual-driveins">HME 6700 Dual Drive-ins w/ Dual HME Bridges</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        Hughes:
+                        <ul style="margin: 0 0 5px 0;">
+                            <li><a href="#reports/hughes">Hughes/Internal Sonic Network</a> <a
+                                    href="#reports/hughes/sort/InstallDate">(sort by install)</a></li>
+                            <li><a href="#reports/hughes-primary">Hughes Primary</a> <a
+                                    href="#reports/hughes-primary/sort/InstallDate">(sort by install)</a></li>
+                            <li><a href="#reports/hughes-relocation">Hughes Relocation Report</a></li>
+                            <li><a href="#reports/conversion-hughes">Hughes Conversion Report</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        POPS:
+                        <ul style="margin: 0 0 5px 0;">
+                            <li><a href="#reports/fabcon">FabCon - Construction Only</a></li>
+                            <li><a href="#reports/conversion-fabcon">FabCon - Conversion Only</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        DT POPS:
+                        <ul style="margin: 0 0 5px 0;">
+                            <li><a href="#reports/dt-pops-all-historical">Historical</a></li>
+                            <li><a href="#reports/dt-pops-all">Combined - Upcoming</a></li>
+                            <li><a href="#reports/dt-pops-construction">Construction - Upcoming</a></li>
+                            <li><a href="#reports/dt-pops-conversion">Conversion - Upcoming</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#reports/dmb">Digital Menu Boards</a></li>
+                    <li><a href="#reports/pays">PAYS (POSData/ServerEPS/FirstData/TASQ)</a></li>
+                    <li><a href="#reports/construction-sonic-radio">Sonic Radio</a> <a
+                            href="#reports/construction-sonic-radio/sort/InstallDate">(sort by install)</a></li>
+                </ul>
+
+                <h2>Internal Reports</h2>
+                <ul>
+
+                    <li><a href="#reports/upcoming-all-new">All Projects</a>: Upcoming all projects using
+                        delivery/install/go-live dates</li>
+                    <li><a href="#reports/oracleserverupgradeschedule">Oracle Server Upgrade Schedule</a>: Upcoming
+                        upgrades based on Upgrade Go Live Date</li>
+                    <li><a href="#reports/oracleserverupgradeschedule2">Oracle Server Upgrade-Windows Upgrade Go Live
+                            Schedule</a>: Upcoming upgrades based on Windows upgrade Go Live Date</li>
+                    <li><a href="#reports/serverswapupgrade">Server Swap Go-Live Report</a></li>
+                    <li><a href="#reports/serverswapupgrade2">Windows 10 Upgrade Go-Live Report</a></li>
+                    <li><a href="#reports/overnightreportsummary">Overnight Report Summary</a></li>
+                    <li><a href="#reports/rvp">RVP Agenda/Construction Summary</a></li>
+                    <li><a href="#reports/upcoming-all">Upcoming Installs All</a>: 8 Month view, including all projects
+                    </li>
+                    <li><a href="#reports/upcoming">Upcoming Installs</a>: 4 Month view, includes construction and
+                        conversion projects</li>
+                    <li><a href="#reports/openings">Upcoming Openings</a>: 1 Month view, includes construction and
+                        conversion projects</li>
+                    <li><a href="#openings/openings-by-day">Opening Schedule</a>: Searchable list of openings, sorted by
+                        Go-Live date, defaults to the current week</li>
+                    <li><a href="#support/installs-by-day">Install Schedule</a>: Searchable list of installs, sorted by
+                        install date, defaults to the current week</li>
+                    <li><a href="#training/openings-by-day">Trainer Assignment</a>: Searchable list of assigned
+                        trainers, sorted by opening date, defaults to the 4 week period of Oracle POS construction and
+                        conversion projects.</li>
+                    <li><a href="#weekly-pops">POPS Weekly Shipping Summary</a>: Searchable list of weekly POPS
+                        deliveries and total number of POPS delivered</li>
+                    <li><a href="#reports/ateam">A-Team Status</a>: List of all new stores with go-live dates from ten
+                        days in the past forward to track the </li>
+                    <li><a href="#manufacturing-projection">POPS Hardware Projection</a>: Shows POPS and mounting
+                        brackets required for all upcoming installs inside a selected date range</li>
+                    <li><a href="#reports/chronically-ailing">Chronically Ailing</a>: A list of all stores in the
+                        chronically ailing fast-track program</li>
+                    <li><a href="#reports/enterprise-management-construction">Enterprise Management - Construction</a>
+                    </li>
+                    <li><a href="#reports/construction-post-install">Post Install - Construction</a></li>
+                    <li><a href="#reports/ConstructionSchedule">Upcoming Construction Schedule</a>: Opening schedule /
+                        install schedule for construction stores</li>
+                    <li><a href="#support/installs-by-day-payment">Pay Mod Install Schedule</a>: Searchable list of
+                        installs, sorted by install date, defaults to the current week</li>
+                    <li><a href="#reports/paymentmodproject">Upcoming Next Gen Pays</a>: Current and Future</li>
+                    <li><a href="#reports/paymentmodprojectall">Upcoming Next Gen Pays - ALL</a>: Current and
+                        Future<br><br></li>
+                    <li><a href="#reports/oraclekitchenpos">Oracle CE Kitchen POS Replacement</a>: Current and
+                        Future<br><br></li>
+                    <li><a href="#reports/firewallapvsatreplacement">Firewall/AP/VSAT Replacement</a>: Current and
+                        Future<br><br></li>
+
+
+
+
+
+
+                    <li><a href="#reports/paymentmodprojectdates">Next Gen Pays Readiness Report</a> (Sort by: <a
+                            href="#reports/paymentmodprojectdates/sort/VP6800ITPM">PM</a> | <a
+                            href="#reports/paymentmodprojectdates/sort/FranchiseGroup">Franchisee</a> | <a
+                            href="#reports/paymentmodprojectdates/sort/VP6800Ordered">Ordered</a> | <a
+                            href="#reports/paymentmodprojectdates/sort/VP6800Level10TrackingNum">Tracking</a> | <a
+                            href="#reports/paymentmodprojectdates/sort/VP6800HughesDoctoFEE">Hughes Sent FEE</a> | <a
+                            href="#reports/paymentmodprojectdates/sort/VP6800OrderDocSenttoFee">Order Doc Sent to
+                            FEE</a>)
+                        <ul style="margin: 0 0 5px 0;">
+                            <li><a href="#reports/paymentmodprojectdates/itpm/kaitlyn">Kaitlyn Childers</a> (Sort by: <a
+                                    href="#reports/paymentmodprojectdates/itpm/kaitlyn/sort/FranchiseGroup">Franchisee</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/kaitlyn/sort/VP6800Ordered">Ordered</a>
+                                | <a
+                                    href="#reports/paymentmodprojectdates/itpm/kaitlyn/sort/VP6800Level10TrackingNum">Tracking</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/kaitlyn/sort/VP6800HughesDoctoFEE">Hughes
+                                    Sent FEE</a> | <a
+                                    href="#reports/paymentmodprojectdates/itpm/kaitlyn/sort/VP6800OrderDocSenttoFee">Order
+                                    Doc Sent to FEE</a>)</li>
+                            <li><a href="#reports/paymentmodprojectdates/itpm/parish">Dustin Parish</a> (Sort by: <a
+                                    href="#reports/paymentmodprojectdates/itpm/parish/sort/FranchiseGroup">Franchisee</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/parish/sort/VP6800Ordered">Ordered</a> |
+                                <a
+                                    href="#reports/paymentmodprojectdates/itpm/parish/sort/VP6800Level10TrackingNum">Tracking</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/parish/sort/VP6800HughesDoctoFEE">Hughes
+                                    Sent FEE</a> | <a
+                                    href="#reports/paymentmodprojectdates/itpm/parish/sort/VP6800OrderDocSenttoFee">Order
+                                    Doc Sent to FEE</a>)
+                            </li>
+                            <li><a href="#reports/paymentmodprojectdates/itpm/coffman">Michele Coffman</a> (Sort by: <a
+                                    href="#reports/paymentmodprojectdates/itpm/coffman/sort/FranchiseGroup">Franchisee</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/coffman/sort/VP6800Ordered">Ordered</a>
+                                | <a
+                                    href="#reports/paymentmodprojectdates/itpm/coffman/sort/VP6800Level10TrackingNum">Tracking</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/coffman/sort/VP6800HughesDoctoFEE">Hughes
+                                    Sent FEE</a> | <a
+                                    href="#reports/paymentmodprojectdates/itpm/coffman/sort/VP6800OrderDocSenttoFee">Order
+                                    Doc Sent to FEE</a>) </li>
+                            <li><a href="#reports/paymentmodprojectdates/itpm/desai">Neal Desai</a> (Sort by: <a
+                                    href="#reports/paymentmodprojectdates/itpm/desai/sort/FranchiseGroup">Franchisee</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/desai/sort/VP6800Ordered">Ordered</a> |
+                                <a
+                                    href="#reports/paymentmodprojectdates/itpm/desai/sort/VP6800Level10TrackingNum">Tracking</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/desai/sort/VP6800HughesDoctoFEE">Hughes
+                                    Sent FEE</a> | <a
+                                    href="#reports/paymentmodprojectdates/itpm/desai/sort/VP6800OrderDocSenttoFee">Order
+                                    Doc Sent to FEE</a>)
+                            </li>
+                            <li><a href="#reports/paymentmodprojectdates/itpm/rice">Josh Rice</a> (Sort by: <a
+                                    href="#reports/paymentmodprojectdates/itpm/rice/sort/FranchiseGroup">Franchisee</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/rice/sort/VP6800Ordered">Ordered</a> |
+                                <a
+                                    href="#reports/paymentmodprojectdates/itpm/rice/sort/VP6800Level10TrackingNum">Tracking</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/rice/sort/VP6800HughesDoctoFEE">Hughes
+                                    Sent FEE</a> | <a
+                                    href="#reports/paymentmodprojectdates/itpm/rice/sort/VP6800OrderDocSenttoFee">Order
+                                    Doc Sent to FEE</a>)
+                            </li>
+                            <li><a href="#reports/paymentmodprojectdates/itpm/over">Cory Van Over</a> (Sort by: <a
+                                    href="#reports/paymentmodprojectdates/itpm/over/sort/FranchiseGroup">Franchisee</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/over/sort/VP6800Ordered">Ordered</a> |
+                                <a
+                                    href="#reports/paymentmodprojectdates/itpm/over/sort/VP6800Level10TrackingNum">Tracking</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/over/sort/VP6800HughesDoctoFEE">Hughes
+                                    Sent FEE</a> | <a
+                                    href="#reports/paymentmodprojectdates/itpm/over/sort/VP6800OrderDocSenttoFee">Order
+                                    Doc Sent to FEE</a>)
+                            </li>
+
+                            <li><a href="#reports/paymentmodprojectdates/itpm/srader">Jason Srader</a> (Sort by: <a
+                                    href="#reports/paymentmodprojectdates/itpm/srader/sort/FranchiseGroup">Franchisee</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/srader/sort/VP6800Ordered">Ordered</a> |
+                                <a
+                                    href="#reports/paymentmodprojectdates/itpm/srader/sort/VP6800Level10TrackingNum">Tracking</a>
+                                | <a href="#reports/paymentmodprojectdates/itpm/srader/sort/VP6800HughesDoctoFEE">Hughes
+                                    Sent FEE</a> | <a
+                                    href="#reports/paymentmodprojectdates/itpm/srader/sort/VP6800OrderDocSenttoFee">Order
+                                    Doc Sent to FEE</a>)
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+                <h2>Construction Project Review</h2>
+                <ul>
+                    <li><a href="#reports/project-assignment">Project Manager Assignment</a></li>
+                    <li>
+                        <a href="#project-review">Project Review</a> (<a href="#project-review/sort/InstallDate">Sort by
+                            Install</a>)
+                        <ul style="margin: 0 0 5px 0;">
+                            <li><a href="#project-review/itpm/barrett">Barrett</a> (<a
+                                    href="#project-review/itpm/barrett/sort/InstallDate">Sort by Install</a>)</li>
+                            <li><a href="#project-review/itpm/emily">Emily</a> (<a
+                                    href="#project-review/itpm/emily/sort/InstallDate">Sort by Install</a>)</li>
+                            <li><a href="#project-review/itpm/rice">Josh Rice</a> (<a
+                                    href="#project-review/itpm/rice/sort/InstallDate">Sort by Install</a>)</li>
+                            <li><a href="#project-review/itpm/katigan">Russell</a> (<a
+                                    href="#project-review/itpm/katigan/sort/InstallDate">Sort by Install</a>)</li>
+                            <li><a href="#project-review/itpm/dylan">Dylan</a> (<a
+                                    href="#project-review/itpm/dylan/sort/InstallDate">Sort by Install</a>)</li>
+                            <li><a href="#project-review/itpm/kaitlyn">Kaitlyn Childers</a> (<a
+                                    href="#project-review/itpm/kaitlyn/sort/InstallDate">Sort by Install</a>)</li>
+                        </ul>
+                    </li>
+                </ul>
+                <h2>Next Gen Pays Project Review</h2>
+                <ul>
+                    <li><a href="#reports/project-assignment-paymod">Project Manager Assignment</a></li>
+                    <li>
+                        <a href="#project-review-paymod">Project Review</a>
+                        <ul style="margin: 0 0 5px 0;">
+                            <li><a href="#project-review-paymod/itpm/kaitlyn">Kaitlyn Childers</a> </li>
+                            <li><a href="#project-review-paymod/itpm/parish">Dustin Parish</a> </li>
+                            <li><a href="#project-review-paymod/itpm/coffman">Michele Coffman</a> </li>
+                            <li><a href="#project-review-paymod/itpm/desai">Neal Desai</a> </li>
+                            <li><a href="#project-review-paymod/itpm/rice">Josh Rice</a> </li>
+                            <li><a href="#project-review-paymod/itpm/over">Cory Van Over</a> </li>
+                            <li><a href="#project-review-paymod/itpm/srader">Jason Srader</a> </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h2>Construction Project Update Tool</h2>
+                <ul>
+                    <li><a href="/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/DailyUpdates/index.aspx">Daily
+                            Update Mobile Web App</a></li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<script type="text/javascript">
+    //<sld:PromoDisplay id="PromoDisplay1" runat="server" />
+    // Configure DOJO
+    // Instead of using data-dojo-config, we're creating a dojoConfig
+    // object *before* we load dojo.js; they're functionally identical,
+    // it's just easier to read this approach with a larger configuration.
+    var base = location.pathname.replace("index.aspx", "");
+
+    var dojoConfig = {
+        async: true,
+
+        baseUrl: "/",
+        tlmSiblingOfDojo: false,
+        cacheBust: true,
+        packages: [
+            { name: "dojo", location: base + "resources/lib/dojo" },
+            { name: "dijit", location: base + "resources/lib/dijit" },
+            { name: "dojox", location: base + "resources/lib/dojox" },
+            { name: "app", location: base + 'app' },
+            { name: "resources", location: base + 'resources' }
+        ]
+    };
+
+    //Turn off inline auto editor for all editable fields
+    //CKEDITOR.disableAutoInline = true;
+</script>
+<!-- cd..
+ -->
+<script src="resources/lib/dojo/dojo.js"></script>
+<!--Start application-->
+<script language="javascript">
+    require(['app/router']);
+</script>
+<script>
+    require([
+
+
+        'app/brands/services/brandServices',
+        "app/brands/services/logHelper",
+        'dojo/when',
+        'app/brands/services/domServices'
+
+    ], function (brandServices, logHelper, when, domServices) {
+        const replaceLinkHrefFn = brandServices.replaceLinkHref.bind(this);
+        loadConfigFile: (async function () {
+            let retVal = false;
+            retVal = await brandServices.loadConfigFile();
+            if (retVal) {
+                logHelper.logInfo("loadConfigFile: Config File Loaded");
+                logHelper.logInfo("Step 1 Return Value: " + retVal);
+                retVal = false;
+                retVal = await brandServices.startApp();
+
+                if (retVal) {
+                    logHelper.logInfo("Step 2 Return Value: " + retVal);
+                    retVal = false;
+                    retVal = await brandServices.setCurrentBrandConfig();
+                }
+
+                if (retVal) {
+                    logHelper.logInfo("Step 3 Return Value: " + retVal);
+                    retVal = false;
+                    retVal = await logHelper.logInfo("loadConfigFile: App Started");
+                }
+
+                //Only use if using mock data api
+                // if (retVal) {
+                //     logHelper.logInfo("Step 4 Return Value: " + retVal);
+                //     retVal = await brandServices.refreshCSS();
+                //     brandServices.getReports();
+                // }
+
+                if (retVal) {
+                    logHelper.logInfo("Step 4 Return Value: " + retVal);
+                    dom.byId("current-date").innerHtml = new Date();
+                    $("#loading-mask").hide();
+
+                    logHelper.logInfo("before changing link");
+                    await brandServices.getSharePointUrlByKey("sitePage-RetailTechnology").then(async (url) => {
+                        var newUrl = url + "/index.aspx#reports/micros";
+                        logHelper.logInfo("after changing link" + url);
+                        brandServices.replaceLinkHref("posMicros", newUrl);
+                    });
+
+                }
+
+            }
+
+
+
+
+
+
+
+        })();
+
+    });
+
+
+</script>

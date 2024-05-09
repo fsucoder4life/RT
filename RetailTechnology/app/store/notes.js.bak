@@ -1,28 +1,24 @@
-define(['app/brands/services/brandServices'],async function(brandServices){
+define(function(){
     //Setup
     //Turn Cross Origin Resource Sharing On to get sharepoint data from outside site
     $.support.cors = true;
-    var listName = 'Project Issues';
+    var listName = 'Project Notes';
 
     //Point towards the sharepoint site
-    var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
-    $().SPServices.defaults.webURL = webUrl;//  // URL of the target Web
+    $().SPServices.defaults.webURL = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out";  // URL of the target Web
 
     //Request fields mapping from internal names
     var mapping = {
-        ows_ID: {mappedName: "IssueId", objectType: "Text"},
+        ows_ID: {mappedName: "NoteId", objectType: "Text"},
         ows_Store_x0020_Number: {mappedName: 'StoreNumber', objectType: 'Lookup'},
-        ows_Issue_x0020_Type: {mappedName: 'IssueType', objectType: "Text", type: 'select', options: ['General', 'Connectivity', 'POS', 'POPS', 'Audio', 'PAYS', 'DMB/TV', 'Construction', 'Installer', 'Delivery', 'Special Request']},
-        ows_Title: {mappedName: 'Title', objectType: 'Text'},
-        ows_Assigned: {mappedName: 'Assigned', objectType: 'Text'},
-        ows_Status: {mappedName: 'Status', objectType: 'Text', type: 'select', options: ['Open', 'Closed']},
-        ows_Severity: {mappedName: 'Severity', objectType: 'Text', type: 'select', options: ['(1) - Optional', '(2) Mandatory', '(3) - Important', '(4) - Severe']},
-        ows_Author: {mappedName: 'CreatedBy', objectType: 'Text'},
-        ows_Editor: {mappedName: 'ModifiedBy', objectType: 'Text'},
-        ows_Created_x0020_Date: {mappedName: 'CreatedOn', objectType: 'Text', type: 'date'},
-        ows_Last_x0020_Modified: {mappedName: 'ModifiedOn', objectType: 'Text', type: 'date'},
-        ows_Description: {mappedName: 'Description', objectType: 'Text'},
-        ows_Waiting_x0020_On: {mappedName: 'WaitingOn', objectType: 'Text'}
+        ows_IssueId: {mappedName: 'IssueId', objectType: 'Lookup'},
+        ows_Source: {mappedName: 'Source', objectType: 'Text'},
+        ows_Note: {mappedName: 'Note', objectType: 'Text'},
+        ows_Note_x0020_Type: {mappedName: 'NoteType', objectType: 'Text', type: 'select', options: ['General', 'Connectivity', 'POS', 'POPS', 'Audio', 'PAYS', 'DMB/TV', 'Installer', 'Construction', 'Site Survey']},
+        ows_Author: {mappedName: 'CreatedBy', objectType: 'Lookup'},
+        ows_Editor: {mappedName: 'ModifiedBy', objectType: 'Lookup'},
+        ows_Created: {mappedName: 'CreatedOn', objectType: 'Text', type: 'date'},
+        ows_Modified: {mappedName: 'ModifiedOn', objectType: 'Text', type: 'date'}
     };
 
     //Build the fields request xml
@@ -46,8 +42,6 @@ define(['app/brands/services/brandServices'],async function(brandServices){
                 .OrderByDesc('Severity');
 
             query = "<Query>" + query.ToString() + "</Query>";
-        } else if (typeof query === 'undefined') {
-            query = "<Query></Query>";
         }
 
         //Load the items if a query exists
@@ -65,9 +59,14 @@ define(['app/brands/services/brandServices'],async function(brandServices){
                     });
 
                     _.forEach(data, function (item, i) {
-                        //Fix the store number
+                        //Fix the store number and ids
                         item.CombinedId = item.StoreNumber.lookupId;
                         item.StoreNumber = item.StoreNumber.lookupValue;
+                        item.IssueId = item.IssueId.lookupId;
+                        item.CreatedById = item.CreatedBy.lookupId;
+                        item.CreatedBy = item.CreatedBy.lookupValue;
+                        item.CreatedOnId = item.CreatedOn.lookupId;
+                        item.ModifiedBy = item.ModifiedBy.lookupValue;
                     });
 
                     //Filter the array
@@ -101,21 +100,24 @@ define(['app/brands/services/brandServices'],async function(brandServices){
         }
     }
 
-    function create (store, issue, callback) {
+    function create (store, note, callback) {
+        var pairs = [
+            ["Source", note.Source || ''],
+            ["Store_x0020_Number", store.CombinedId + ";#" + store.StoreNumber],
+            ["Note_x0020_Type", note.NoteType || ''],
+            ["Note", note.Note || '']
+        ];
+
+        if (note.IssueId) {
+            pairs.push(['IssueId', note.IssueId + ";#" + note.IssueId]);
+        }
+
         $().SPServices({
             operation: "UpdateListItems",
             async: true,
             batchCmd: "New",
             listName: listName,
-            valuepairs: [
-                ["Title", issue.Title || ''],
-                ["Store_x0020_Number", store.CombinedId + ";#" + store.StoreNumber],
-                ["Assigned", issue.Assigned || ''],
-                ["Severity", issue.Severity || ''],
-                ["Issue_x0020_Type", issue.IssueType || ''],
-                ["Description", issue.Description || ''],
-                ["Waiting_x0020_On", issue.WaitingOn || '']
-            ],
+            valuepairs: pairs,
             completefunc: function(xData, Status) {
                 //Convert to JSON object for easier access
                 var data = $(xData.responseXML).SPFilterNode("z:row").SPXmlToJson({
@@ -127,12 +129,18 @@ define(['app/brands/services/brandServices'],async function(brandServices){
                     //Fix the store number
                     item.CombinedId = item.StoreNumber.lookupId;
                     item.StoreNumber = item.StoreNumber.lookupValue;
+                    item.IssueId = item.IssueId.lookupId;
+                    item.CreatedById = item.CreatedBy.lookupId;
+                    item.CreatedBy = item.CreatedBy.lookupValue;
+                    item.ModifiedById = item.ModifiedBy.lookupId;
+                    item.ModifiedBy = item.ModifiedBy.lookupValue;
                 });
 
                 callback(data[0]);
             }
         });
     }
+
 
     function destroy (id, callback) {
         $().SPServices({
@@ -148,7 +156,7 @@ define(['app/brands/services/brandServices'],async function(brandServices){
         $().SPServices({
             operation: "GetListAndView",
             listName: listName,
-            viewName: '078240D7-F45E-413F-AEC5-FE3AAFB98FCE',
+            viewName: 'A54AF98D-2411-4B71-8B15-F7D21A18F50A',
             completefunc: function(xData, Status) {
                 $(xData.responseXML).find("Fields > Field").each(function() {
                     var $node = $(this);
@@ -190,7 +198,7 @@ define(['app/brands/services/brandServices'],async function(brandServices){
 
     function changeFactory (key, store, callback) {
         return function (value) {
-            changeValue(key, value, store.IssueId, function (response) {
+            changeValue(key, value, store.NoteId, function (response) {
                 //Update store
                 store[key] = value;
 
@@ -255,6 +263,11 @@ define(['app/brands/services/brandServices'],async function(brandServices){
                     //Fix the store number
                     item.CombinedId = item.StoreNumber.lookupId;
                     item.StoreNumber = item.StoreNumber.lookupValue;
+                    item.IssueId = item.IssueId.lookupId;
+                    item.CreatedById = item.CreatedBy.lookupId;
+                    item.CreatedBy = item.CreatedBy.lookupValue;
+                    item.ModifiedById = item.ModifiedBy.lookupId;
+                    item.ModifiedBy = item.ModifiedBy.lookupValue;
                 });
 
                 callback(data[0]);
@@ -269,7 +282,7 @@ define(['app/brands/services/brandServices'],async function(brandServices){
         $().SPServices({
             operation: "GetAttachmentCollection",
             listName: listName,
-            ID: store.IssueId,
+            ID: store.NoteId,
             completefunc: function(xData, Status) {
                 $(xData.responseXML).find("Attachments > Attachment").each(function(i, el) {
                     var $node = $(this),

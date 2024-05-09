@@ -1,10 +1,11 @@
-define(['app/utility/sp-utility'], function(utility){
+define(['app/utility/sp-utility','app/brand/services/brandServices'], async function(utility,brandServices){
   //Setup
   //Turn Cross Origin Resource Sharing On to get sharepoint data from outside site
   var listName = 'Products';
   
   //Point towards the sharepoint site
-  $().SPServices.defaults.webURL = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/";  // URL of the target Web
+  var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+  $().SPServices.defaults.webURL = webUrl + "/";//  // URL of the target Web
   
   //Request fields mapping from internal names
   var mapping = {

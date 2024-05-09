@@ -192,7 +192,7 @@ define(
 
                         const setBrandLogoFn = this.setBrandLogo.bind(this);
                         const setBrandInfoFn = this.setBrandInfo.bind(this);
-                        const queryEmailDistributionListFn = this.queryEmailDistributionList.bind(this);
+                       // const queryEmailDistributionListFn = this.queryEmailDistributionList.bind(this);
 
 
                         var queryText = `[*]`
@@ -304,8 +304,8 @@ define(
                                             sitePageProjectReviewPayMod, sitePageRetailTech, sitePageRetailTechSearch, sitePageRetailTechPaymentModProjectDates, sitePageRetailTechStoreConfigurationSearch)
                                             .then(async () => {
                                                 //Email array from SharePoint Online | EmailDistributionList                            
-                                    var emailDistributionDetails = queryEmailDistributionListFn(brandId);
-                                    retVal = await setEmailDistributionDetailsFn(emailDistributionDetails);
+                                   //var emailDistributionDetails = queryEmailDistributionListFn(brandId);
+                                    //retVal = await setEmailDistributionDetailsFn(emailDistributionDetails);
                                     //retVal = await setQuoteDetailsFn(quoteDetails);
                                     retVal = await registerBrandThemeFn();
                                             });
@@ -572,7 +572,7 @@ define(
             }),
 
 
-
+            //Get email distribution from SharePoint List by FormType and DistributionType (ex: "PurchaseOrder","default")
             getEmailDistributionDetails: (async function (formType,distributionType) {
                 const emailDistributionDetailsFn = this.getEmailDistributionDetails.bind(this);
                 const emailDistributionDetails = await getEmailDistributionDetailsFn();
@@ -592,6 +592,61 @@ define(
 
                 }
                 emailDetails.push(emailCC);
+
+                var phone = item[0]["emails"]["phone"];
+
+                if (!phone) {
+                    logHelper.logError("logHelper: phone has not been cached");
+                    return false
+                }
+                emailDetails.push(phone);
+
+                var emailFrom = item[0]["emails"]["emailFrom"];
+
+                if (!emailFrom) {
+                    logHelper.logError("logHelper: emailFrom has not been cached");
+                    return false
+                }
+                emailDetails.push(emailFrom);
+                return emailDistributionDetails;
+            }),
+
+             //Get email distribution from SharePoint List by FormType, DistributionType, and UniqueIdentifier (ex: "Notification","ConstructionManager","TRAINER")
+             getEmailDistributionDetails: (async function (formType,distributionType, uniqueIdentifier) {
+                const emailDistributionDetailsFn = this.getEmailDistributionDetails.bind(this);
+                const emailDistributionDetails = await getEmailDistributionDetailsFn();
+                const emailDetails = [];
+                var queryText = `[?formType='${formType}&distributionType='${distributionType}&uniqueIdentifier='${uniqueIdentifier}']`
+                var item = dojox.json.query(queryText, emailDistributionDetails);
+                var emailTo = item[0]["emails"]["emailTo"];
+
+                if (!emailTo) {
+                    logHelper.logError("logHelper: emailTo has not been cached");
+                    return false
+                }
+                emailDetails.push(emailTo);
+                var emailCC = item[0]["emails"]["emailCC"];
+                if (!emailCC) {
+                    logHelper.logError("getEmailDistributionDetails: emailCC has not been cached");
+
+                }
+                emailDetails.push(emailCC);
+
+                var phone = item[0]["emails"]["phone"];
+
+                if (!phone) {
+                    logHelper.logError("logHelper: phone has not been cached");
+                    return false
+                }
+                emailDetails.push(phone);
+
+                var emailFrom = item[0]["emails"]["emailFrom"];
+
+                if (!emailFrom) {
+                    logHelper.logError("logHelper: emailFrom has not been cached");
+                    return false
+                }
+                emailDetails.push(emailFrom);
                 return emailDistributionDetails;
             }),
 
@@ -1057,7 +1112,7 @@ define(
 
                         addressText = brandInfo[0].address;
                         addressSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_ADDRESS");
-                        cityStateText = `${brandInfo[0].cityState} ${brandInfo[0].zipCode}`;
+                        cityStateText = brandInfo[0].cityState + ' ' + brandInfo[0].zipCode;
                         cityStateSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_CITYSTATE");
                         //zipText = brandInfo[0].zipCode;
                         //zipSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_ZIP");

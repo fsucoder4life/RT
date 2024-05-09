@@ -15,10 +15,16 @@ define([
         logInfo: (async function (info) {
             const consoleLoggingFn = this.consoleLogging.bind(this);
             consoleLoggingFn().then((consoleLogging) => {
-                if (consoleLogging) {                    
-                    var myTime = new Date();
+                if (consoleLogging) {          
+                    try {
+                        //console.log(info);
+                         var myTime = new Date();
                     var newInfo = `${info} : ${myTime.toISOString()}`;
                     console.log(newInfo);
+                    } catch (error) {
+                        console.log(error);
+                    }          
+                   
                 }
             })
         }),

@@ -13,8 +13,8 @@
     "pageTitle": "Retail Technology - Development Projects",
     "siteTitle": "Sonic Retail Technology",
     "sharePointUrls": {
-        "hostWebUrl": "https://inspirebrands.sharepoint.com/sites/SonicRTD",
-        "sharePointBaseUrl": "https://inspirebrands.sharepoint.com/sites/SonicRTD/SitePages/RetailTechnologyDev",
+        "hostWebUrl": "https://irbpartners.sharepoint.com/sites/RetailTechDeployment",
+        "sharePointBaseUrl": "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/RetailTechnologyProd",
         "api-pdfGenerator": "https://api.html2pdfrocket.com/pdf",
         "form-POSSurvey": "https://videoredirect.sonicdrivein.com/RetailTech/POSSurvey/?store=__store.StoreNumber__",
         "list-CombinedSchedule": "__sharePointBaseUrl__/Lists/Combined%20Schedule/DispForm.aspx?ID=__store.CombinedId__",

@@ -1,11 +1,10 @@
-define(['app/utility/sp-utility','app/brand/services/brandServices'], async function(utility,brandServices){
+define(['app/utility/sp-utility'], function(utility){
   //Setup
   //Turn Cross Origin Resource Sharing On to get sharepoint data from outside site
   var listName = 'Purchase Order Item';
   
   //Point towards the sharepoint site
-  var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
-    $().SPServices.defaults.webURL = webUrl + "/";//";  // URL of the target Web
+  $().SPServices.defaults.webURL = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/";  // URL of the target Web
   
   //Request fields mapping from internal names
   var mapping = {
@@ -40,10 +39,10 @@ define(['app/utility/sp-utility','app/brand/services/brandServices'], async func
     var query = options.query || '';
     if (query === '' && typeof options.PurchaseOrderItemId !== 'undefined') {
       query = new CamlBuilder().Where().TextField('ID').EqualTo(options.PurchaseOrderItemId);
-      query = "<Query>" + query.ToString() + "</Query>";
+      query = "<Query>" + query.ToString() + "<OrderBy><FieldRef Name='Vendor' Ascending='TRUE'/><FieldRef Name='Title' Ascending='TRUE'/></OrderBy></Query>";
     } else if (query === '' && typeof options.PurchaseOrderId !== 'undefined') {
       query = new CamlBuilder().Where().LookupIdField('PurchaseOrderId').EqualTo(options.PurchaseOrderId);
-      query = "<Query>" + query.ToString() + "</Query>";
+      query = "<Query>" + query.ToString() + "<OrderBy><FieldRef Name='Vendor' Ascending='TRUE'/><FieldRef Name='Title' Ascending='TRUE'/></OrderBy></Query>";
     }
     
     //Load the items

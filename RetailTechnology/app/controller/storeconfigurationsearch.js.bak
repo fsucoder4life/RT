@@ -1,4 +1,4 @@
-async function ApplyFilters() {
+function ApplyFilters() {
 
     var type = "";
     var stallRange = "";
@@ -34,13 +34,12 @@ async function ApplyFilters() {
     //if ($("input[name='orderdocsent']:checked").val() !== "ALL")
     //    orderdocsent = "/orderdocsent/" + $("input[name='orderdocsent']:checked").val();
 
-    var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
-    $().SPServices.defaults.webURL = webUrl;//
-    window.location.href = webUrl + "/index.aspx#reports/storeconfigurationsearch" + type + stallRange + driveThru + POS + audio + dinein ;
+
+    window.location.href = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/index.aspx#reports/storeconfigurationsearch" + type + stallRange + driveThru + POS + audio + dinein ;
     window.location.reload();
 }
 
-define(['app/view/reportStoreconfigurationsearch', 'app/store/combined', 'app/store/construction', 'app/store/combinedconstructionextend', 'app/rules/paymentmod', 'app/brands/services/brandServices'], function (report, combined, construction, combinedconstructionextend, paymentmodRules,brandServices) {
+define(['app/view/reportStoreconfigurationsearch', 'app/store/combined', 'app/store/construction', 'app/store/combinedconstructionextend', 'app/rules/paymentmod'], function (report, combined, construction, combinedconstructionextend, paymentmodRules) {
     return {
         show: function (target, routeCheck, options) {
             var stores2 = [];
