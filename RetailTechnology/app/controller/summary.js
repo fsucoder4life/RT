@@ -3423,6 +3423,7 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
 
     return {
         show: function (target, storeNumber, routeCheck) {
+            console.log("target: " + target + " | storeNumber: " + storeNumber + " | routeCheck: " + routeCheck);
             //Show summary
             summary.render({
                 storeNumber: storeNumber,

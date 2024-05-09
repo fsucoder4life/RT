@@ -5,5 +5,5 @@
     </Description>
     <InputEncoding>UTF-8</InputEncoding>
     <!--<Image width="16" height="16" type="image/x-icon"></Image>-->
-    <Url type="text/html" method="get" template="index.aspx#search/{searchTerms}"/>
+    <Url type="text/html" method="get" template="https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/RetailTechnology_Dev_v4/index.aspx#search/{searchTerms}"/>
 </OpenSearchDescription>

@@ -212,6 +212,7 @@ define(['app/store/combined','app/brands/services/brandServices','app/brands/ser
                 }
             });
         } else if (combinedQuery) {
+            console.log("CombinedQuery: " + combinedQuery);
             combined.loadData({query: combinedQuery}, function (combined) {
 
                 //Create query

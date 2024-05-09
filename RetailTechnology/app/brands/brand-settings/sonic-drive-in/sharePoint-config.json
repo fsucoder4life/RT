@@ -9,12 +9,12 @@
         "companyZipCode": "73104",
         "companyPhone": "405-272-1670"
     },
-    "homeUrl": "",
-    "pageTitle": "Retail Technology - Development Projects",
+    "homeUrl": "",   
+    "pageTitle": "Retail Technology - Development",
     "siteTitle": "Sonic Retail Technology",
     "sharePointUrls": {
         "hostWebUrl": "https://irbpartners.sharepoint.com/sites/RetailTechDeployment",
-        "sharePointBaseUrl": "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/RetailTechnologyProd",
+        "sharePointBaseUrl": "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/RetailTechnology_Dev_v4",
         "api-pdfGenerator": "https://api.html2pdfrocket.com/pdf",
         "form-POSSurvey": "https://videoredirect.sonicdrivein.com/RetailTech/POSSurvey/?store=__store.StoreNumber__",
         "list-CombinedSchedule": "__sharePointBaseUrl__/Lists/Combined%20Schedule/DispForm.aspx?ID=__store.CombinedId__",
@@ -38,42 +38,7 @@
         "sitePage-RetailTechnology-paymentModProjectDates": "__sitePage-RetailTechnology__#reports/paymentmodprojectdates__itpm____startDate____endDate____sortByGoLiveDate____franchisee____sitesurveycompleted____orderdocsent__",
         "sitePage-RetailTechnology-storeConfigurationSearch": "__sitePage-RetailTechnology__#reports/storeconfigurationsearch__type____stallRange____driveThru____POS____audio____dinein__"
     },
-    "purchaseOrders": {
-        "distributionList": [
-            {
-                "distributionType": "default",
-                "emails": {
-                    "emailTo": "kgelfer@fabcon.com; cromero@fabcon.com; Kimberly.Oliver@sonicdrivein.com; BJuarez@fabcon.com; IEscobar@fabcon.com; RAlbrechtsen@fabcon.com; MPerez@fabcon.com; rMagallanes@fabcon.com; ",
-                    "emailCC": "nsti@sonicdrivein.com; Charles.Cease@sonicdrivein.com;"
-                }
-            },
-            {
-                "distributionType": "idtech",
-                "emails": {
-                    "emailTo": "justin.ning@idtechproducts.com; sandy.lee@itsco.net; Victoria.chan@itsco.net; grace.jin@idtechproducts.com;",
-                    "emailCC": "nsti@sonicdrivein.com; Charles.Cease@sonicdrivein.com;spadmin@sonicdrivein.com;"
-                }
-            },
-            {
-                "distributionType": "fabcon",
-                "emails": {
-                    "emailTo": "mperez@fabcon.com; iescobar@fabcon.com; kgelfer@fabcon.com; bjuarez@fabcon.com; justin.ning@idtechproducts.com; sandy.lee@idtechproducts.com;",
-                    "emailCC": "SDI-NewStoreTechnologyInstallations-DL@Sonicdrivein.com; Post.InstallationManagement@Sonicdrivein.com; ccease@inspirebrands.com; kgreen@inspirebrands.com;"
-                }
-            }
-        ]
-    },
-    "quotes": {
-        "distributionList": [
-            {
-                "distributionType": "default",
-                "emails": {
-                    "emailTo": "kgelfer@fabcon.com; mflores@fabcon.com; cromero@fabcon.com; James.Carroll@Sonicdrivein.com; Kimberly.Oliver@sonicdrivein.com; vtaylor@fabcon.com; mKosta@fabcon.com; Matt.Spessard@Sonicdrivein.com; VTaylor@fabcon.com; IEscobar@fabcon.com; RAlbrechtsen@fabcon.com; MPerez@fabcon.com; rMagallanes@fabcon.com;",
-                    "emailCC": "nsti@sonicdrivein.com; PostInstallationManagement@Sonicdrivein.com; Charles.Cease@sonicdrivein.com; Kyle.Green@Sonicdrivein.com;"
-                }
-            }
-        ]
-    },
+   
     "hyperlinks": {
         "store": [],
         "checklist": [
