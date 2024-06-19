@@ -1,10 +1,14 @@
-define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServices'], async function (utility, dNumber,brandServices) {
+define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServices', 'app/brands/services/logHelper','app/brands/services/apiServices'], 
+    async function (utility, dNumber,brandServices,logHelper,apiServices) {
     //Setup
     //Turn Cross Origin Resource Sharing On to get sharepoint data from outside site
     var listName = 'Purchase Order';
 
     //Point towards the sharepoint site
     var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+
+    //NOTE: 2024   ******** $().SPServices interacts with SharePoint on-premises using SOAP services, while SharePoint Online uses the REST API for data access
+    //All calls using $().SPServices will have to be refactored to use REST API.  app/brands/services/apiServices has generic functions for querying and saving data to SharePoint Online
     $().SPServices.defaults.webURL = webUrl + "/"; // URL of the target Web
 
     //Request fields mapping from internal names,
@@ -50,7 +54,8 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
 
     fields += "</ViewFields>";
 
-    function loadData(callback, options) {
+    //SP2010
+    function loadData2010(callback, options) {
         //-------------------------------------------------------Report Build
         //Empty query to load all if not passed
         options = options || {}
@@ -104,7 +109,51 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
         });
     }
 
-    function create(store, callback) {
+    //REST API
+   async function loadData(callback, options) {
+        //-------------------------------------------------------Report Build
+        //Empty query to load all if not passed
+        logHelper.logInfo("Using REST API to load the Purchase Order Data");
+        options = options || {}
+        var query = options.query || '';
+
+        if (query === '' && typeof options.PurchaseOrderId !== 'undefined') {
+            query = `$filter=(ID eq '${options.PurchaseOrderId}')`;
+           
+        } else if (query === '' && typeof options.StoreNumber !== 'undefined') {
+            query = `$filter=(StoreNumber eq '${options.StoreNumber}')`;
+           
+        }
+
+        //Query the list using REST API & Load the items
+        await apiServices.getListItem(listName,options)
+        .then((data) => {
+            utility.fixLookups(mapping, data);
+
+            //Filter the array
+            if (typeof options.filter === "function") {
+                data = options.filter(data);
+            }
+
+            //Sort the array
+            if (typeof options.sort === "object") {
+                if (options.sort.direction === "DESC") {
+                    _(data).map().sortBy(data, options.sort.key).reverse();
+                } else {
+                    _(data).map().sortBy(data, options.sort.key);
+                }
+            } else if (typeof options.sort === "function") {
+                data = options.sort(data);
+            }
+
+            //Call the passed callback function
+            callback(data);
+        });
+       
+    }
+
+    //SP2010 
+    function create2010(store, callback) {
         var pairs = [];
         _.forOwn(store, function (value, key) {
             pairs.push([lookupKey(key), value]);
@@ -132,8 +181,25 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
         });
     }
 
+    //REST API
+    async function create(store, callback) {
+        var pairs = [];
+        _.forOwn(store, function (value, key) {
+            pairs.push([lookupKey(key), value]);
+        });
 
-    function destroy(id, callback) {
+        await apiServices.addToList(listName, pairs)
+        .then((data) => {
+            //var test = utility.errorCheck(xData, Status); if (test.success === false) return callback(test.message);
+            utility.fixLookups(mapping, data);
+
+            callback(data[0]);
+        });
+        
+    }
+
+    //SP2010
+    function destroy2010(id, callback) {
         $().SPServices({
             operation: "UpdateListItems",
             listName: listName,
@@ -141,6 +207,14 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
             ID: id,
             completefunc: callback
         });
+    }
+
+    //REST API
+    async function destroy(id, callback) {
+        await apiServices.deleteFromList(listName,id)
+        .then(() => {
+            callback
+        });       
     }
 
     function logFields() {
@@ -269,7 +343,8 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
         });
     }
 
-    function getDocuments(store, callback) {
+    //SP2010
+    function getDocuments2010(store, callback) {
         store.Documents = [];
 
         //Get construction documents
@@ -302,6 +377,36 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
         });
     }
 
+    //REST API
+    async function getDocuments(store, callback) {
+        store.Documents = [];
+        await apiServices.getListItemAttachments(listName,store['PurchaseOrderId'])
+        .then((data) => {
+
+            data.each(function (i, el) {
+                
+                  filePath = i.text(),
+                  arrString = filePath.split("/"),
+                  fileName = arrString[arrString.length - 1];
+                var version = 0;
+
+            if (fileName.indexOf("revision") > -1) {
+                version = fileName.substr(fileName.indexOf("revision ") + "revision ".length);
+                version = version.replace(".pdf", "");
+            }
+            else
+                version = 0;
+
+            store.Documents.push({ FileName: fileName, FilePath: filePath, Version: version });
+        });
+
+        callback(store);
+        });
+        //Get construction documents
+       
+    }
+
+    //SP2010
     function uploadDocument(store, file, name, callback) {
         $().SPServices({
             operation: "AddAttachment",
@@ -317,6 +422,34 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
                 store.Documents = (typeof store.Documents !== 'undefined' ? store.Documents : []);
 
                 var filePath = "https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/" + $(xData.responseXML).find("AddAttachmentResult").text(),
+                  arrString = filePath.split("/"),
+                  fileName = arrString[arrString.length - 1];
+
+                store.Documents.push({ FileName: fileName, FilePath: filePath });
+
+                if (typeof callback !== 'undefined') {
+                    callback(store);
+                }
+            }
+        });
+    }
+
+    //REST API
+    function uploadDocument(store, file, name, callback) {
+        $().SPServices({
+            operation: "AddAttachment",
+            listName: listName,
+            listItemID: store["PurchaseOrderId"],
+            fileName: name,
+            async: true,
+            attachment: file,
+            completefunc: function (xData, Status) {
+                var test = utility.errorCheck(xData, Status); if (test.success === false) return callback(test.message);
+
+                //TODO - find a way to add the document to the store.Documents list (FileName & FilePath) - this doesn't quite work!
+                store.Documents = (typeof store.Documents !== 'undefined' ? store.Documents : []);
+                var hostWebUrl = brandServices.getSharePointUrlByKeyFn("hostWebUrl");
+                var filePath = hostWebUrl + $(xData.responseXML).find("AddAttachmentResult").text(),
                   arrString = filePath.split("/"),
                   fileName = arrString[arrString.length - 1];
 

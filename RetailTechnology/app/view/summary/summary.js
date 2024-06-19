@@ -1,3 +1,76 @@
+var storeCombinedId = 0;
+
+function currReplace(value) {
+    if (value === '' || typeof value === 'undefined')
+        value = "0";
+    else
+        value = value.replace(",", "").replace("$", "");
+    return value;
+}
+
+function formatMoney(money) {
+    if (money instanceof Big) {
+        return dojo.number.format(money.toString(), { places: 2, locale: 'en-us' });
+    } else {
+        return dojo.number.format(money, { places: 2, locale: 'en-us' });
+    }
+}
+
+function UpdateField(listName, recordID, fieldName, fieldValue) {
+    try {
+        $().SPServices({
+            operation: "UpdateListItems",
+            async: false,
+            batchCmd: "Update",
+            listName: listName,
+            ID: recordID,
+            valuepairs: [[fieldName, formatMoney(fieldValue)]],
+            completefunc: function (xData, Status) {
+            }
+        });
+    }
+    catch (err) {
+        console.log("UpdateField - Total Cost - Addition Error:" + err.message);
+    }
+}
+
+function UploadFile(location) {
+    $("#" + location).trigger('click');
+}
+
+function OpenCostfiles(location) {
+    if ($("#" + location + "Div").css("display") === "none") {
+        $("#" + location + "Arrow").attr("src", "resources/images/downarrow.png");
+        $("#" + location + "Div").css("display", "");
+        
+        $().SPServices({
+            async: false,
+            operation: "GetAttachmentCollection",
+            listName: "Combined Schedule",
+            ID: storeCombinedId,
+            completefunc: function (xData, Status) {
+                var fileOutput = "";
+                $(xData.responseXML).find("Attachments > Attachment").each(function (i, el) {
+                    var $node = $(this),
+                            filePath = $node.text(),
+                            arrString = filePath.split("/"),
+                            fileName = arrString[arrString.length - 1];
+                    if (fileName.indexOf(location + "file-") > -1)
+                        fileOutput += "<li><a target='_blank' href='" + filePath + "'>" + fileName.substring(fileName.indexOf("-")+1) + "</a></li>";
+                    
+                });
+                $("#" + location + "Span").html("<ul>" + fileOutput + "</ul>");
+            }
+        });
+
+
+    }
+    else {
+        $("#" + location + "Arrow").attr("src", "resources/images/uparrow2.png");
+        $("#" + location + "Div").css("display", "none");
+    }
+}
+
 define([
   'app/store/construction',
   'app/store/combined',
@@ -26,85 +99,13 @@ define([
   'dojox/uuid/generateTimeBasedUuid',
   'dijit/registry',
   'app/store/purchaseOrders',
-  'app/brands/services/brandServices'
-], async function (construction, combined, combinedconstructionextend, issues, notes, updateStore, constructionSummaryTemplate, conversionSummaryTemplate, OTISummaryTemplate, notesTemplate, issuesTemplate, renameTemplate, deleteTemplate, searchController, dropdown, datePicker, textfield, widgetHelper, router,
-             DropDownButton, Button, Select, DropDownMenu, Dialog, uuid, registry, purchaseOrderStore, brandServices) {
-               
-                const webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
-                const masterPortalUrl = await brandServices.getSharePointUrlByKey("sitePage-MasterPortal");
-                $().SPServices.defaults.webURL = webUrl;
-                var storeCombinedId = 0;
+  'app/brands/services/brandServices',
+  'app/brands/services/logHelper'
+], function (construction, combined, combinedconstructionextend, issues, notes, updateStore, constructionSummaryTemplate, conversionSummaryTemplate, OTISummaryTemplate, notesTemplate, issuesTemplate, renameTemplate, deleteTemplate, searchController, dropdown, datePicker, textfield, widgetHelper, router,
+             DropDownButton, Button, Select, DropDownMenu, Dialog, uuid, registry, purchaseOrderStore, brandServices, logHelper) {
 
-                function currReplace(value) {
-                    if (value === '' || typeof value === 'undefined')
-                        value = "0";
-                    else
-                        value = value.replace(",", "").replace("$", "");
-                    return value;
-                }
-                
-                function formatMoney(money) {
-                    if (money instanceof Big) {
-                        return dojo.number.format(money.toString(), { places: 2, locale: 'en-us' });
-                    } else {
-                        return dojo.number.format(money, { places: 2, locale: 'en-us' });
-                    }
-                }
-                
-                function UpdateField(listName, recordID, fieldName, fieldValue) {
-                    try {
-                        $().SPServices({
-                            operation: "UpdateListItems",
-                            async: false,
-                            batchCmd: "Update",
-                            listName: listName,
-                            ID: recordID,
-                            valuepairs: [[fieldName, formatMoney(fieldValue)]],
-                            completefunc: function (xData, Status) {
-                            }
-                        });
-                    }
-                    catch (err) {
-                        console.log("UpdateField - Total Cost - Addition Error:" + err.message);
-                    }
-                }
-                
-                function UploadFile(location) {
-                    $("#" + location).trigger('click');
-                }
-                
-                function OpenCostfiles(location) {
-                    if ($("#" + location + "Div").css("display") === "none") {
-                        $("#" + location + "Arrow").attr("src", "resources/images/downarrow.png");
-                        $("#" + location + "Div").css("display", "");
-                        
-                        $().SPServices({
-                            async: false,
-                            operation: "GetAttachmentCollection",
-                            listName: "Combined Schedule",
-                            ID: storeCombinedId,
-                            completefunc: function (xData, Status) {
-                                var fileOutput = "";
-                                $(xData.responseXML).find("Attachments > Attachment").each(function (i, el) {
-                                    var $node = $(this),
-                                            filePath = $node.text(),
-                                            arrString = filePath.split("/"),
-                                            fileName = arrString[arrString.length - 1];
-                                    if (fileName.indexOf(location + "file-") > -1)
-                                        fileOutput += "<li><a target='_blank' href='" + filePath + "'>" + fileName.substring(fileName.indexOf("-")+1) + "</a></li>";
-                                    
-                                });
-                                $("#" + location + "Span").html("<ul>" + fileOutput + "</ul>");
-                            }
-                        });
-                
-                
-                    }
-                    else {
-                        $("#" + location + "Arrow").attr("src", "resources/images/uparrow2.png");
-                        $("#" + location + "Div").css("display", "none");
-                    }
-                }
+    var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+
     function typeCheck(options) {
         var query = new CamlBuilder().Where().TextField('Title').EqualTo(options.storeNumber);
         query = "<Query>" + query.ToString() + "</Query>";
@@ -115,10 +116,15 @@ define([
         combined.loadData(opt, function (data) {
             //Grab the first object property as the store
             var store = data[_.keys(data)[0]];
-
+			
+			
+			//var webUrl = brandServices.getSharePointBaseUrl();
+			
+			$().SPServices.defaults.webURL = webUrl;
+			logHelper.logDebug("summary.js","webUrl: " +  webUrl);
             //spservices to see if store exists in combinedconstructionextend table.
             //if not, create it
-
+			 
 
             var cceID = 0;
             storeCombinedId = store.CombinedId;
@@ -996,7 +1002,7 @@ define([
                             children: [{
                                 id: 'picture-gallery',
                                 text: "Click to View Gallery",
-                                url: encodeURI(webUrl + "/DailyUpdates/index.aspx#" + store.StoreNumber + "/dailyupdate/gallery"),
+                                url: encodeURI(webUrl + "/SitePages/DailyUpdates/index.aspx#" + store.StoreNumber + "/dailyupdate/gallery"),
                                 type: 'file'
                             }]
                         };
@@ -1056,7 +1062,7 @@ define([
                     level10DataOrders.children.push({
                         id: 'Level10DataOrder-' + ++level10DataOrdersNumber,
                         text: "PO # " + PONUM + " (Click to View / Cancel)",
-                        url: webUrl + "/Level%2010%20Orders/DispForm.aspx?ID=" + id,
+                        url: "/Lists/Level%2010%20Orders/DispForm.aspx?ID=" + id,
                         type: 'file'
                     });
                 });
@@ -1160,8 +1166,8 @@ define([
     function renderDocuments(store, view) {
         jsTreeDom = view.el.find('#document-tree');
 
-       
-        $("#document-manage").html("<div style='float:left;'>&nbsp;&nbsp;[<a href='" + webUrl + "/Purchase%20Order/AllItems.aspx?FilterField1=StoreNumber&FilterValue1=" + store.StoreNumber + "'>manage POs</a>]</div><div style='float:right;'><table><tr><td colspan='3'>[<a href='https://videoredirect.sonicdrivein.com/RetailTech/POSSurvey/?store=" + store.StoreNumber + "'  target='_blank'>Kitchen POS Equipment Survey</a>]</td></tr><tr><td>[<a href='https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/survey' target='_blank'>Survey</a>]<br />&nbsp;<span style='font-size:12px;'>-<a href='" + webUrl + "/PaymentSurveySignoff/ViewPhotosAllArea.html?store=" + store.StoreNumber + "&area=SurveyStart' target='_blank'>All Photos</a></span></td><td valign=top>&nbsp;[<a target='_blank' href='https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/checkin'>Check In</a>]<br /></td><td>&nbsp;[<a href='https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/dailyupdate' target='_blank'>Signoff</a>]&nbsp;&nbsp;&nbsp;<br />&nbsp;<span style='font-size:12px;'>-<a href='" + webUrl + "/PaymentSurveySignoff/ViewPhotosAllArea.html?store=" + store.StoreNumber + "&area=Signoff&area2=HardwareInstallation&area3=HardwareRemoval&area4=NetworkConnectivity&area5=PaymentTerminal' target='_blank'>All Photos</a></span></td></tr></table></div><div style='clear:both;'></div>");
+        //$("#document-manage").html("&nbsp;&nbsp;[<a href='/Lists/Purchase%20Order/AllItems.aspx?FilterField1=StoreNumber&FilterValue1=" + store.StoreNumber + "'>manage POs</a>]");
+        $("#document-manage").html("<div style='float:left;'>&nbsp;&nbsp;[<a href='" + webUrl + "/Lists/Purchase%20Order/AllItems.aspx?FilterField1=StoreNumber&FilterValue1=" + store.StoreNumber + "'>manage POs</a>]</div><div style='float:right;'><table><tr><td colspan='3'>[<a href='https://videoredirect.sonicdrivein.com/RetailTech/POSSurvey/?store=" + store.StoreNumber + "'  target='_blank'>Kitchen POS Equipment Survey</a>]</td></tr><tr><td>[<a href='" + webUrl + "/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/survey' target='_blank'>Survey</a>]<br />&nbsp;<span style='font-size:12px;'>-<a href='" + webUrl + "/SitePages/PaymentSurveySignoff/ViewPhotosAllArea.html?store=" + store.StoreNumber + "&area=SurveyStart' target='_blank'>All Photos</a></span></td><td valign=top>&nbsp;[<a target='_blank' href='" + webUrl + "/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/checkin'>Check In</a>]<br /></td><td>&nbsp;[<a href='" + webUrl + "/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/dailyupdate' target='_blank'>Signoff</a>]&nbsp;&nbsp;&nbsp;<br />&nbsp;<span style='font-size:12px;'>-<a href='" + webUrl + "/SitePages/PaymentSurveySignoff/ViewPhotosAllArea.html?store=" + store.StoreNumber + "&area=Signoff&area2=HardwareInstallation&area3=HardwareRemoval&area4=NetworkConnectivity&area5=PaymentTerminal' target='_blank'>All Photos</a></span></td></tr></table></div><div style='clear:both;'></div>");
         var me = {
             el: jsTreeDom,
             updateDocuments: function () {
@@ -1925,9 +1931,9 @@ define([
         me.Workflows = summary.find('#workflows');
 
         //--------------------------------------------------------------Setup SharePoint Links
-        summary.find('#construction-calls').prop('href', webUrl + "/Construction%20Calls/DispForm.aspx?ID=" + store.ConstructionId);
-        summary.find('#combined-schedule').prop('href',webUrl +  "/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
-        summary.find('#master-portal').prop('href', masterPortalUrl.replace('__store.StoreNumber__',store.StoreNumber));
+        summary.find('#construction-calls').prop('href', webUrl + "/Lists/Construction%20Calls/DispForm.aspx?ID=" + store.ConstructionId);
+        summary.find('#combined-schedule').prop('href', webUrl + "/Lists/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
+        summary.find('#master-portal').prop('href', webUrl + "/public/master%20portal/store.aspx?store=" + store.StoreNumber);
 
         //--------------------------------------------------------------Issues/Tasks
         issues.loadData({ store: store }, function (issues) {
@@ -2758,9 +2764,9 @@ define([
         me.Workflows = summary.find('#workflows');
 
         //Create links to sharepoint
-        summary.find('#construction-calls').prop('href', webUrl + "/Construction%20Calls/DispForm.aspx?ID=" + store.ConstructionId);
-        summary.find('#combined-schedule').prop('href', webUrl + "/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
-        summary.find('#master-portal').prop('href', masterPortalUrl.replace('__store.StoreNumber__',store.StoreNumber) );
+        summary.find('#construction-calls').prop('href', webUrl + "/Lists/Construction%20Calls/DispForm.aspx?ID=" + store.ConstructionId);
+        summary.find('#combined-schedule').prop('href', webUrl + "/Lists/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
+        summary.find('#master-portal').prop('href', webUrl + "/public/master%20portal/store.aspx?store=" + store.StoreNumber);
 
         ///--------------------------------------------------------------Issues/Tasks
         issues.loadData({ store: store }, function (issues) {
@@ -3216,8 +3222,8 @@ define([
         me.Workflows = summary.find('#workflows');
 
         //Create links to sharepoint
-        summary.find('#combined-schedule').prop('href', webUrl + "/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
-        summary.find('#master-portal').prop('href', "https://www.sonicpartnernet.com/public/master%20portal/store.aspx?store=" + store.StoreNumber);
+        summary.find('#combined-schedule').prop('href', webUrl + "/Lists/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
+        summary.find('#master-portal').prop('href', "/public/master%20portal/store.aspx?store=" + store.StoreNumber);
 
         ///--------------------------------------------------------------Issues/Tasks
         issues.loadData({ store: store }, function (issues) {
@@ -3331,5 +3337,42 @@ define([
         } else {
             return "";
         }
+    }
+
+
+    function triggerWorkflow(workFlowType) {
+        var url = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/"; // Replace placeholders
+                           
+        var clientContext = new SP.ClientContext(url);
+        
+
+        // var webContext = clientContext.get_web();  
+        //         currentUser = webContext.get_currentUser();
+        var oList = clientContext.get_web().get_lists().getByTitle('WorkFlowTriggerRequest');
+            console.log("After retrieving the list:" + oList);
+        var itemCreateInfo = new SP.ListItemCreationInformation();
+        this.oListItem = oList.addItem(itemCreateInfo);
+        oListItem.set_item('Title', 'HCMAudioQuote - Trigger');
+        oListItem.set_item('Store', '9999');
+        oListItem.set_item('WFType', workFlowType);
+        oListItem.set_item('RequestBy', currentUser.UserName);
+        oListItem.set_item('DateRequested', new Date());
+        console.log("Before updating the list:" + oList);
+        oListItem.update();
+    
+        clientContext.load(oListItem);
+        clientContext.executeQueryAsync(
+            Function.createDelegate(this, this.onQuerySucceeded), 
+            Function.createDelegate(this, this.onQueryFailed)
+        );
+    }
+    
+    function onQuerySucceeded() {
+        alert('Item created: ' + oListItem.get_id());
+    }
+    
+    function onQueryFailed(sender, args) {
+        alert('Request failed. ' + args.get_message() + 
+            '\n' + args.get_stackTrace());
     }
 });

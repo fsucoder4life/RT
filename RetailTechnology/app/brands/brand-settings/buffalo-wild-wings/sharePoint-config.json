@@ -13,14 +13,17 @@
     "pageTitle": "Buffalo Wild Wings  Retail Technology - Development Projects",
     "siteTitle": "Buffalo Wild Wings Retail Technology",
     "sharePointUrls": {
-        "sharePointBaseUrl": "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out",
+        "hostWebUrl": "https://irbpartners.sharepoint.com/sites/RetailTechDeployment",
+        "sharePointBaseUrl": "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/RetailTechnologyProd",
         "api-pdfGenerator": "https://api.html2pdfrocket.com/pdf",
         "form-POSSurvey": "https://videoredirect.sonicdrivein.com/RetailTech/POSSurvey/?store=__store.StoreNumber__",
         "list-CombinedSchedule": "__sharePointBaseUrl__/Lists/Combined%20Schedule/DispForm.aspx?ID=__store.CombinedId__",
-        "list-ConstructionCalls": "__sharePointBaseUrl__/Lists/Construction%20Calls/DispForm.aspx?ID=__store.ConstructionId__",
+        "list-ConstructionCalls": "__sharePointBaseUrl__/Lists/Construction%20Calls/",
+        "list-ConstructionCalls-DispForm": "__list-ConstructionCalls__DispForm.aspx?ID=__store.ConstructionId__",
         "list-InstallQuoteGen": "__sharePointBaseUrl__/Lists/InstallQuoteGen/1_.000",
         "list-Level2010Orders": "__sharePointBaseUrl__/Lists/Level%2010%20Orders/__id.000__",
         "list-PurchaseOrders": "__sharePointBaseUrl__/Lists/Purchase%20Order/AllItems.aspx?FilterField1=StoreNumber&FilterValue1=__store.StoreNumber__",
+        "siteAssets-RenameListFileAttachments": "__sharePointBaseUrl__/SiteAssets/RenameListFileAttachment.aspx",
         "sitePage-DailyUpdates": "__sharePointBaseUrl__/DailyUpdates/index.aspx#__store.StoreNumber__/dailyupdate/gallery",
         "sitePage-MasterPortal": "https://www.sonicpartnernet.com/public/master%20portal/store.aspx?store=__store.StoreNumber__",
         "sitePage-PaymentSurveySignOff": "__sharePointBaseUrl__/SitePages/PaymentSurveySignoff",
@@ -37,7 +40,14 @@
     },
     
     "hyperlinks": {
-	
+        "store": [],
+        "checklist": [
+            {
+                "title": "",
+                "name": "",
+                "url": ""
+            }
+        ],
         "pos": [
             {
                 "title": "Oracle - Construction",

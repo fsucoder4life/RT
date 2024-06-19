@@ -35,6 +35,7 @@ define([
 
                 //Grab the store, and turn the template into an element
                 var store = options.store,
+                warning = $(warningTemplate),
                   upload = $(fileUploadTemplate);
 
                 //Activate all the fields marked as display
@@ -46,6 +47,16 @@ define([
                 me.UploadButton = upload.find('#hughes-upload-button');
                 me.SendWithout = upload.find('#hughes-send-without');
 
+                if (warning){
+                    //remove the warning template
+                    const divToRemove = document.getElementById("store-address-modal");
+
+                    if (divToRemove) {
+                    divToRemove.remove();
+                    } else {
+                    console.error("Div with ID 'store-address-modal' not found");
+                    }
+                }
                 upload.appendTo('body').modal();
 
                 return me;
@@ -55,20 +66,30 @@ define([
 
                 //Grab the store, and turn the template into an element
                 var store = options.store,
-                    warning = $(statusTemplate);
+                    upload = $(fileUploadTemplate),
+                    status = $(statusTemplate);
 
                 //Activate all the fields marked as display,
-                widgetHelper.activate(warning, store);
+                widgetHelper.activate(status, store);
 
                 //Grab links to buttons & Checkboxes
-                me.Next = warning.find('#hughes-status-check-next');
-                me.UpdateVsat = warning.find('#update-vsat-status');
-                me.UpdateTemp = warning.find('#update-temp-status');
-                me.UpdatePrimary = warning.find('#update-primary-status');
-                me.UpdateDeinstall = warning.find('#update-deinstall-status');
+                me.Next = status.find('#hughes-status-check-next');
+                me.UpdateVsat = status.find('#update-vsat-status');
+                me.UpdateTemp = status.find('#update-temp-status');
+                me.UpdatePrimary = status.find('#update-primary-status');
+                me.UpdateDeinstall = status.find('#update-deinstall-status');
 
+                if (upload){
+                    //remove the warning template
+                    const divToRemove = document.getElementById("file-upload-modal");
 
-                warning.appendTo('body').modal();
+                    if (divToRemove) {
+                    divToRemove.remove();
+                    } else {
+                    console.error("Div with ID 'file-upload-modal' not found");
+                    }
+                }
+                status.appendTo('body').modal();
 
                 return me;
             },
@@ -149,7 +170,7 @@ define([
                 }, email.find('#cc')[0]);
 
                 me.subject = new TextBox({
-                    value: store.City + ', ' + store.State + ' #' + store.StoreNumber + ' - Hughes Request',
+                    value: store.City + ', ' + store.State + ' #' + store.StoreNumber + ' - Comcast Request',
                     style: "width: 100%"
                 }, email.find('#subject')[0]);
 
@@ -160,7 +181,7 @@ define([
 
                 //Create the dialog box
                 me.dialog = new Dialog({
-                    title: 'Hughes Request',
+                    title: 'Comcast Request',
                     content: email,
                     style: "width: 1150px; height: 710px;",
                     hide: function () {

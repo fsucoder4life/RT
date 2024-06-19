@@ -1156,8 +1156,8 @@ define([
     function renderDocuments(store, view) {
         jsTreeDom = view.el.find('#document-tree');
 
-        //$("#document-manage").html("&nbsp;&nbsp;[<a href='https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Purchase%20Order/AllItems.aspx?FilterField1=StoreNumber&FilterValue1=" + store.StoreNumber + "'>manage POs</a>]");
-        $("#document-manage").html("<div style='float:left;'>&nbsp;&nbsp;[<a href='https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Purchase%20Order/AllItems.aspx?FilterField1=StoreNumber&FilterValue1=" + store.StoreNumber + "'>manage POs</a>]</div><div style='float:right;'><table><tr><td colspan='3'>[<a href='https://videoredirect.sonicdrivein.com/RetailTech/POSSurvey/?store=" + store.StoreNumber + "'  target='_blank'>Kitchen POS Equipment Survey</a>]</td></tr><tr><td>[<a href='https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/survey' target='_blank'>Survey</a>]<br />&nbsp;<span style='font-size:12px;'>-<a href='https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/PaymentSurveySignoff/ViewPhotosAllArea.html?store=" + store.StoreNumber + "&area=SurveyStart' target='_blank'>All Photos</a></span></td><td valign=top>&nbsp;[<a target='_blank' href='https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/checkin'>Check In</a>]<br /></td><td>&nbsp;[<a href='https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/dailyupdate' target='_blank'>Signoff</a>]&nbsp;&nbsp;&nbsp;<br />&nbsp;<span style='font-size:12px;'>-<a href='https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/PaymentSurveySignoff/ViewPhotosAllArea.html?store=" + store.StoreNumber + "&area=Signoff&area2=HardwareInstallation&area3=HardwareRemoval&area4=NetworkConnectivity&area5=PaymentTerminal' target='_blank'>All Photos</a></span></td></tr></table></div><div style='clear:both;'></div>");
+        //$("#document-manage").html("&nbsp;&nbsp;[<a href='https://irbpartners.sharepoint.com/sites/RetailTechDeployment/Lists/Purchase%20Order/AllItems.aspx?FilterField1=StoreNumber&FilterValue1=" + store.StoreNumber + "'>manage POs</a>]");
+        $("#document-manage").html("<div style='float:left;'>&nbsp;&nbsp;[<a href='https://irbpartners.sharepoint.com/sites/RetailTechDeployment/Lists/Purchase%20Order/AllItems.aspx?FilterField1=StoreNumber&FilterValue1=" + store.StoreNumber + "'>manage POs</a>]</div><div style='float:right;'><table><tr><td colspan='3'>[<a href='https://videoredirect.sonicdrivein.com/RetailTech/POSSurvey/?store=" + store.StoreNumber + "'  target='_blank'>Kitchen POS Equipment Survey</a>]</td></tr><tr><td>[<a href='https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/survey' target='_blank'>Survey</a>]<br />&nbsp;<span style='font-size:12px;'>-<a href='https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/PaymentSurveySignoff/ViewPhotosAllArea.html?store=" + store.StoreNumber + "&area=SurveyStart' target='_blank'>All Photos</a></span></td><td valign=top>&nbsp;[<a target='_blank' href='https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/checkin'>Check In</a>]<br /></td><td>&nbsp;[<a href='https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/SitePages/PaymentSurveySignoff/index.aspx#" + store.StoreNumber + "/dailyupdate' target='_blank'>Signoff</a>]&nbsp;&nbsp;&nbsp;<br />&nbsp;<span style='font-size:12px;'>-<a href='https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/PaymentSurveySignoff/ViewPhotosAllArea.html?store=" + store.StoreNumber + "&area=Signoff&area2=HardwareInstallation&area3=HardwareRemoval&area4=NetworkConnectivity&area5=PaymentTerminal' target='_blank'>All Photos</a></span></td></tr></table></div><div style='clear:both;'></div>");
         var me = {
             el: jsTreeDom,
             updateDocuments: function () {
@@ -1921,8 +1921,8 @@ define([
         me.Workflows = summary.find('#workflows');
 
         //--------------------------------------------------------------Setup SharePoint Links
-        summary.find('#construction-calls').prop('href', "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Construction%20Calls/DispForm.aspx?ID=" + store.ConstructionId);
-        summary.find('#combined-schedule').prop('href', "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
+        summary.find('#construction-calls').prop('href', "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/Lists/Construction%20Calls/DispForm.aspx?ID=" + store.ConstructionId);
+        summary.find('#combined-schedule').prop('href', "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/Lists/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
         summary.find('#master-portal').prop('href', "https://www.sonicpartnernet.com/public/master%20portal/store.aspx?store=" + store.StoreNumber);
 
         //--------------------------------------------------------------Issues/Tasks
@@ -2754,8 +2754,8 @@ define([
         me.Workflows = summary.find('#workflows');
 
         //Create links to sharepoint
-        summary.find('#construction-calls').prop('href', "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Construction%20Calls/DispForm.aspx?ID=" + store.ConstructionId);
-        summary.find('#combined-schedule').prop('href', "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
+        summary.find('#construction-calls').prop('href', "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/Lists/Construction%20Calls/DispForm.aspx?ID=" + store.ConstructionId);
+        summary.find('#combined-schedule').prop('href', "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/Lists/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
         summary.find('#master-portal').prop('href', "https://www.sonicpartnernet.com/public/master%20portal/store.aspx?store=" + store.StoreNumber);
 
         ///--------------------------------------------------------------Issues/Tasks
@@ -3212,7 +3212,7 @@ define([
         me.Workflows = summary.find('#workflows');
 
         //Create links to sharepoint
-        summary.find('#combined-schedule').prop('href', "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
+        summary.find('#combined-schedule').prop('href', "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/Lists/Combined%20Schedule/DispForm.aspx?ID=" + store.CombinedId);
         summary.find('#master-portal').prop('href', "https://www.sonicpartnernet.com/public/master%20portal/store.aspx?store=" + store.StoreNumber);
 
         ///--------------------------------------------------------------Issues/Tasks

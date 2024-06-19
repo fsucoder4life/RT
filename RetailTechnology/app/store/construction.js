@@ -4,11 +4,16 @@ define(['app/store/combined','app/brands/services/brandServices','app/brands/ser
     $.support.cors = true;
 
     //Point towards the sharepoint site
-    var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+	//console.log("construction.js before webUrl: " );
+	
+     //var webUrl = brandServices.getSharePointBaseUrl();
+	 var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
     $().SPServices.defaults.webURL = webUrl;
-	logHelper.logDebug("construction.js","webUrl: " +  webUrl); // URL of the  target Web
+	logHelper.logDebug("construction.js","webUrl: " +  webUrl);
+    //$().SPServices.defaults.webURL = "/sites/SonicRTD";  // URL of the  target Web
     $().SPServices.defaults.listName = "Construction_Calls";  // Name of the list for list
     var today = moment().format('M/D');
+	
     var constructionMapping = {
         ows_ID: {mappedName: "ConstructionId", objectType: "Text"},
         ows_Title: {mappedName: "Title", objectType: "Text"},
@@ -212,7 +217,6 @@ define(['app/store/combined','app/brands/services/brandServices','app/brands/ser
                 }
             });
         } else if (combinedQuery) {
-            console.log("CombinedQuery: " + combinedQuery);
             combined.loadData({query: combinedQuery}, function (combined) {
 
                 //Create query

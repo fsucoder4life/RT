@@ -1,8 +1,121 @@
-define(['app/view/quotegen/quotegen', 'app/store/construction', 'app/store/combined', 'app/store/user', 'dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-min.css', 'app/utility/sp-utility','app/brand/services/brandServices'], function (proforma, construction, combined, user, mainCss, pureCss, spUtility,brandServices) {
+define(['app/view/quotegen/quotegen', 'app/store/construction', 'app/store/combined', 'app/store/user', 'dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-min.css', 'app/utility/sp-utility','app/brands/services/brandServices','app/brands/services/logHelper', 'app/brands/services/apiServices'], 
+    function (proforma, construction, combined, user, mainCss, pureCss, spUtility,brandServices, logHelper, apiServices) {
     var me = {
         storeData: {}       //this is so other controllers can pass in some data before this controller is hit - right now just POS amounts
     };
+    var storeNumberHash = window.location.hash.substr(1);
+    storeNumberHash = storeNumberHash.substr(9, 4);
 
+    const pdfAPIUrl = brandServices.getSharePointUrlByKey('api-pdfGenerator');
+    var fileName = "";
+    var storeData = loadData();
+
+
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Month (0-indexed)
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+      
+        const formattedDate = date.toLocaleDateString();
+        return `${year}${month}${day}${hours}${minutes}${seconds}`;
+      }
+var siteUrl2
+      var currentUser;
+      function getCurrentUser(){
+        console.log("Inside getCurrentUser: ");
+        var ctx= new SP.ClientContext.get_current();
+        console.log("Inside getCurrentUser: 2" + ctx);
+        var web = ctx.get_web();
+        console.log("Inside getCurrentUser: 3 " + web);
+        currentUser = web.get_currentUser();
+        console.log("Current User: " + currentUser.UserName);
+        // ctx.load(currentUser);
+        // ctx.executeQueryAsync(onSuccess, onFailure);
+        }
+    function triggerWorkflow(store,workFlowType,hasAttachment,fileName) {
+        try {
+            console.log("Inside triggerWorkFlow: " + workFlowType);
+                var siteUrl = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/";
+                getCurrentUser();
+                
+                console.log("siteUrl2: " + siteUrl2);
+                var clientContext = new SP.ClientContext(siteUrl);
+                var oList = clientContext.get_web().get_lists().getByTitle('WorkFlowTriggerRequest');
+                    
+                var itemCreateInfo = new SP.ListItemCreationInformation();
+                this.oListItem = oList.addItem(itemCreateInfo);
+                
+                const newDate = new Date();
+                const formattedDate = formatDate(newDate);
+                
+            
+                var title = store + '-' + workFlowType + '-' + formattedDate;
+
+                oListItem.set_item('Title', title);
+                oListItem.set_item('Store', store);
+                oListItem.set_item('WFType', workFlowType);
+                oListItem.set_item('RequestBy', currentUser.UserName);
+                oListItem.set_item('DateRequested', new Date());
+                if (hasAttachment === true){
+                     this.oListItem.set_item('HasAttachment',hasAttachment);
+                     this.oListItem.set_item('AttachmentFileName',fileName);
+                }
+               
+                console.log("Before updating the list:" + oList);
+                oListItem.update();
+            
+                clientContext.load(oListItem);
+
+        clientContext.executeQueryAsync(
+            //Success callback
+            () => {
+                console.log("Successfully created trigger request");                 
+                alert("Workflow Trigger Created");
+            },
+            //Error callback
+            (sender, args) => {
+                console.error("An error occured:", args.get_message());
+                alert("Error creating trigger");
+            }
+            // Function.createDelegate(this, this.onQuerySucceeded), 
+            // Function.createDelegate(this, this.onQueryFailed)
+        );
+    // function onQuerySucceeded() {
+    //     alert('Item created: ' + oListItem.get_id());
+    // }
+    
+    //  function onQueryFailed(sender, args) {
+    //     alert('Request failed. ' + args.get_message() + 
+    //         '\n' + args.get_stackTrace());
+    // }
+            return true;
+        } catch (error) {
+            return false;
+        }
+        
+     
+    }
+
+
+
+
+
+
+    //Retrieve the store data
+    function loadData()  {
+        construction.loadData({ combinedQuery: "<Query>" + new CamlBuilder().Where().TextField('Title').EqualTo(storeNumberHash).ToString() + "</Query>" }, async function (stores) {
+        var store = stores[0];
+        if (store){
+            logHelper.logInfo("quotegen.js: storeData: " + store);
+            return store;
+        }
+        return null;
+        });
+    }
+    
     function GetQueryStringParams(sParam) {
         var sPageURL = window.location.search.substring(1);
         var sURLVariables = sPageURL.split('&');
@@ -18,241 +131,296 @@ define(['app/view/quotegen/quotegen', 'app/store/construction', 'app/store/combi
         var target = this;
         return target.replace(new RegExp(search, 'g'), replacement);
     };
-
+    
     function buildPdf(view, callback) {
         //Make the date input plain html
-        //view.html.find('#po-delivery').closest('td').html(view.html.find('#po-delivery').val());
-
+        
         //Format html/remove UI elements
         var html = $(".proforma").html();
 
-        //html.find('#po-buttons').remove();
-        //html.css('margin', '100px');
         //Inline css and make it a string
         html = "<style>" + pureCss + " " + mainCss + "</style>" + html.replaceAll("<button ", "<button style='display:none;' ").replaceAll("<select ", "<select style='display:none;' ");
+        
         //Build request
-
-
+        //logHelper.logInfo("QuoteGen.js html: " + html);
+        
+        var req = new XMLHttpRequest();
         //Setup event handler for callback
-        //req.onload = function (event) {
-        //    var reader = new FileReader();
+        req.onload = function (event) {
+           var reader = new FileReader();
 
-        //    reader.addEventListener("loadend", function () {
-        //        //Save resulting base 64 string to sharepoint
+           reader.addEventListener("loadend", async function (e) {
+            //Save resulting base 64 string to sharepoint            
+            var formattedDate = getFormattedDate(new Date());
+            const fileData = e.target.result;
+            if (fileData){ 
+                logHelper.logInfo("fileData exists: " + fileData);  
+            //Build filename
+            fileName = storeNumberHash + '- Install Quote Gen';
+            //fileName = storeNumberHash + '- Install Quote Gen_' + formattedDate;
+            
+            fileName += '.pdf';
+            logHelper.logInfo("fileName generated: " + fileName);  
 
-        //            //Build filename
+            
+            //Upload               
+            
+            
+                        
+                construction.loadData({ combinedQuery: "<Query>" + new CamlBuilder().Where().TextField('Title').EqualTo(storeNumberHash).ToString() + "</Query>" },  function (stores) {
+                    logHelper.logInfo("CamlQuery Complete: ");  
+                    var store = stores[0];  
+                    var n = reader.result.indexOf(";base64,") + 8;
+                    var b64 = reader.result.substring(n);
+                    //var extension = file.name.substr(file.name.lastIndexOf('.') + 1);
+                    combined.getDocuments(store, function (store) {
+                                   var exists = false;
+                                   _.each(store.CombinedDocuments, function (document, i) {
+                                       if (document.FileName.indexOf(fileName) !== -1) {
+                                           exists = true;
+                                           //Delete the file before uploading a new one
+                                           combined.deleteDocument(store.CombinedId, document.FilePath, null);
+                                           logHelper.logInfo("File exists, so it needs to be deleted.");
+                                           exists = false;
+                                       }
+                                   });
 
+                        if (!exists) {
+                            //Upload the base 64 file
+                            logHelper.logInfo("File doesn't exist, so attempt to upload it");
+                            combined.uploadDocument(store, b64, fileName, function () {
+                                var content = {
+                                    "filename": fileName,
+                                    "storeNumber": storeNumberHash
+                                };
+                        
+                                logHelper.logInfo("Data to be submitted to Power Automate: " + JSON.stringify(content));
+                                console.log("Inside audio-quote-request-workflow:");
+                                triggerWorkflow(storeNumberHash,"InstallerQuote",true, fileName);
+                                alert("PDF Emailed successfully");
+                                $('.blocker').hide();
 
+                            });                                     
+                        }
+                    });
+                });
+                     //combined.uploadDocument(store, reader.result.replace('data:application/pdf;base64,', ''), fileName, callback);
+                    
+        }
+        else{
+               logHelper.logInfo("fileData doesn't exist");
+            }
+    });
 
-        //            //Upload to SharePoint
-        //            purchaseOrderStore.uploadDocument(view.purchaseOrder, reader.result.replace('data:application/pdf;base64,', ''), 'test.pdf', callback);
-
-        //    });
-
-        //    reader.readAsDataURL(req.response);
-        //};
+    reader.readAsDataURL(req.response);
+};
 
         //create PDF
-        //req.open("POST", "https://api.html2pdfrocket.com/pdf");
-        //req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        //req.responseType = "blob";
+        req.open("POST", pdfAPIUrl);
+        req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        req.responseType = "blob";
+        //development apikey = b61d7550-3227-4999-9681-14e09ff5b806
+        req.send("MarginLeft=1&MarginRight=1&MarginTop=1&MarginBottom=1&apikey=b61d7550-3227-4999-9681-14e09ff5b806&value=" + encodeURIComponent(html));
+        //production apikey = dca86da0-12d0-4620-a58b-eb7e1936df7c
         //req.send("MarginLeft=1&MarginRight=1&MarginTop=1&MarginBottom=1&apikey=dca86da0-12d0-4620-a58b-eb7e1936df7c&value=" + encodeURIComponent(html));
+        
         //pdfUploadComplete();
-        var storeNumberHash = window.location.hash.substr(1);
-        storeNumberHash = storeNumberHash.substr(9, 4);
+        
 
-        var data = {
-            filename: storeNumberHash + '-Install Quote Gen',
-            html: html,
-            title: storeNumberHash
-        };
-
-        $.ajax({
-            url: '/public/PDF/html2pdfEmailInstallQuoteGen.aspx',
-            type: 'POST',
-            data: data,
-            success: function (result) {
-                //TODO - Do I need to notify the headless browser that I'm done?
-                pdfUploadComplete(result);
-            }
-        });
+       
 
     }
+ 
+    function getFormattedDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Month (0-indexed)
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+      
+        const formattedDate = `${year}${month}${day}${hours}${minutes}${seconds}`;
+        return formattedDate;
+      }
 
-    function pdfUploadComplete(result) {
+function pdfUploadComplete(){
 
-        var filePath = result.substring(0, result.indexOf(";"));
-        var fileName = result.substring(result.indexOf(";") + 1);
-
-
-        var storeNumberHash = window.location.hash.substr(1);
-        storeNumberHash = storeNumberHash.substr(9, 4);
-
-        require(['app/view/workflow/email'], function (form) {
-            //mask.html('Loading Store Data');
-            construction.loadData({ combinedQuery: "<Query>" + new CamlBuilder().Where().TextField('Title').EqualTo(storeNumberHash).ToString() + "</Query>" }, async function (stores) {
-                var store = stores[0];
-                //Close the modal
-                $.modal.close();
-
-                //var sendTo = "";
-                //if (store.Pos.toUpperCase().indexOf('MICROS') > -1)
-                //    sendTo = "cory.cartier@oracle.com; dave.p.williams@oracle.com; carol.crory@oracle.com; blake.webb@oracle.com; myra.rock@oracle.com; Erin.Mckay@oracle.com; michael.ingersoll@oracle.com;";
-                //else if (store.Pos.toUpperCase().indexOf('INFOR') > -1)
-                //    sendTo = "doug.gilbert@infor.com; joel.schuler@infor.com; James.Ferguson@infor.com;";
-
-                var installDate = moment(store.InstallDate).format('l');
-                if (installDate.toUpperCase().indexOf("INVALID") > -1)
-                    installDate = "NO INSTALL DATE ENTERED";
-
-                var bodyMessage = "Hello all - We need technology installation service at this location. Please provide initial quote to designated POC and the SONIC Project Manager within two business days. Installation will begin on <b>" + installDate + "</b> with tentative go-live of <b>" + moment(store.GoLiveDate).format('l') + "</b>. Please respond to the SONIC Project Manager listed below to verify that you can meet this date or with any issues that we might have. Thanks!<br /><br />";
-
-                bodyMessage += "Respectfully,<br /><br />" + store.ProjectManager + "<br />New Store Team<br />";
-
-                if (store.ProjectManager.toUpperCase().indexOf('JASON') !== -1) {
-
-                    bodyMessage += '918.269.1657<br />';
-                    bodyMessage += 'Jason.Srader@sonicdrivein.com';
-
-                } else if (store.ProjectManager.toUpperCase().indexOf('LIZ') !== -1) {
-
-                    bodyMessage += '405-641-2374<br />';
-                    bodyMessage += 'Elizabeth.Sannes@sonicdrivein.com';
-
-                } else if (store.ProjectManager.toUpperCase().indexOf('KATIGAN') !== -1) {
-
-                    bodyMessage += '405-919-6342<br />';
-                    bodyMessage += 'Russell.Katigan@Sonicdrivein.com';
-
-                }
-
-                else if (store.ProjectManager.toUpperCase().indexOf('BARRETT') !== -1) {
-
-                    bodyMessage += '918.760.8023<br />';
-                    bodyMessage += 'Barrett.Seal@Sonicdrivein.com';
-
-                }
-
-                else if (store.ProjectManager.toUpperCase().indexOf('DYLAN') !== -1) {
-
-                    bodyMessage += '303-437-8623<br />';
-                    bodyMessage += 'Dylan.Gehlbach@Sonicdrivein.com';
-
-                }
-
-                else if (store.ProjectManager.toUpperCase().indexOf('REGINA') !== -1) {
-
-                    bodyMessage += '405-201-1235<br />';
-                    bodyMessage += 'Regina.Pannell@Sonicdrivein.com';
-
-                }
-
-                else if (store.ProjectManager.toUpperCase().indexOf('BJ') !== -1) {
-
-                    bodyMessage += '405-202-2965<br />';
-                    bodyMessage += 'BJ.Bryant@Sonicdrivein.com';
-
-                }
-
-                var CC = "NewStoreTechnologyInstallations@Sonicdrivein.com; " + store.PrimaryEmail + ";";
-                if (store.Installer.toUpperCase().indexOf('RH TECH') > -1)
-                    CC += "charlie@rhtechservices.com;mary@rhtechservices.com;shane@rhtechservices.com;";
-                else if (store.Installer.toUpperCase().indexOf('MIRA') > -1)
-                    CC += "rachael@miraenterprises.net;zachary@miraenterprises.net;";
-                else if (store.Installer.toUpperCase().indexOf('ATI') > -1)
-                    CC += "brfc0316@gmail.com";
-                else if (store.Installer.toUpperCase().indexOf('AVA') > -1)
-                    CC += "rickcrenshaw7777@gmail.com";
-                else if (store.Installer.toUpperCase().indexOf('AVIT') > -1)
-                    CC += "skalisek@avitprousa.com";
+}
+  
+    // function pdfUploadComplete() {
+    //     logHelper.logInfo("Inside pdfUploadComplete")
+    //     var filePath = result.substring(0, result.indexOf(";"));
+    //     var fileName = result.substring(result.indexOf(";") + 1);
 
 
-                let baseUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
-                //Show the quote
-                form.render({
-                    subject: 'Sonic #' + store.StoreNumber + ' Technology Installation Quote Request',
-                    to: CC,
-                    body: bodyMessage,
-                    button: 'Send Email',
-                    title: 'Technology Installation Quote',
-                    callback: function (mailView) {
+    //     //var storeNumberHash = window.location.hash.substr(1);
+    //     //storeNumberHash = storeNumberHash.substr(9, 4);
 
-                        //Add a link to the attachment
-                        $('span[widgetid="submit-button"]').after("Attachment: <a href='" + encodeURI(filePath) + "'>" + fileName + "</a>");
+    //     require(['app/view/workflow/email'], function (form) {
+    //         //mask.html('Loading Store Data');
+    //         construction.loadData({ combinedQuery: "<Query>" + new CamlBuilder().Where().TextField('Title').EqualTo(storeNumberHash).ToString() + "</Query>" }, async function (stores) {
+    //             var store = stores[0];
+    //             //Close the modal
+    //             $.modal.close();
 
-                        //Add event handler for click
-                        mailView.submit.on('click', function () {
-                            //Disable the button
-                            mailView.submit.setDisabled(true);
+    //             //var sendTo = "";
+    //             //if (store.Pos.toUpperCase().indexOf('MICROS') > -1)
+    //             //    sendTo = "cory.cartier@oracle.com; dave.p.williams@oracle.com; carol.crory@oracle.com; blake.webb@oracle.com; myra.rock@oracle.com; Erin.Mckay@oracle.com; michael.ingersoll@oracle.com;";
+    //             //else if (store.Pos.toUpperCase().indexOf('INFOR') > -1)
+    //             //    sendTo = "doug.gilbert@infor.com; joel.schuler@infor.com; James.Ferguson@infor.com;";
 
-                            //////////////send email:
+    //             var installDate = moment(store.InstallDate).format('l');
+    //             if (installDate.toUpperCase().indexOf("INVALID") > -1)
+    //                 installDate = "NO INSTALL DATE ENTERED";
+
+    //             var bodyMessage = "Hello all - We need technology installation service at this location. Please provide initial quote to designated POC and the SONIC Project Manager within two business days. Installation will begin on <b>" + installDate + "</b> with tentative go-live of <b>" + moment(store.GoLiveDate).format('l') + "</b>. Please respond to the SONIC Project Manager listed below to verify that you can meet this date or with any issues that we might have. Thanks!<br /><br />";
+
+    //             bodyMessage += "Respectfully,<br /><br />" + store.ProjectManager + "<br />New Store Team<br />";
+
+    //             if (store.ProjectManager.toUpperCase().indexOf('JASON') !== -1) {
+
+    //                 bodyMessage += '918.269.1657<br />';
+    //                 bodyMessage += 'Jason.Srader@sonicdrivein.com';
+
+    //             } else if (store.ProjectManager.toUpperCase().indexOf('LIZ') !== -1) {
+
+    //                 bodyMessage += '405-641-2374<br />';
+    //                 bodyMessage += 'Elizabeth.Sannes@sonicdrivein.com';
+
+    //             } else if (store.ProjectManager.toUpperCase().indexOf('KATIGAN') !== -1) {
+
+    //                 bodyMessage += '405-919-6342<br />';
+    //                 bodyMessage += 'Russell.Katigan@Sonicdrivein.com';
+
+    //             }
+
+    //             else if (store.ProjectManager.toUpperCase().indexOf('BARRETT') !== -1) {
+
+    //                 bodyMessage += '918.760.8023<br />';
+    //                 bodyMessage += 'Barrett.Seal@Sonicdrivein.com';
+
+    //             }
+
+    //             else if (store.ProjectManager.toUpperCase().indexOf('DYLAN') !== -1) {
+
+    //                 bodyMessage += '303-437-8623<br />';
+    //                 bodyMessage += 'Dylan.Gehlbach@Sonicdrivein.com';
+
+    //             }
+
+    //             else if (store.ProjectManager.toUpperCase().indexOf('REGINA') !== -1) {
+
+    //                 bodyMessage += '405-201-1235<br />';
+    //                 bodyMessage += 'Regina.Pannell@Sonicdrivein.com';
+
+    //             }
+
+    //             else if (store.ProjectManager.toUpperCase().indexOf('BJ') !== -1) {
+
+    //                 bodyMessage += '405-202-2965<br />';
+    //                 bodyMessage += 'BJ.Bryant@Sonicdrivein.com';
+
+    //             }
+
+    //             var CC = "NewStoreTechnologyInstallations@Sonicdrivein.com; " + store.PrimaryEmail + ";";
+    //             if (store.Installer.toUpperCase().indexOf('RH TECH') > -1)
+    //                 CC += "charlie@rhtechservices.com;mary@rhtechservices.com;shane@rhtechservices.com;";
+    //             else if (store.Installer.toUpperCase().indexOf('MIRA') > -1)
+    //                 CC += "rachael@miraenterprises.net;zachary@miraenterprises.net;";
+    //             else if (store.Installer.toUpperCase().indexOf('ATI') > -1)
+    //                 CC += "brfc0316@gmail.com";
+    //             else if (store.Installer.toUpperCase().indexOf('AVA') > -1)
+    //                 CC += "rickcrenshaw7777@gmail.com";
+    //             else if (store.Installer.toUpperCase().indexOf('AVIT') > -1)
+    //                 CC += "skalisek@avitprousa.com";
 
 
-                            var subject = spUtility.escapeXml($("#subject").val());
-                            var to = spUtility.escapeXml($("#to").val());
-                            var cc = spUtility.escapeXml($("#cc").val());
+    //             let baseUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+    //             //Show the quote
+    //             form.render({
+    //                 subject: 'Sonic #' + store.StoreNumber + ' Technology Installation Quote Request',
+    //                 to: CC,
+    //                 body: bodyMessage,
+    //                 button: 'Send Email',
+    //                 title: 'Technology Installation Quote',
+    //                 callback: function (mailView) {
 
-                            //Find the template id - this is a long story but a problem with the template id changing everytime a workflow is updated
-                            $().SPServices({
-                                operation: "GetTemplatesForItem",
-                                item: baseUrl + "/InstallQuoteGen/1_.000",
-                                async: true,
-                                completefunc: function (xData, Status) {
-                                    $(xData.responseXML).find("WorkflowTemplates > WorkflowTemplate").each(function (i, e) {
-                                        if ($(this).attr("Name") == "InstallQuoteGen Email") {
-                                            var guid = $(this).find("WorkflowTemplateIdSet").attr("TemplateId");
-                                            if (guid != null) {
-                                                //Fire the workflow on the construction list
-                                                $().SPServices({
-                                                    operation: "StartWorkflow",
-                                                    item: baseUrl + "/InstallQuoteGen/1_.000",
-                                                    templateId: "{" + guid + "}",
-                                                    workflowParameters: "<Data>" +
-                                                    "<eTo>" + spUtility.escapeXml(mailView.to.getValue()) + "</eTo>" +
-                                                    "<eCC>" + spUtility.escapeXml(mailView.cc.getValue()) + "</eCC>" +
-                                                    "<eFrom>spadmin@Sonicdrivein.com</eFrom>" +
-                                                    "<eSubject>" + spUtility.escapeXml(mailView.subject.getValue()) + "</eSubject>" +
-                                                    "<eFilename>" + fileName + ".pdf</eFilename>" +
-                                                    "<eFileURL>" + filePath + "</eFileURL>" +
-                                                    "<eBody>" + spUtility.escapeXml(mailView.message.getData()) + "</eBody>" +
-                                                    "</Data>",
-                                                    completefunc: function () {
-                                                        alert('Email Sent');
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-                            return;
+    //                     //Add a link to the attachment
+    //                     $('span[widgetid="submit-button"]').after("Attachment: <a href='" + encodeURI(filePath) + "'>" + fileName + "</a>");
 
-                            //self.sendUpdatedPurchaseOrder(purchaseOrder, mailView.message.getData(), mailView.subject.getValue(), mailView.to.getValue(), mailView.cc.getValue(), lastDocument.FilePath, lastDocument.FileName, function () {
-                            //    if (purchaseOrder.PoType === 'FabCon - DT POPS') {
-                            //        construction.changeValue('DtPopsBaseStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
-                            //            //Hide the view & go back to the summary
-                            //            mailView.dialog.hide();
-                            //            location.hash = 'summary/' + store.StoreNumber;
-                            //        });
-                            //    } else if (store.ProjectType === 'POS Conversion') {
-                            //        //Hide the view & go back to the summary
-                            //        mailView.dialog.hide();
-                            //        location.hash = 'summary/' + store.StoreNumber;
-                            //    } else {
-                            //        //Update the status to requested today
-                            //        construction.changeValue('PopsStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
-                            //            //Hide the view & go back to the summary
-                            //            mailView.dialog.hide();
-                            //            location.hash = 'summary/' + store.StoreNumber;
-                            //        });
-                            //    }
-                            //});
-                        });
-                    }
-                });
-            });
-        });
-    }
+    //                     //Add event handler for click
+    //                     mailView.submit.on('click', function () {
+    //                         //Disable the button
+    //                         mailView.submit.setDisabled(true);
+
+    //                         //////////////send email:
+
+
+    //                         var subject = spUtility.escapeXml($("#subject").val());
+    //                         var to = spUtility.escapeXml($("#to").val());
+    //                         var cc = spUtility.escapeXml($("#cc").val());
+
+    //                         //Find the template id - this is a long story but a problem with the template id changing everytime a workflow is updated
+    //                         $().SPServices({
+    //                             operation: "GetTemplatesForItem",
+    //                             item: baseUrl + "/InstallQuoteGen/1_.000",
+    //                             async: true,
+    //                             completefunc: function (xData, Status) {
+    //                                 $(xData.responseXML).find("WorkflowTemplates > WorkflowTemplate").each(function (i, e) {
+    //                                     if ($(this).attr("Name") == "InstallQuoteGen Email") {
+    //                                         var guid = $(this).find("WorkflowTemplateIdSet").attr("TemplateId");
+    //                                         if (guid != null) {
+    //                                             //Fire the workflow on the construction list
+    //                                             $().SPServices({
+    //                                                 operation: "StartWorkflow",
+    //                                                 item: baseUrl + "/InstallQuoteGen/1_.000",
+    //                                                 templateId: "{" + guid + "}",
+    //                                                 workflowParameters: "<Data>" +
+    //                                                 "<eTo>" + spUtility.escapeXml(mailView.to.getValue()) + "</eTo>" +
+    //                                                 "<eCC>" + spUtility.escapeXml(mailView.cc.getValue()) + "</eCC>" +
+    //                                                 "<eFrom>spadmin@Sonicdrivein.com</eFrom>" +
+    //                                                 "<eSubject>" + spUtility.escapeXml(mailView.subject.getValue()) + "</eSubject>" +
+    //                                                 "<eFilename>" + fileName + ".pdf</eFilename>" +
+    //                                                 "<eFileURL>" + filePath + "</eFileURL>" +
+    //                                                 "<eBody>" + spUtility.escapeXml(mailView.message.getData()) + "</eBody>" +
+    //                                                 "</Data>",
+    //                                                 completefunc: function () {
+    //                                                     alert('Email Sent');
+    //                                                 }
+    //                                             });
+    //                                         }
+    //                                     }
+    //                                 });
+    //                             }
+    //                         });
+    //                         return;
+
+    //                         //self.sendUpdatedPurchaseOrder(purchaseOrder, mailView.message.getData(), mailView.subject.getValue(), mailView.to.getValue(), mailView.cc.getValue(), lastDocument.FilePath, lastDocument.FileName, function () {
+    //                         //    if (purchaseOrder.PoType === 'FabCon - DT POPS') {
+    //                         //        construction.changeValue('DtPopsBaseStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
+    //                         //            //Hide the view & go back to the summary
+    //                         //            mailView.dialog.hide();
+    //                         //            location.hash = 'summary/' + store.StoreNumber;
+    //                         //        });
+    //                         //    } else if (store.ProjectType === 'POS Conversion') {
+    //                         //        //Hide the view & go back to the summary
+    //                         //        mailView.dialog.hide();
+    //                         //        location.hash = 'summary/' + store.StoreNumber;
+    //                         //    } else {
+    //                         //        //Update the status to requested today
+    //                         //        construction.changeValue('PopsStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
+    //                         //            //Hide the view & go back to the summary
+    //                         //            mailView.dialog.hide();
+    //                         //            location.hash = 'summary/' + store.StoreNumber;
+    //                         //        });
+    //                         //    }
+    //                         //});
+    //                     });
+    //                 }
+    //             });
+    //         });
+    //     });
+    // }
 
 
 
@@ -269,6 +437,7 @@ define(['app/view/quotegen/quotegen', 'app/store/construction', 'app/store/combi
                 clickClose: false,
                 showClose: false
             });
+            //logHelper.logInfo("View Contents: " + view);
             buildPdf(view, pdfUploadComplete);
         }
 

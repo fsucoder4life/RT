@@ -281,7 +281,7 @@ define(
                                     //var quoteDetails = item[7];
 
                                     //Images & Logo array
-                                    var logo = item[9];
+                                    var logo = item[7];
                                     var logoDescription = logo["logo"].description;
                                     var logoFilePath = logo["logo"].uri;
 

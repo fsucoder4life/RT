@@ -22,7 +22,7 @@
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 11:00:00 GMT">
     <meta http-equiv="pragma" content="no-cache">
 
-    <title>Sonic Retail Technology</title>
+    <title id="applicationId">Sonic Retail Technology</title>
     <link rel="shortcut icon" href="/_layouts/images/favicon.ico" type="image/vnd.microsoft.icon" />
     <!--Styles-->
     <link rel="stylesheet" type="text/css" href="resources/style/main.css" />
@@ -59,8 +59,8 @@
     <script language="javascript" type="text/javascript" src="resources/lib/jstree/jstree.min.js"></script>
     <script language="javascript" type="text/javascript" src="app/utility/asyncLoop.js"></script>
     <!--<script language="javascript" type="text/javascript" src="resources/lib/FileSaver.min.js"></script>-->
-    <!--<script language="javascript" type="text/javascript" src="resources/lib/jspdf.min.js"></script>-->
-    <!--<script language="javascript" type="text/javascript" src="resources/lib/jspdf.plugin.autotable.js"></script>-->
+    <script language="javascript" type="text/javascript" src="resources/lib/jspdf.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/jspdf.plugin.autotable.js"></script>
     <!--<script language="javascript" type="text/javascript" src="resources/lib/table2CSV.js"></script>-->
     <script language="javascript" type="text/javascript" src="resources/lib/big.min.js"></script>
     <%--<script>--%>
@@ -178,6 +178,46 @@
     
     
     </script>
+   <script language="javascript">
+  
+    function triggerWorkflow(workFlowType) {
+        alert("Test");
+        var url = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/"; // Replace placeholders
+                           
+        var clientContext = new SP.ClientContext(url);
+        var currentUser = getCurrentUser();
+
+        // var webContext = clientContext.get_web();  
+        //         currentUser = webContext.get_currentUser();
+        var oList = clientContext.get_web().get_lists().getByTitle('WorkFlowTriggerRequest');
+            console.log("After retrieving the list:" + oList);
+        var itemCreateInfo = new SP.ListItemCreationInformation();
+        this.oListItem = oList.addItem(itemCreateInfo);
+        oListItem.set_item('Title', 'HCMAudioQuote - Trigger');
+        oListItem.set_item('Store', '9999');
+        oListItem.set_item('WFType', workFlowType);
+        oListItem.set_item('RequestBy', 'clayton.gause@inspirebrands.com');
+        oListItem.set_item('DateRequested', new Date());
+        console.log("Before updating the list:" + oList);
+        oListItem.update();
+    
+        clientContext.load(oListItem);
+        clientContext.executeQueryAsync(
+            Function.createDelegate(this, this.onQuerySucceeded), 
+            Function.createDelegate(this, this.onQueryFailed)
+        );
+    }
+    
+    function onQuerySucceeded() {
+        alert('Item created: ' + oListItem.get_id());
+    }
+    
+    function onQueryFailed(sender, args) {
+        alert('Request failed. ' + args.get_message() + 
+            '\n' + args.get_stackTrace());
+    }
+        
+        </script>
 </head>
 <body class="claro">
     <div id="main">

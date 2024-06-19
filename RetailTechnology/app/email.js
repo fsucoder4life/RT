@@ -63,7 +63,7 @@ define(['dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-mi
         //         subject = xmlEscape(options.subject || 'Report'),
         //         to = xmlEscape(options.to),
         //         cc = xmlEscape(options.cc || ''),
-        //         item = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Combined%20Schedule/3850_.000";//this is a random item because this is a workflow for a list item we are borrowing
+        //         item = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/Lists/Combined%20Schedule/3850_.000";//this is a random item because this is a workflow for a list item we are borrowing
         //
         //
         //     //TODO - Stop displaying PDF

@@ -1,15 +1,15 @@
 define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'app/store/purchaseOrderItems', 'app/store/products', 'dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-min.css', 'app/store/combined', 'app/store/construction', 'app/utility/sp-utility', 'app/widget/widgetHelper', 'dojo/text!app/view/workflow/idtech-purchase-order.html','app/brands/services/brandServices'],
   function (summary, purchaseOrderStore, purchaseOrderItemStore, products, mainCss, pureCss, combined, construction, spUtility, widgetHelper, emailTemplate,brandServices) {
-    var purchaseOrderDetails = brandServices.getEmailDistributionDetails("purchaseOrder","idtech");
+    //var purchaseOrderDetails = brandServices.getEmailDistributionDetails("purchaseOrder","idtech");
     const valEmailTo = "";
     const valEmailCC = "";
-    if (purchaseOrderDetails){
-        valEmailTo = purchaseOrderDetails.emailTo;
-        if (purchaseOrderDetails.emailCC){
-            valEmailCC = purchaseOrderDetails.emailCC;
-        }
+    // if (purchaseOrderDetails){
+    //     valEmailTo = purchaseOrderDetails.emailTo;
+    //     if (purchaseOrderDetails.emailCC){
+    //         valEmailCC = purchaseOrderDetails.emailCC;
+    //     }
         
-    }
+    // }
   
     var self = {
       emailTo: varEmailTo,

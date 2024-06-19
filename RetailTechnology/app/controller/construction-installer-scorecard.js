@@ -90,9 +90,9 @@ define(['app/view/report', 'app/rules/construction', 'app/email', 'app/store/con
                       {key: 'PhotoCount', title: 'Photos<br/>Submitted', transform: function (na, store, stores, index) {
                         //Display the photo count if it exists
                         if (typeof store.PhotoCount !== 'undefined') {
-                          return '<a href="https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/DailyUpdates/index.aspx#' + store.StoreNumber + '/dailyupdate/gallery">' + store.PhotoCount + '</a>';
+                          return '<a href="https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/DailyUpdates/index.aspx#' + store.StoreNumber + '/dailyupdate/gallery">' + store.PhotoCount + '</a>';
                         } else {
-                          return '<a href="https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/DailyUpdates/index.aspx#' + store.StoreNumber + '/dailyupdate/gallery">N/A</a>';
+                          return '<a href="https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/DailyUpdates/index.aspx#' + store.StoreNumber + '/dailyupdate/gallery">N/A</a>';
                         }
                       }},
                       {key: 'UpdateCount', title: 'Updates<br/>Submitted'},

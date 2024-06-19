@@ -114,8 +114,8 @@ This project is intended as a more intuitive and specialized access mechanism to
 
 ###Environments
  * Live Site:
-    * https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/index.aspx
+    * https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/RetailTechnology/index.aspx
  * Development Site:
-    * https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnologyDev/index.aspx
+    * https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/RetailTechnologyDev/index.aspx
  * Legacy Site (forwards to live):
-    * https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/Construction/index.aspx
+    * https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/Construction/index.aspx

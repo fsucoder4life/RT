@@ -13,7 +13,8 @@
     "pageTitle": "Baskin Robbins Retail Technology - Development Projects",
     "siteTitle": "Baskin Robbins Retail Technology",
     "sharePointUrls": {
-        "sharePointBaseUrl": "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out",
+        "hostWebUrl": "https://irbpartners.sharepoint.com/sites/RetailTechDeployment",
+        "sharePointBaseUrl": "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/RetailTechnologyProd",
         "api-pdfGenerator": "https://api.html2pdfrocket.com/pdf",
         "form-POSSurvey": "https://videoredirect.sonicdrivein.com/RetailTech/POSSurvey/?store=__store.StoreNumber__",
         "list-CombinedSchedule": "__sharePointBaseUrl__/Lists/Combined%20Schedule/DispForm.aspx?ID=__store.CombinedId__",

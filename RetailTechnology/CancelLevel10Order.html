@@ -14,7 +14,7 @@
             var results = regex.exec(location.search);
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         };
-        var itemURL = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Level%2010%20Orders/" + getParam('id') + "_.000";
+        var itemURL = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/Lists/Level%2010%20Orders/" + getParam('id') + "_.000";
         console.log(itemURL);
         $().SPServices({
             operation: "GetTemplatesForItem",
@@ -36,7 +36,7 @@
                                 "</Data>",
                                 completefunc: function () {
                                     alert('Level 10 PO Canceled');
-                                    window.location = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/index.aspx";
+                                    window.location = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/RetailTechnology/index.aspx";
                                 }
                             });
                         }

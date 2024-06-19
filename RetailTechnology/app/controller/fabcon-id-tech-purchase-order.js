@@ -1,16 +1,16 @@
 define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purchaseOrders', 'app/store/fabConIDTechPurchaseOrderItems', 'app/store/products', 'dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-min.css', 'app/store/combined', 'app/store/construction', 'app/utility/sp-utility', 'app/widget/widgetHelper', 'dojo/text!app/view/workflow/fabcon-id-tech-purchase-order.html','app/brands/services/brandServices'],
   function (summary, purchaseOrderStore, purchaseOrderItemStore, products, mainCss, pureCss, combined, construction, spUtility, widgetHelper, emailTemplate,brandServices) {
       
-    var purchaseOrderDetails = brandServices.getEmailDistributionDetails("purchaseOrder","fabcon");
+   // var purchaseOrderDetails = brandServices.getEmailDistributionDetails("purchaseOrder","fabcon");
     const valEmailTo = "";
     const valEmailCC = "";
-    if (purchaseOrderDetails){
-        valEmailTo = purchaseOrderDetails.emailTo;
-        if (purchaseOrderDetails.emailCC){
-            valEmailCC = purchaseOrderDetails.emailCC;
-        }
+    // if (purchaseOrderDetails){
+    //     valEmailTo = purchaseOrderDetails.emailTo;
+    //     if (purchaseOrderDetails.emailCC){
+    //         valEmailCC = purchaseOrderDetails.emailCC;
+    //     }
         
-    }
+    // }
     var self = {
           emailTo: valEmailTo,//'mperez@fabcon.com; iescobar@fabcon.com; kgelfer@fabcon.com; bjuarez@fabcon.com; justin.ning@idtechproducts.com; sandy.lee@idtechproducts.com; ',
           emailCc: valEmailCC,//'SDI-NewStoreTechnologyInstallations-DL@Sonicdrivein.com; Post.InstallationManagement@Sonicdrivein.com; ccease@inspirebrands.com; kgreen@inspirebrands.com; ',

@@ -1,3 +1,48 @@
+<script language="javascript">
+    function getCurrentUser()  {
+    //Load the user data
+    return $().SPServices.SPGetCurrentUser({
+        fieldNames: ["FirstName", "LastName", "UserName"],
+        debug: false
+    });
+}
+    function triggerWorkflow(workFlowType) {
+        var url = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/"; // Replace placeholders
+                           
+        var clientContext = new SP.ClientContext(url);
+        var currentUser = getCurrentUser();
+
+        // var webContext = clientContext.get_web();  
+        //         currentUser = webContext.get_currentUser();
+        var oList = clientContext.get_web().get_lists().getByTitle('WorkFlowTriggerRequest');
+            console.log("After retrieving the list:" + oList);
+        var itemCreateInfo = new SP.ListItemCreationInformation();
+        this.oListItem = oList.addItem(itemCreateInfo);
+        oListItem.set_item('Title', 'HCMAudioQuote - Trigger');
+        oListItem.set_item('Store', '9999');
+        oListItem.set_item('WFType', workFlowType);
+        oListItem.set_item('RequestBy', currentUser.UserName);
+        oListItem.set_item('DateRequested', new Date());
+        console.log("Before updating the list:" + oList);
+        oListItem.update();
+    
+        clientContext.load(oListItem);
+        clientContext.executeQueryAsync(
+            Function.createDelegate(this, this.onQuerySucceeded), 
+            Function.createDelegate(this, this.onQueryFailed)
+        );
+    }
+    
+    function onQuerySucceeded() {
+        alert('Item created: ' + oListItem.get_id());
+    }
+    
+    function onQueryFailed(sender, args) {
+        alert('Request failed. ' + args.get_message() + 
+            '\n' + args.get_stackTrace());
+    }
+        
+        </script>
 <div class="summary-row">
     <div class="summary-box summary-box-side" style="min-height:490px;">
         <div class="summary-box-title">Store Contact</div>
@@ -661,33 +706,41 @@
 <div class="full-width-box" style="text-align: center;">
     <div id="issues">Loading Issues...</div>
 </div>
+
 <div style="text-align: center" class="pure-form">
     <div class="notes-box-title">Workflows</div>
     <div id="workflow-button"></div>
     <select id="workflows">
-        <option value="select-workflow">Select Workflow CTG</option>
-        <option value="audio-quote-request">HME/Audio Quote Request</option>
-        <option value="audio-quote-request-power-automate">HME Audio Quote (Power Automate)</option>
-        <option value="micros-audio-quote-request">Micros Audio Quote Request</option>
-        <!--<option value="fabcon-commworks-pops">FabCon/CommWorks POPS Purchase Order Request</option>-->
-        <!--<option value="fabcon-commworks-dt-base">FabCon/CommWorks DT Base Purchase Order Request</option>-->
-        
+        <option value="select-workflow">Select Workflow</option>
+        <!-- <option value="audio-quote-request">HME/Audio Quote Request</option> -->
+        <option value="audio-quote-request-workflow">HME Audio Quote</option>
+        <!-- <option value="micros-audio-quote-request">Micros Audio Quote Request</option> -->
+        <!-- <option value="fabcon-commworks-pops">FabCon/CommWorks POPS Purchase Order Request</option>
+        <option value="fabcon-commworks-dt-base">FabCon/CommWorks DT Base Purchase Order Request</option>        -->
         <option value="fabcon-create-purchase-order">FabCon ONLY - Create Purchase Order</option>
-        <option value="idtech-create-purchase-order">ID Tech ONLY - Create Purchase Order</option>
-        <option value="fabcon-dtpops-create-purchase-order">FabCon - DT POPS Base - Create Purchase Order</option>
-        <option value="level-ten-data-order">Level 10 Order</option>
-        <option value="pos-data-order">POS Data Order</option>
-        <option value="servereps-setup">ServerEPS Setup Request</option>
-        <option value="promotion-order">ProMotion Order</option>
-        <option value="sonic-radio-order">Sonic Radio Order</option>
+        <!-- <option value="fabcon-create-purchase-order-workflow">FabCon ONLY - Create Purchase Order (Power Automate)</option> -->
+        <!-- <option value="idtech-create-purchase-order">ID Tech ONLY - Create Purchase Order</option> -->
+        <!-- <option value="fabcon-dtpops-create-purchase-order">FabCon - DT POPS Base - Create Purchase Order</option> -->
+        <!-- <option value="level-ten-data-order">Level 10 Order</option> -->
+        <!-- <option value="pos-data-order">POS Data Order</option> -->
+        <!-- <option value="servereps-setup">ServerEPS Setup Request</option> -->
+        <option value="servereps-setup-workflow">ServerEPS Setup Request</option>
+        <!-- <option value="promotion-order">ProMotion Order</option> -->
+        <option value="promotion-order-workflow">ProMotion Order</option>
+        <!-- <option value="sonic-radio-order">Sonic Radio Order</option> -->
+        <option value="sonic-radio-order-workflow">Sonic Radio Order</option>
         <option value="installer-quote-request">Installer Quote Request</option>
         <option value="generate-pro-forma">Generate Summary</option>
-        <option value="updated-dates">Notify Date Changes</option>
-        <option value="hughes-request">Comcast Request</option>
-        <option value="payment-monetization-summary">Next Gen Pays Summary (roll out)</option>
-        <option value="payment-monetization-order">Next Gen Pays Order (roll out)</option>
-        <option value="hme-loop-request">HME Loop Request</option>
-        <option value="submit-em-survey">Submit EM Survey</option>
+        <!-- <option value="updated-dates">Notify Date Changes</option> -->
+        <option value="updated-dates-workflow">Notify Date Changes </option>
+        <!-- <option value="hughes-request">Comcast Request</option> -->
+        <option value="hughes-request-workflow">Comcast Request </option>
+        <!-- <option value="payment-monetization-summary">Next Gen Pays Summary (roll out)</option>
+        <option value="payment-monetization-order">Next Gen Pays Order (roll out)</option> -->
+        <!-- <option value="hme-loop-request">HME Loop Request</option> -->
+        <option value="hme-loop-request-workflow">HME Loop Request</option>
+        <!-- <option value="submit-em-survey">Submit EM Survey</option> -->
+        <option value="submit-em-survey-workflow">Submit EM Survey</option>
 
     </select>
 </div>

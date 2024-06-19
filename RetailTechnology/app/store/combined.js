@@ -1,12 +1,17 @@
-define(['app/store/issues', 'app/store/notes', 'app/store/sp-utility', 'app/brands/services/brandServices'], async function (issues, notes, utility, brandServices) {
+define(['app/store/issues', 'app/store/notes', 'app/store/sp-utility','app/brands/services/brandServices','app/brands/services/logHelper'], function (issues, notes, utility,brandServices,logHelper) {
     //Setup 
-    //Turn Cross Origin Resource Sharing On to get sharepoint data from outside site
+    //Turn Cross Origin Resource Sharing On to get  sharepoint data from outside site 
     $.support.cors = true;
 
     var listName = 'Combined Schedule';
     //Point towards the sharepoint site
-    var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
-    $().SPServices.defaults.webURL = webUrl;  // URL of the target Web
+	//console.log("combined.js before webUrl: ");
+	 //var webUrl = brandServices.getSharePointBaseUrl();
+    var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+     
+    $().SPServices.defaults.webURL = webUrl;
+	logHelper.logDebug("combined.js","webUrl: " +  webUrl);
+    //$().SPServices.defaults.webURL = "/sites/SonicRTD/";  // URL of the target Web
     $().SPServices.defaults.listName = listName;  // Name of the list for list
 
     //Request fields mapping from internal names
@@ -944,6 +949,7 @@ define(['app/store/issues', 'app/store/notes', 'app/store/sp-utility', 'app/bran
     }
 
     function uploadDocument(store, file, name, callback) {
+        logHelper.logInfo("Store Information: " + JSON.stringify(store));
         $().SPServices({
             operation: "AddAttachment",
             listName: listName,
@@ -958,7 +964,7 @@ define(['app/store/issues', 'app/store/notes', 'app/store/sp-utility', 'app/bran
                 store.Documents = (typeof store.Documents !== 'undefined' ? store.Documents : []);
                 store.CombinedDocuments = (typeof store.CombinedDocuments !== 'undefined' ? store.CombinedDocuments : []);
 
-                var filePath = "https://www.sonicpartnernet.com/Scoop/Information Services/PMT/Roll Out/" + $(xData.responseXML).find("AddAttachmentResult").text(),
+                var filePath = webUrl + "/" + $(xData.responseXML).find("AddAttachmentResult").text(),
                   arrString = filePath.split("/"),
                   fileName = arrString[arrString.length - 1];
 

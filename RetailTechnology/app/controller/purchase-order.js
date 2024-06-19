@@ -1,15 +1,104 @@
-define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'app/store/purchaseOrderItems', 'app/store/products', 'dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-min.css', 'app/store/combined', 'app/store/construction', 'app/utility/sp-utility', 'app/widget/widgetHelper', 'dojo/text!app/view/workflow/fabcon-purchase-order.html','app/brands/services/brandServices'],
-  function (summary, purchaseOrderStore, purchaseOrderItemStore, products, mainCss, pureCss, combined, construction, spUtility, widgetHelper, emailTemplate,brandServices) {
+define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'app/store/purchaseOrderItems', 'app/store/products', 'dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-min.css', 'app/store/combined', 'app/store/construction', 'app/utility/sp-utility', 'app/widget/widgetHelper', 'dojo/text!app/view/workflow/fabcon-purchase-order.html','app/brands/services/brandServices','app/brands/services/logHelper'],
+  function (summary, purchaseOrderStore, purchaseOrderItemStore, products, mainCss, pureCss, combined, construction, spUtility, widgetHelper, emailTemplate,brandServices,logHelper) {
       
-    var purchaseOrderDetails = brandServices.getEmailDistributionDetails("purchaseOrder","default");
+    //var purchaseOrderDetails = brandServices.getEmailDistributionDetails("purchaseOrder","default");
     const valEmailTo = "";
     const valEmailCC = "";
-    if (purchaseOrderDetails){
-        valEmailTo = purchaseOrderDetails.emailTo;
-        if (purchaseOrderDetails.emailCC){
-            valEmailCC = purchaseOrderDetails.emailCC;
+    // if (purchaseOrderDetails){
+    //     valEmailTo = purchaseOrderDetails.emailTo;
+    //     if (purchaseOrderDetails.emailCC){
+    //         valEmailCC = purchaseOrderDetails.emailCC;
+    //     }
+        
+    // }
+
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Month (0-indexed)
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+      
+        const formattedDate = date.toLocaleDateString();
+        return `${year}${month}${day}${hours}${minutes}${seconds}`;
+      }
+
+      var siteUrl2
+  var currentUser;
+  function getCurrentUser(){
+    console.log("Inside getCurrentUser: ");
+    var ctx= new SP.ClientContext.get_current();
+    console.log("Inside getCurrentUser: 2" + ctx);
+    var web = ctx.get_web();
+    console.log("Inside getCurrentUser: 3 " + web);
+    currentUser = web.get_currentUser();
+    console.log("Current User: " + currentUser.UserName);
+    // ctx.load(currentUser);
+    // ctx.executeQueryAsync(onSuccess, onFailure);
+    }
+      function triggerWorkflow(store,workFlowType,hasAttachment,fileName) {
+        try {
+            console.log("Inside triggerWorkFlow: " + workFlowType);
+                var siteUrl = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/";
+                getCurrentUser();
+                
+                console.log("siteUrl2: " + siteUrl2);
+                var clientContext = new SP.ClientContext(siteUrl);
+                var oList = clientContext.get_web().get_lists().getByTitle('WorkFlowTriggerRequest');
+                    
+                var itemCreateInfo = new SP.ListItemCreationInformation();
+                this.oListItem = oList.addItem(itemCreateInfo);
+                
+                const newDate = new Date();
+                const formattedDate = formatDate(newDate);
+                
+            
+                var title = store + '-' + workFlowType + '-' + formattedDate;
+
+                oListItem.set_item('Title', title);
+                oListItem.set_item('Store', store);
+                oListItem.set_item('WFType', workFlowType);
+                oListItem.set_item('RequestBy', currentUser.UserName);
+                oListItem.set_item('DateRequested', new Date());
+                if (hasAttachment === true){
+                     this.oListItem.set_item('HasAttachment',hasAttachment);
+                     this.oListItem.set_item('AttachmentFileName',fileName);
+                }
+               
+                console.log("Before updating the list:" + oList);
+                oListItem.update();
+            
+                clientContext.load(oListItem);
+
+        clientContext.executeQueryAsync(
+            //Success callback
+            () => {
+                console.log("Successfully created trigger request");                 
+                alert("Workflow Trigger Created");
+            },
+            //Error callback
+            (sender, args) => {
+                console.error("An error occured:", args.get_message());
+                alert("Error creating trigger");
+            }
+            // Function.createDelegate(this, this.onQuerySucceeded), 
+            // Function.createDelegate(this, this.onQueryFailed)
+        );
+    // function onQuerySucceeded() {
+    //     alert('Item created: ' + oListItem.get_id());
+    // }
+    
+    //  function onQueryFailed(sender, args) {
+    //     alert('Request failed. ' + args.get_message() + 
+    //         '\n' + args.get_stackTrace());
+    // }
+            return true;
+        } catch (error) {
+            return false;
         }
         
+     
     }
     var self = {
           emailTo: valEmailTo,//'kgelfer@fabcon.com; cromero@fabcon.com; Kimberly.Oliver@sonicdrivein.com; BJuarez@fabcon.com; IEscobar@fabcon.com; RAlbrechtsen@fabcon.com; MPerez@fabcon.com; rMagallanes@fabcon.com; ',
@@ -73,6 +162,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
               });
           };
 
+          
           view.onSendClick = function () {
               //Mask to prevent re-clicking
               var mask = $('<div>Preparing PO</div>'),
@@ -85,61 +175,67 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
 
               self.buildPdf(view, pdfUploadComplete);
 
-              function pdfUploadComplete(purchaseOrder) {
-                  require(['app/view/workflow/email'], function (form) {
-                      mask.html('Loading Store Data');
-                      construction.loadData({ combinedQuery: "<Query>" + new CamlBuilder().Where().TextField('Title').EqualTo(purchaseOrder.StoreNumber).ToString() + "</Query>" }, function (stores) {
-                          var store = stores[0];
-                          //Close the modal
-                          $.modal.close();
 
-                          //Show the quote
-                          form.render({
-                              subject: self.buildSubject(view.purchaseOrder),
-                              to: self.emailTo,
-                              cc: self.emailCc,
-                              body: self.buildBody(view.purchaseOrder, store),
-                              button: 'Send Purchase Order',
-                              title: 'FabCon Purchase Order',
-                              callback: function (mailView) {
-                                  //Grab the most current document
-                                  var lastDocument = _.last(view.purchaseOrder.Documents);
+              function pdfUploadComplete(){
 
-                                  //Add a link to the attachment
-                                  $('span[widgetid="submit-button"]').after("Attachment: <a href='" + encodeURI(lastDocument.FilePath) + "'>" + lastDocument.FileName + "</a>");
-
-
-                                  //Add event handler for click
-                                  mailView.submit.on('click', function () {
-                                      //Disable the button
-                                      mailView.submit.setDisabled(true);
-
-                                      self.sendUpdatedPurchaseOrder(stores[0], purchaseOrder, mailView.message.getData(), mailView.subject.getValue(), mailView.to.getValue(), mailView.cc.getValue(), lastDocument.FilePath, lastDocument.FileName, function () {
-                                          if (purchaseOrder.PoType === 'FabCon - DT POPS') {
-                                              construction.changeValue('DtPopsBaseStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
-                                                  //Hide the view & go back to the summary 
-                                                  mailView.dialog.hide();
-                                                  location.hash = 'summary/' + store.StoreNumber;
-                                              });
-                                          } else if (store.ProjectType === 'POS Conversion') {
-                                              //Hide the view & go back to the summary
-                                              mailView.dialog.hide();
-                                              location.hash = 'summary/' + store.StoreNumber;
-                                          } else {
-                                              //Update the status to requested today
-                                              construction.changeValue('PopsStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
-                                                  //Hide the view & go back to the summary
-                                                  mailView.dialog.hide();
-                                                  location.hash = 'summary/' + store.StoreNumber;
-                                              });
-                                          }
-                                      });
-                                  });
-                              }
-                          });
-                      });
-                  });
+            
               }
+                
+            //   function pdfUploadComplete(purchaseOrder) {
+            //       require(['app/view/workflow/email'], function (form) {
+            //           mask.html('Loading Store Data');
+            //           construction.loadData({ combinedQuery: "<Query>" + new CamlBuilder().Where().TextField('Title').EqualTo(purchaseOrder.StoreNumber).ToString() + "</Query>" }, function (stores) {
+            //               var store = stores[0];
+            //               //Close the modal
+            //               $.modal.close();
+
+            //               //Show the quote
+            //               form.render({
+            //                   subject: self.buildSubject(view.purchaseOrder),
+            //                   to: self.emailTo,
+            //                   cc: self.emailCc,
+            //                   body: self.buildBody(view.purchaseOrder, store),
+            //                   button: 'Send Purchase Order',
+            //                   title: 'FabCon Purchase Order',
+            //                   callback: function (mailView) {
+            //                       //Grab the most current document
+            //                       var lastDocument = _.last(view.purchaseOrder.Documents);
+
+            //                       //Add a link to the attachment
+            //                       $('span[widgetid="submit-button"]').after("Attachment: <a href='" + encodeURI(lastDocument.FilePath) + "'>" + lastDocument.FileName + "</a>");
+
+
+            //                       //Add event handler for click
+            //                       mailView.submit.on('click', function () {
+            //                           //Disable the button
+            //                           mailView.submit.setDisabled(true);
+
+            //                           self.sendUpdatedPurchaseOrder(stores[0], purchaseOrder, mailView.message.getData(), mailView.subject.getValue(), mailView.to.getValue(), mailView.cc.getValue(), lastDocument.FilePath, lastDocument.FileName, function () {
+            //                               if (purchaseOrder.PoType === 'FabCon - DT POPS') {
+            //                                   construction.changeValue('DtPopsBaseStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
+            //                                       //Hide the view & go back to the summary 
+            //                                       mailView.dialog.hide();
+            //                                       location.hash = 'summary/' + store.StoreNumber;
+            //                                   });
+            //                               } else if (store.ProjectType === 'POS Conversion') {
+            //                                   //Hide the view & go back to the summary
+            //                                   mailView.dialog.hide();
+            //                                   location.hash = 'summary/' + store.StoreNumber;
+            //                               } else {
+            //                                   //Update the status to requested today
+            //                                   construction.changeValue('PopsStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
+            //                                       //Hide the view & go back to the summary
+            //                                       mailView.dialog.hide();
+            //                                       location.hash = 'summary/' + store.StoreNumber;
+            //                                   });
+            //                               }
+            //                           });
+            //                       });
+            //                   }
+            //               });
+            //           });
+            //       });
+            //   }
           }
       };
 
@@ -172,9 +268,13 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
                           fileName += '- revision ' + (view.purchaseOrder.Documents.length);
                       }
                       fileName += '.pdf';
-
+                      logHelper.logInfo("fileName generated: " + fileName);  
                       //Upload
-                      purchaseOrderStore.uploadDocument(view.purchaseOrder, reader.result.replace('data:application/pdf;base64,', ''), fileName, callback);
+                      purchaseOrderStore.uploadDocument(view.purchaseOrder, reader.result.replace('data:application/pdf;base64,', ''), fileName, function(){
+                       logHelper.logInfo("view.purchaseOrder: " + JSON.stringify(view.purchaseOrder));
+                        console.log("Inside fabcon-create-purchase-order-workflow");
+                        triggerWorkflow(view.purchaseOrder.StoreNumber,"FabconCPO",true, fileName);
+                      });
                   });
               });
 

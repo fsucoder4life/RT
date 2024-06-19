@@ -33,7 +33,7 @@ function ApplyFilters() {
         orderdocsent = "/orderdocsent/" + $("input[name='orderdocsent']:checked").val();
 
 
-    window.location.href = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SitePages/RetailTechnology/index.aspx#reports/paymentmodprojectdates4" + itpm + startDate + endDate + sortByGoLiveDate + franchisee + sitesurveycompleted + orderdocsent;
+    window.location.href = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SitePages/RetailTechnology/index.aspx#reports/paymentmodprojectdates4" + itpm + startDate + endDate + sortByGoLiveDate + franchisee + sitesurveycompleted + orderdocsent;
     window.location.reload();
 }
 

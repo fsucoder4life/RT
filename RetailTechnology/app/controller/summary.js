@@ -1,5 +1,9 @@
-define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues', 'app/store/notes', 'app/store/combined', 'app/rules/construction'], 
-function (summary, construction, issueStore, noteStore, combined, constructionRules) {
+define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues', 'app/store/notes', 'app/store/combined', 'app/rules/construction','app/brands/services/brandServices','app/brands/services/logHelper'], function (summary, construction, issueStore, noteStore, combined, constructionRules,brandServices,logHelper) {
+
+
+    var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+    $().SPServices.defaults.webURL = webUrl;
+
     function applyIssueEventListeners(view) {
         var store = view.store;
         var promotionOrderDisplaySize = 55;
@@ -496,9 +500,100 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
         });
     }
 
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Month (0-indexed)
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+      
+        const formattedDate = date.toLocaleDateString();
+        return `${year}${month}${day}${hours}${minutes}${seconds}`;
+      }
+var siteUrl2
+      var currentUser;
+      function getCurrentUser(){
+        console.log("Inside getCurrentUser: ");
+        var ctx= new SP.ClientContext.get_current();
+        console.log("Inside getCurrentUser: 2" + ctx);
+        var web = ctx.get_web();
+        console.log("Inside getCurrentUser: 3 " + web);
+        currentUser = web.get_currentUser();
+        console.log("Current User: " + currentUser.UserName);
+        // ctx.load(currentUser);
+        // ctx.executeQueryAsync(onSuccess, onFailure);
+        }
+    function triggerWorkflow(store,workFlowType,hasAttachment,fileName) {
+        try {
+            console.log("Inside triggerWorkFlow: " + workFlowType);
+                var siteUrl = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/";
+                getCurrentUser();
+                
+                console.log("siteUrl2: " + siteUrl2);
+                var clientContext = new SP.ClientContext(siteUrl);
+                var oList = clientContext.get_web().get_lists().getByTitle('WorkFlowTriggerRequest');
+                    
+                var itemCreateInfo = new SP.ListItemCreationInformation();
+                this.oListItem = oList.addItem(itemCreateInfo);
+                
+                const newDate = new Date();
+                const formattedDate = formatDate(newDate);
+                
+            
+                var title = store + '-' + workFlowType + '-' + formattedDate;
+
+                oListItem.set_item('Title', title);
+                oListItem.set_item('Store', store);
+                oListItem.set_item('WFType', workFlowType);
+                oListItem.set_item('RequestBy', currentUser.UserName);
+                oListItem.set_item('DateRequested', new Date());
+                if (hasAttachment === true){
+                     this.oListItem.set_item('HasAttachment',hasAttachment);
+                     this.oListItem.set_item('AttachmentFileName',fileName);
+                }
+               
+                console.log("Before updating the list:" + oList);
+                oListItem.update();
+            
+                clientContext.load(oListItem);
+
+        clientContext.executeQueryAsync(
+            //Success callback
+            () => {
+                console.log("Successfully created trigger request");                 
+                alert(`The ${workFlowType} workflow has been sent to the queue.`);
+            },
+            //Error callback
+            (sender, args) => {
+                console.error("An error occured:", args.get_message());
+                alert(`Error queueing the ${workFlowType} workflow, please try again.`);
+            }
+            // Function.createDelegate(this, this.onQuerySucceeded), 
+            // Function.createDelegate(this, this.onQueryFailed)
+        );
+    // function onQuerySucceeded() {
+    //     alert('Item created: ' + oListItem.get_id());
+    // }
+    
+    //  function onQueryFailed(sender, args) {
+    //     alert('Request failed. ' + args.get_message() + 
+    //         '\n' + args.get_stackTrace());
+    // }
+            return true;
+        } catch (error) {
+            return false;
+        }
+        
+     
+    }
+    
+  
+
+
     function afterRender(view) {
         var store = view.store;
-
+		var overrideDebugForFile = false;
         //Create workflow actions
         view.Workflows.on('change', function (e) {
             switch (view.Workflows.val()) {
@@ -543,7 +638,7 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                             completefunc: function (xData, Status) {
                                                 $(xData.responseXML).SPFilterNode("z:row").each(function () {
 
-                                                    store.EncodedAbsoluteUrl = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Construction%20Calls/" + $(this).attr("ows_ID") + "_.000";
+                                                    store.EncodedAbsoluteUrl = webUrl + "/Lists/Construction%20Calls/" + $(this).attr("ows_ID") + "_.000";
                                                     showAlert = true;
                                                 });
                                             }
@@ -568,6 +663,7 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                                             templateId: "{" + guid + "}",
                                                             workflowParameters: "<Data>" +
                                                             "<eSubject>" + subject + "</eSubject>" +
+                                                            "<eFrom>clayton.gause@inspirebrands.com</eFrom>" +
                                                             "<eBody>" + msg + "</eBody>" +
                                                             "</Data>",
                                                             completefunc: function () {
@@ -591,6 +687,10 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                             }
                         });
                     });
+                    break;
+                case 'audio-quote-request-workflow':
+                    console.log("Inside audio-quote-request-workflow:");
+                     triggerWorkflow(store.StoreNumber,"HMEAudioQuote",false, null);
                     break;
                 case 'installer-quote-request':
                     window.open('#quotegen/' + store.StoreNumber);
@@ -722,7 +822,7 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                             completefunc: function (xData, Status) {
                                                 $(xData.responseXML).SPFilterNode("z:row").each(function () {
 
-                                                    store.EncodedAbsoluteUrl = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Construction%20Calls/" + $(this).attr("ows_ID") + "_.000";
+                                                    store.EncodedAbsoluteUrl = webUrl + "/Lists/Construction%20Calls/" + $(this).attr("ows_ID") + "_.000";
                                                     showAlert = true;
 
                                                 });
@@ -889,6 +989,68 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                     
 
                     break;
+                case 'submit-em-survey-workflow':
+                    console.log("Inside submit-em-survey-workflow:");
+                    require(['app/view/workflow/submit-em-survey'], function (quote) {
+                        //Show address warning
+                        
+                        
+                            //Show the upload form
+                            var upload = quote.renderFileUpload({ store: store });
+
+                            //Start file upload if changed to a file/user selects file
+                            upload.Upload.change(function (e) {
+                                if (this.files.length > 0) {
+                                    //Disable the button
+                                    upload.UploadLabel.attr('disabled', true);
+                                    upload.UploadLabel.html('Uploading...');
+                                    
+                                    uploadFile();
+
+                                    //Then upload the new file after deleting old/confirm doesn't exist
+                                    function uploadFile() {
+                                        //Convert to Base 64
+                                        var file = upload.Upload[0].files[0];
+                                        var reader = new FileReader();
+                                        reader.readAsDataURL(file);
+                                        reader.onload = function () {
+                                            var n = reader.result.indexOf(";base64,") + 8;
+                                            var b64 = reader.result.substring(n);
+                                            var extension = file.name.substr(file.name.lastIndexOf('.') + 1);
+
+                                            //Upload the base 64 file
+                                            combined.uploadDocument(store, b64, file.name, function () {
+                                                //Go to the normal view
+
+                                                triggerWorkflow(store.StoreNumber,"SubmitEMSurvey",true,file.name);
+                                                
+                                                $('<div>We did It!  Have a nice Day :-)</div>').modal({
+                                                    escapeClose: false,
+                                                    clickClose: false,
+                                                    showClose: false
+                                                });
+                                                setTimeout(function () {
+                                                    $.modal.close();
+                                                }, 1500);
+                                            });
+                                        };
+                                        reader.onerror = function (error) {
+                                            alert('Error Uploading File during base 64 conversion!')
+                                        };
+                                    }
+                                } else {
+                                    upload.UploadButton.attr('disabled', true);
+                                }
+                            });
+
+
+                        
+
+
+                        
+                    });
+                      
+                    break;
                 case 'hme-loop-request':
                     require(['app/view/workflow/hme-loop-request'], function (quote) {
                         //Show the quote
@@ -932,7 +1094,7 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                             completefunc: function (xData, Status) {
                                                 $(xData.responseXML).SPFilterNode("z:row").each(function () {
 
-                                                    store.EncodedAbsoluteUrl = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Construction%20Calls/" + $(this).attr("ows_ID") + "_.000";
+                                                    store.EncodedAbsoluteUrl = webUrl + "/Lists/Construction%20Calls/" + $(this).attr("ows_ID") + "_.000";
                                                     showAlert = true;
 
                                                 });
@@ -990,7 +1152,10 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                         });
                     });
                     break;
-
+                case 'hme-loop-request-workflow':
+                    console.log("Inside loop-request-workflow:");
+                        triggerWorkflow(store.StoreNumber,"HMELoopRequest",false,null);
+                    break;
                 case 'pos-data-order':
                     require(['app/view/workflow/pos-data-order'], function (quote) {
                         //Show the quote
@@ -1030,7 +1195,7 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                             completefunc: function (xData, Status) {
                                                 $(xData.responseXML).SPFilterNode("z:row").each(function () {
 
-                                                    store.EncodedAbsoluteUrl = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Construction%20Calls/" + $(this).attr("ows_ID") + "_.000";
+                                                    store.EncodedAbsoluteUrl = webUrl + "/Lists/Construction%20Calls/" + $(this).attr("ows_ID") + "_.000";
                                                     showAlert = true;
 
                                                 });
@@ -1079,7 +1244,6 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                         });
                     });
                     break;
-
                 case 'level-ten-data-order':
                     require(['app/view/workflow/level-ten-data-order'], function (quote) {
                         //Show the quote
@@ -1119,7 +1283,7 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                             completefunc: function (xData, Status) {
                                                 $(xData.responseXML).SPFilterNode("z:row").each(function () {
 
-                                                    store.EncodedAbsoluteUrl = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Construction%20Calls/" + $(this).attr("ows_ID") + "_.000";
+                                                    store.EncodedAbsoluteUrl = webUrl + "/Lists/Construction%20Calls/" + $(this).attr("ows_ID") + "_.000";
                                                     showAlert = true;
 
                                                 });
@@ -1194,77 +1358,82 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                         });
                     });
                     break;
-
                 case 'updated-dates':
-                    require(['app/view/workflow/email', 'dojo/text!app/view/workflow/updated-dates.html', 'app/widget/widgetHelper', 'dojo/text!app/view/workflow/update-purchase-order.html', 'app/store/purchaseOrders', 'app/controller/purchase-order','app/brands/services/brandServices'], 
-                    function (form, template, widgetHelper, purchaseOrderUpdateTemplate, purchaseOrderStore, poController, brandServices) {
+                    require(['app/view/workflow/email', 'dojo/text!app/view/workflow/updated-dates.html', 'app/widget/widgetHelper', 'dojo/text!app/view/workflow/update-purchase-order.html', 'app/store/purchaseOrders', 'app/controller/purchase-order','app/brands/services/brandServices','app/brands/services/logHelper', 'dojo/when'], function (form, template, widgetHelper, purchaseOrderUpdateTemplate, purchaseOrderStore, poController,brandServices,logHelper,when) {
                         
-                    //Create email variables
-                    const CDEmail = "";
-                    const valEmailTo = "";
-                    const valEmailCC = "";
-                    const valConstructionManagerEmailTo = "";
-                    const valProjectManagerEmailTo = "";
-                    const valProjectManagerPhone = "";
-                    const valConstructionProjectManagerEmailTo = "";
-                    const valInstallerEmailTo = "";
-                    const valDefaultEmailFrom = "";
-                    const additionalEmailDetails = "";
-                    const valAdditionalEmailTo = "";
+						var emailDistributionDetails =  brandServices.getEmailDistributionDetails('Workflow','updated-dates');
+						logHelper.logDebug("controller-summary.js","EmailDistributionDetails for updated-dates: " + JSON.stringify(emailDistributionDetails));
+						
+						
+						// //Create list to email to based on parameters
+                         var CDEmail = '';
+                         if (store.ConstructionManager.toUpperCase().indexOf('TRAINER') !== -1)
+                             CDEmail += 'atrainer-murray@inspirebrands.com;';
+                         if (store.ConstructionManager.toUpperCase().indexOf('ROWAN') !== -1)
+                             CDEmail += 'browan@inspirebrands.com;';
+                         if (store.ConstructionManager.toUpperCase().indexOf('BRUNTON') !== -1)
+                             CDEmail += 'bbrunton@inspirebrands.com;';
+                         if (store.ConstructionManager.toUpperCase().indexOf('PIPITONE') !== -1)
+                             CDEmail += 'ipipitone@inspirebrands.com;';
+                         if (store.ConstructionManager.toUpperCase().indexOf('CULBERTSON') !== -1)
+                             CDEmail += 'jculbertson@inspirebrands.com;';
+                         if (store.ConstructionManager.toUpperCase().indexOf('PUENTE') !== -1)
+                             CDEmail += 'jpuente@inspirebrands.com;';
+                         if (store.ConstructionManager.toUpperCase().indexOf('CHISM') !== -1)
+                             CDEmail += 'jchism@inspirebrands.com;';
+                         if (store.ConstructionManager.toUpperCase().indexOf('RICE') !== -1)
+                             CDEmail += 'nrice@inspirebrands.com;';
 
-
-                    //retrieve the default email address(es) for every instance of an update email
-                    var updatedDateEmails = brandServices.getEmailDistributionDetails("workflow","updated-dates");
-                    if (updatedDateEmails){
-                        valEmailTo += updatedDateEmails.emailTo;
-                        if (updatedDateEmails.emailCC){
-                            valEmailCC += updatedDateEmails.emailCC;
-                        }
+						
+						logHelper.logDebug("controller-summary","Initial email list for updated-dates email : " + CDEmail);
+						
+						var email = CDEmail + emailDistributionDetails[0].emailTo,
+						from = emailDistributionDetails[0].emailFrom,
+						emailCC = emailDistributionDetails[0].emailCC,
+						template = $(template);
+						logHelper.logDebug("controller-summary","email list with distributionList added for updated-dates email : " + email);
                         
-                    }
-
-                    //The constructionManager email is now dynamic so this code doesn't have to be updated if the manager changes, only the sharepoint list has to be updated
-                    var constructionManager = store.ConstructionManager.toUpperCase();
-                    if (constructionManager){
-                         //retrieve the email address(es) for the construction manager assigned to the location
-                        var constructionManagerEmail = brandServices.getEmailDistributionDetails("notification","constructionManager",constructionManager);
-                        if (constructionManagerEmail){
-                            valConstructionManagerEmailTo += constructionManagerEmail.emailTo;
+                         // var email = CDEmail + 'Tracy.Kapka@sonicdrivein.com;Collise.fisher@hughes.com;sejal.degadwala@hughes.com;meron.abinet@hughes.com;Muhammad.saleem@hughes.com;deokie.khan@hughes.com;valini.sarjoo@hughes.com;sean.carroll@hughes.com;William.kruger@hughes.com;Shae.Mitine@Sonicdrivein.com; ',
+                        // from = 'NSTI@sonicdrivein.com; ';
+                        // template = $(template);
+                         //Edit template fields for the PM signature:
+                         template.find('#pm').html(store.ProjectManager);
+						
+						//TODO:  Need to retrieve Project Manager details from a List
+                        if (store.ProjectManager.toUpperCase().indexOf('JASON') !== -1) {
+                            template.find('#phone').html('918.269.1657');
+                            template.find('#email').html('Jason.Srader@sonicdrivein.com');
+                        } else if (store.ProjectManager.toUpperCase().indexOf('LIZ') !== -1) {
+                            template.find('#phone').html('405-641-2374');
+                            template.find('#email').html('Elizabeth.Sannes@sonicdrivein.com');
                         }
-                    }
-
-                    var projectManager = store.ProjectManager.toUpperCase();
-                    if (projectManager){
-                         //retrieve the email address and phone number for the project manager assigned to the location
-                        var projectManagerDetails = brandServices.getEmailDistributionDetails("notification","projectManager",projectManager);
-                        if (projectManagerDetails){
-                            valProjectManagerEmailTo += projectManagerDetails.emailTo;
-                            valProjectManagerPhone += projectManagerDetails.phone;
+                        else if (store.ProjectManager.toUpperCase().indexOf('KATIGAN') !== -1) {
+                            template.find('#phone').html('405-919-6342');
+                            template.find('#email').html('Russell.Katigan@Sonicdrivein.com');
                         }
-                    }
 
-                     //retrieve the default email address for sending sending emails
-                     var defaultSenderDetails = brandServices.getEmailDistributionDetails("notification","default");
-                     if (defaultSenderDetails){
-                         valDefaultEmailFrom = defaultSenderDetails.emailFrom;  
-                                                   
-                     }
-                        //Create list to email to based on parameters                        
-                         CDEmail += valConstructionManagerEmailTo;
+                        else if (store.ProjectManager.toUpperCase().indexOf('BARRETT') !== -1) {
+                            template.find('#phone').html('918.760.8023');
+                            template.find('#email').html('Barrett.Seal@Sonicdrivein.com');
+                        }
+                        else if (store.ProjectManager.toUpperCase().indexOf('PAIGE') !== -1) {
+                            template.find('#phone').html('918.760.8023');
+                            template.find('#email').html('Paige.Bailey@Sonicdrivein.com');
+                        }
+                        else if (store.ProjectManager.toUpperCase().indexOf('DYLAN') !== -1) {
+                            template.find('#phone').html('303-437-8623');
+                            template.find('#email').html('Dylan.Gehlbach@Sonicdrivein.com');
+                        }
+                        else if (store.ProjectManager.toUpperCase().indexOf('REGINA') !== -1) {
+                            template.find('#phone').html('405-201-1235');
+                            template.find('#email').html('Regina.Pannell@Sonicdrivein.com');
+                        }
+                        else if (store.ProjectManager.toUpperCase().indexOf('BJ') !== -1) {
+                            template.find('#phone').html('405-202-2965');
+                            template.find('#email').html('BJ.Bryant@Sonicdrivein.com');
+                        }
 
-                        
-
-                        var email = CDEmail + valEmailTo,
-                        from = valDefaultEmailFrom;
-                        template = $(template);
-                        //Edit template fields for the PM signature:
-                         //The projectManager template update is now dynamic and based on data from the sharepoint list
-                        template.find('#pm').html(store.ProjectManager);
-                        template.find('#phone').html(valProjectManagerPhone);
-                        template.find('#email').html(valProjectManagerEmailTo);
-                      
-                       
-
+						logHelper.logDebug("controller-summary","email list with store.ProjectManager added for updated-dates email : " + email);
                         if (store.PaysType === 'VP6800')
                         {
                             template.find('#DataDelivery').text('Level 10 Delivery');
@@ -1320,140 +1489,103 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                             'padding-right': '20px'
                         });
 
-
-                        //The store.Installer email is now dynamic so this code doesn't have to be updated if the manager changes, only the sharepoint list has to be updated
-                        //retrieve the email address(es) for the installer assigned to the location
-                        var installer = store.Installer.toUpperCase();
-                        if (installer){
-                            var installerDetails = brandServices.getEmailDistributionDetails("notification","installer",installer);
-                            if (installerDetails){
-                                valInstallerEmailTo = installerDetails.emailTo;         
-                                  //Add installer PM
-                                email += valInstallerEmailTo;                     
-                            }
-                        }                 
-                       
-                        //retrieve the email address(es) for the construction PM
-                        var constructionProjectManagerDetails = brandServices.getEmailDistributionDetails("notification","ConstructionProjectManager");
-                        if (constructionProjectManagerDetails){
-                            valConstructionProjectManagerEmailTo = constructionProjectManagerDetails.emailTo;  
-                            //Add construction PM's
-                            email += valConstructionProjectManagerEmailTo;                          
+                        if (store.ConstructionManager)
+                            if (store.ConstructionManager.toUpperCase().indexOf('JULIEN') !== -1) {
+                            email += 'djulien@InspireBrands.com;';
                         }
-                       
+						logHelper.logDebug("controller-summary","email list with store.ConstructionManager added for updated-dates email : " + email);
+						//TODO add store installer to Brand - EmailDistributionList
+                        //Add installer PM
+                        switch (store.Installer) {
+                            case 'IST':
+                            case 'Skinny IT':
+                                email += 'Sonic.installs@skinnyit.com; ';
+                                break;
+                            case 'AVIT':
+                                email += 'skalisek99@gmail.com; amyartibee40@gmail.com; ';
+                                break;
+                            case 'RH Tech':
+                                email += 'Jesse@rhtechservices.com; shane@rhtechservices.com; charlie@rhtechservices.com; lee@rhtechservices.com;  ';
+                                break;
+                            case 'AVA':
+                                email += 'rickcrenshaw7777@gmail.com; ';
+                                break;
+                            case 'MSIT':
+                                email += 'ron.schmittou@msit.us; DavidCasishere@yahoo.com; quotes@MSIT.us; ';
+                                break;
+                            case 'MYRA':
+                            case 'MIRA':
+                                email += 'Rachael@miraenterprises.net; mikeb@miraenterprises.net; zachary@miraenterprises.net; dispatchrequest@miraenterprises.net; ';
+                                break;
+                            case 'ATI':
+                                email += 'brfc0316@gmail.com; aticustomerservice2015@gmail.com; ';
+                                break;
+                            case 'CSI':
+                                email += 'Chrissy.Davis@CSICentralStates.com; gabe.marler@CSICentralStates.com; ';
+                                break;
+                        }
+						logHelper.logDebug("controller-summary","email list with store.Installer added for updated-dates email : " + email);
+						//TODO add construction Project Manager to Brand - EmailDistributionList
+                        //Add construction PM's
+                        email += 'Development-ConstructionGroup@Sonicdrivein.com; ';
+						logHelper.logDebug("controller-summary","email list with construction Project Manager added for updated-dates email : " + email);
+                        //Add Norbert/Kendra if Micros
                         if (store.Pos === 'Micros') {
-                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","Pos","MICROS");
-                            if (additionalEmailDetails){
-                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
-                                email += valAdditionalEmailTo;                          
-                            }                           
-                            valAdditionalEmailTo = "";
+                            email += 'crussell@inspirebrands.com;lwilliams@inspirebrands.com;mtucker@inspirebrands.com;Hannah.sales@oracle.com;Carol.crory@oracle.com;Blake.webb@oracle.com;erin.mckay@oracle.com;aaron.glosser@oracle.com;dave.p.williams@oracle.com;  ';
                         } else if (store.Pos === 'Infor') {
-                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","Pos","INFOR");
-                            if (additionalEmailDetails){
-                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
-                                email += valAdditionalEmailTo;                          
-                            }                           
-                            valAdditionalEmailTo = "";
-                           
+                            email += 'Doug.Gilbert@infor.com; joel.schuler@infor.com; justin.hiller@infor.com;Kevin.oconnor@infor.com; ';
                         }
-
-                        //Add Paul/Erin if Micros Audio
+						logHelper.logDebug("controller-summary","email list with store.Pos added for updated-dates email : " + email);
+                        //Add Paul/Erin if Micros  Audio
                         if (store.AudioType === 'Micros') {
-                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","AudioType","MICROS");
-                            if (additionalEmailDetails){
-                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
-                                email += valAdditionalEmailTo;                          
-                            }                           
-                            valAdditionalEmailTo = "";
-                          
+                            email += 'Paul.Fischer@Sonicdrivein.com; inge.smith@sonicdrivein.com; ';
+							logHelper.logDebug("controller-summary","email list with store.AudioType added for updated-dates email : " + email);
                         }
 
-                        //Add Paul/Erin if Micros Audio
+                        //Add SonicSales@hme if AudioType contains 'HME'
                         if (store.AudioType.toUpperCase().indexOf('HME') !== -1) {
-                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","AudioType","HME");
-                            if (additionalEmailDetails){
-                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
-                                email += valAdditionalEmailTo;                          
-                            }                           
-                            valAdditionalEmailTo = "";
-                         
+                            email += 'SonicSales@hme.com; ';
+							logHelper.logDebug("controller-summary","email list with store.AudioType HME added for updated-dates email : " + email);
                         }
 
                         //Add FabCon if status isn't not required
-                        if (store.PopsStatus){
+                        if (store.PopsStatus)
                         if (store.PopsStatus.toUpperCase().indexOf('NOT REQUIRED') === -1) {
-                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","PopsStatus","FABCON");
-                            if (additionalEmailDetails){
-                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
-                                email += valAdditionalEmailTo;                          
-                            }                           
-                            valAdditionalEmailTo = "";
-                        } 
+                            email += 'kgelfer@fabcon.com; bjuarez@fabcon.com; rdelapena@fabcon.com; kgelfer@fabcon.com; IEscobar@fabcon.com;  ';
                         }
-                        
+                        logHelper.logDebug("controller-summary","email list with store.PopsStatus added for updated-dates email : " + email);
                         //Add Pos Data if status isn't not required
-                        if (store.CirronetStatus){
+                        if (store.CirronetStatus)
                         if (store.CirronetStatus.toUpperCase().indexOf('NOT REQUIRED') === -1) {
-                            if (store.PaysType === 'VP6800'){
-                                additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","CirronetStatus","LEVEL10");
-                                if (additionalEmailDetails){
-                                    valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
-                                    email += valAdditionalEmailTo;                          
-                                }                           
-                                valAdditionalEmailTo = "";
-                            }   
-                            else{
-                                additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","CirronetStatus","POSDATA");
-                                if (additionalEmailDetails){
-                                    valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
-                                    email += valAdditionalEmailTo;                          
-                                }                           
-                                valAdditionalEmailTo = "";                              
-                                }
-                            }
+                            if (store.PaysType === 'VP6800')
+                                email += 'sonicorder@level10.com; gglaze@level10.com; elanglo@level10.com; ';
+                            else
+                                email += 'becky.fighera@posdata.com; Amy.sherrer@posdata.com; ';
                         }
-                        
-                        if (store.PaysType){
-                        if (store.PaysType.indexOf("VP6800") > -1){
-                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","PaysType","LEVEL10");
-                            if (additionalEmailDetails){
-                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
-                                email += valAdditionalEmailTo;                          
-                            }                           
-                            valAdditionalEmailTo = "";
-                            }
-                           
-                        }
+						logHelper.logDebug("controller-summary","email list with store.CirronetStatus added for updated-dates email : " + email);
+                        if (store.PaysType)
+                        if (store.PaysType.indexOf("VP6800") > -1)
+                            email += 'gglaze@level10.com; elanglo@level10.com; ';
+						logHelper.logDebug("controller-summary","email list with store.PaysType added for updated-dates email : " + email);
                         //Add ProMotion if status isn't not required
-                        if (store.DmbTvStatus){
+                        if (store.DmbTvStatus)
                         if (store.DmbTvStatus.toUpperCase().indexOf('NOT REQUIRED') === -1) {
-                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","DmbTvStatus","PROMOTION");
-                            if (additionalEmailDetails){
-                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
-                                email += valAdditionalEmailTo;                          
-                            }                           
-                            valAdditionalEmailTo = "";
-                            }
-                        }
+                            email += 'Victoria.wilson@promotion.tech;katelyn.kazanowski@promotion.tech;crystal.kokenos@promotion.tech;Zena.mikha@promotion.tech;ali.kazanowski@promotion.tech; ';
+                        logHelper.logDebug("controller-summary","email list with store.DmbTvStatus added for updated-dates email : " + email);
+						}
                         //Add ProMotion if status isn't not required
-                        if (store.SonicRadioStatus){
+                        if (store.SonicRadioStatus)
                         if (store.SonicRadioStatus.toUpperCase().indexOf('NOT REQUIRED') === -1) {
-                            additionalEmailDetails = brandServices.getEmailDistributionDetails("notification","SonicRadioStatus","PROMOTION");
-                            if (additionalEmailDetails){
-                                valAdditionalEmailTo = additionalEmailDetails.emailTo;                                 
-                                email += valAdditionalEmailTo;                          
-                            }                           
-                            valAdditionalEmailTo = "";
-                           
-                            }
+                            email += 'dmorris@pamdist.com;  purchasing@pamdist.com; accounting@pamdist.com; JSaunders@pamdist.com; ';
+							logHelper.logDebug("controller-summary","email list with store.SonicRadioStatus added for updated-dates email : " + email);
                         }
-
+						logHelper.logDebug("controller-summary","complete email list for updated-dates email : " + email);
                         //Show the quote
                         form.render({
                             subject: store.City + ', ' + store.State + ' #' + store.StoreNumber + ' - Updated Install & Delivery Dates',
-                            to: email,
-                            cc: valEmailCC,
+                            from: from,
+							to: email,
+                            cc: emailCC,//'NSTI@sonicdrivein.com; SonicFieldServices@inspirebrands.com; ',
                             body: template.html(),
                             button: 'Send Update',
                             title: 'Notify All of Updated Install/Delivery Dates',
@@ -1518,14 +1650,14 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                               '</tr>');
                                         });
 
-                                        //Handle close click
+                                        //Handle Don't Update button click
                                         purchaseOrderUpdateTemplate.find('#po-cancel-button').click(function () {
                                             $.modal.close();
                                             poEmailSent = true;
-                                            complete();
+                                            sendToQueue();
                                         });
 
-                                        //Handle update click
+                                        //Handle update button click
                                         purchaseOrderUpdateTemplate.find('#po-update-button').click(function () {
                                             var requestCount = poList.find('.po-update-checkbox:checked').length;
                                             var mask = $('<div>Updating Purchase Orders 0/' + requestCount + '</div>');
@@ -1547,7 +1679,7 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                                             if (requestCount <= 0) {
                                                                 $.modal.close();
                                                                 poEmailSent = true;
-                                                                complete();
+                                                                sendToQueue();
                                                                 //TODO - need to find a way to abstract the document update part of the view away so I can update it easily here
                                                             } else {
                                                                 mask.html('Updating Purchase Orders 0/' + requestCount);
@@ -1560,13 +1692,13 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                             if (requestCount <= 0) {
                                                 $.modal.close();
                                                 poEmailSent = true;
-                                                complete();
+                                                sendToQueue();
                                             }
                                         });
                                     } else {
                                         $.modal.close();
                                         poEmailSent = true;
-                                        complete();
+                                        sendToQueue();
                                     }
 
 
@@ -1580,29 +1712,80 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                                 if ($(this).attr("Name") == "Email") {
                                                     var guid = $(this).find("WorkflowTemplateIdSet").attr("TemplateId");
                                                     if (guid != null) {
+														
+														sendToQueue();
+														 
+														//CTG: Old method
                                                         //Fire the workflow on the construction list
-                                                        $().SPServices({
-                                                            operation: "StartWorkflow",
-                                                            item: store.CombinedAbsoluteUrl,
-                                                            templateId: "{" + guid + "}",
-                                                            workflowParameters: "<Data>" +
-                                                            "<eTo>" + to + "</eTo>" +
-                                                            "<eCC>" + cc + "</eCC>" +
-                                                            "<eFrom>" + cc + "</eFrom>" +
-                                                            "<eSubject>" + subject + "</eSubject>" +
-                                                            "<eBody>" + msg + "</eBody>" +
-                                                            "</Data>",
-                                                            completefunc: function () {
-                                                                mailView.dialog.hide();
-                                                                updateEmailSent = true;
-                                                                complete();
-                                                            }
-                                                        });
+                                                        // $().SPServices({
+                                                            // operation: "StartWorkflow",
+                                                            // item: store.CombinedAbsoluteUrl,
+                                                            // templateId: "{" + guid + "}",
+                                                            // workflowParameters: "<Data>" +
+                                                            // "<eTo>" + to + "</eTo>" +
+                                                            // "<eCC>" + cc + "</eCC>" +
+                                                            // "<eFrom>" + cc + "</eFrom>" +
+                                                            // "<eSubject>" + subject + "</eSubject>" +
+                                                            // "<eBody>" + msg + "</eBody>" +
+                                                            // "</Data>",
+                                                            // completefunc: function () {
+                                                                // mailView.dialog.hide();
+                                                                // updateEmailSent = true;
+                                                                // complete();
+                                                            // }
+                                                        // });
                                                     }
                                                 }
                                             });
                                         }
                                     });
+									
+									function convertToPlain(rtf) {
+									rtf = rtf.replace(/\\par[d]?/g, "");
+									return rtf.replace(/\{\*?\\[^{}]+}|[{}]|\\\n?[A-Za-z]+\n?(?:-?\d+)?[ ]?/g, "").trim();
+									}
+									
+									function sendToQueue() {
+										
+										var plainTextMsg = convertToPlain(msg);
+										logHelper.logDebug("controller-summary","updated-dates workflow plainTextMsg: " + plainTextMsg,overrideDebugForFile);
+																	
+                                        if (poEmailSent || true) {
+										
+											 $().SPServices({
+                                                                    operation: "UpdateListItems",
+                                                                    async: false,
+                                                                    batchCmd: "New",
+                                                                    listName: "Workflow Queue",
+                                                                    valuepairs: [["Title", 'Notify All of Updated Install/Delivery Dates'],
+																	["StoreNumber", store.StoreNumber],
+																	["Item","updated-dates.html"],																	
+																	["EmailFrom",from],
+																	["EmailTo",to],
+																	["EmailCC",cc],
+																	["EmailSubject", subject],
+																	["EmailBody", plainTextMsg]],																	
+                                                                    completefunc: function (xData, Status) {																																			
+                                                                        mailView.dialog.hide();
+																		updateEmailSent = true;
+																		complete();
+                                                                    },
+																		error: function (data) {
+																		   logHelper.logDebugError("controller-summary","updated-dates error: " + data,overrideDebugForFile);
+                                                                       
+																		}
+                                                                });
+                                            //Notify that we're still sending the date update email
+                                            $('<div>Sending date update email to workflow queue...</div>').modal({
+                                                escapeClose: false,
+                                                clickClose: false,
+                                                showClose: false
+                                            });
+                                            setTimeout(function () {
+                                                $.modal.close();
+                                            }, 1500);
+                                        } 
+                                    }
 
                                     //Track Completion of email
                                     function complete() {
@@ -1616,26 +1799,44 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                             setTimeout(function () {
                                                 $.modal.close();
                                             }, 1500);
-                                        } else if (poEmailSent && updateEmailSent === false) {
+                                        } else if (poEmailSent && updateEmailSent === false) {											
+												
                                             //Notify that we're still sending the date update email
                                             $('<div>Still sending date update email...</div>').modal({
                                                 escapeClose: false,
                                                 clickClose: false,
                                                 showClose: false
                                             });
+											setTimeout(function () {
+                                                $.modal.close();
+                                            }, 1500);
                                         }
                                     }
                                 });
                             }
                         });
                     });
+					
+					
+					
+                    break;
+                case 'updated-dates-workflow':
+                    console.log("Inside updated-dates-workflow:");
+                        triggerWorkflow(store.StoreNumber,"NotifyDateChange",false,null);
                     break;
                 case 'sonic-radio-order':
-                    require(['app/view/workflow/email', 'dojo/text!app/view/workflow/sonic-radio-order.html', 'app/widget/widgetHelper'], function (form, template, widgetHelper) {
-                        //Create list to email to based on parameters
-                        var email = 'dmorris@pamdist.com;  purchasing@pamdist.com; accounting@pamdist.com; JSaunders@pamdist.com; ',
-                          cc = 'nsti@sonicdrivein.com; ';
-                        template = $(template);
+                    require(['app/view/workflow/email', 'dojo/text!app/view/workflow/sonic-radio-order.html', 'app/widget/widgetHelper','app/brands/services/brandServices','app/brands/services/logHelper'], function (form, template, widgetHelper,brandServices,logHelper) {
+                        //Get the emails from distributionList
+						var emailDistributionDetails =  brandServices.getEmailDistributionDetails('Workflow','sonic-radio-order');
+						
+						var email = emailDistributionDetails[0].emailTo,
+						from = emailDistributionDetails[0].emailFrom,
+						cc = emailDistributionDetails[0].emailCC,
+						template = $(template);
+						//Create list to email to based on parameters
+                        // var email = 'dmorris@pamdist.com;  purchasing@pamdist.com; accounting@pamdist.com; JSaunders@pamdist.com; ',
+                          // cc = 'nsti@sonicdrivein.com; ';
+                        // template = $(template);
                         //Edit template fields for the PM signature:
                         template.find('#pm').html(store.ProjectManager);
                         if (store.ProjectManager.toUpperCase().indexOf('JASON') !== -1) {
@@ -1748,32 +1949,33 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                                     var guid = $(this).find("WorkflowTemplateIdSet").attr("TemplateId");
                                                     if (guid != null) {
                                                         //Fire the workflow on the construction list
-                                                        $().SPServices({
-                                                            operation: "StartWorkflow",
-                                                            item: store.CombinedAbsoluteUrl,
-                                                            templateId: "{" + guid + "}",
-                                                            workflowParameters: "<Data>" +
-                                                            "<eTo>" + to + "</eTo>" +
-                                                            "<eCC>" + cc + "</eCC>" +
-                                                            "<eFrom>" + cc + "</eFrom>" +
-                                                            "<eSubject>" + subject + "</eSubject>" +
-                                                            "<eBody>" + msg + "</eBody>" +
-                                                            "</Data>",
-                                                            completefunc: function () {
-                                                                //Update the status to requested today
-                                                                var newStatus = 'Requested ' + moment().format('M/D');
-                                                                construction.changeValue('SonicRadioStatus', newStatus, store, function () {
-                                                                    store.SonicRadioStatus = newStatus;
-                                                                    $('input[data-editable="SonicRadioStatus"]').val(newStatus);
+														sendToQueue();
+                                                        // $().SPServices({
+                                                            // operation: "StartWorkflow",
+                                                            // item: store.CombinedAbsoluteUrl,
+                                                            // templateId: "{" + guid + "}",
+                                                            // workflowParameters: "<Data>" +
+                                                            // "<eTo>" + to + "</eTo>" +
+                                                            // "<eCC>" + cc + "</eCC>" +
+                                                            // "<eFrom>" + cc + "</eFrom>" +
+                                                            // "<eSubject>" + subject + "</eSubject>" +
+                                                            // "<eBody>" + msg + "</eBody>" +
+                                                            // "</Data>",
+                                                            // completefunc: function () {
+                                                                // //Update the status to requested today
+                                                                // var newStatus = 'Requested ' + moment().format('M/D');
+                                                                // construction.changeValue('SonicRadioStatus', newStatus, store, function () {
+                                                                    // store.SonicRadioStatus = newStatus;
+                                                                    // $('input[data-editable="SonicRadioStatus"]').val(newStatus);
 
-                                                                    //Rerun the business rules to update the view
-                                                                    constructionRules.helper(view.el, store);
+                                                                    // //Rerun the business rules to update the view
+                                                                    // constructionRules.helper(view.el, store);
 
-                                                                    //Hide the view
-                                                                    mailView.dialog.hide();
-                                                                });
-                                                            }
-                                                        });
+                                                                    // //Hide the view
+                                                                    // mailView.dialog.hide();
+                                                                // });
+                                                            // }
+                                                        // });
                                                     }
                                                 }
                                             });
@@ -1782,7 +1984,61 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                                 });
                             }
                         });
+						
+									function convertToPlain(rtf) {
+									rtf = rtf.replace(/\\par[d]?/g, "");
+									return rtf.replace(/\{\*?\\[^{}]+}|[{}]|\\\n?[A-Za-z]+\n?(?:-?\d+)?[ ]?/g, "").trim();
+									}
+									
+									function sendToQueue() {
+										
+										var plainTextMsg = convertToPlain(msg);
+										
+										
+											 $().SPServices({
+                                                                    operation: "UpdateListItems",
+                                                                    async: false,
+                                                                    batchCmd: "New",
+                                                                    listName: "Workflow Queue",
+                                                                    valuepairs: [["Title", 'Notify All of Updated Install/Delivery Dates'],
+																	["StoreNumber", store.StoreNumber],
+																	["Item","updated-dates.html"],																	
+																	["EmailFrom",from],
+																	["EmailTo",to],
+																	["EmailCC",cc],
+																	["EmailSubject", subject],
+																	["EmailBody", plainTextMsg]],																	
+                                                                      completefunc: function () {
+                                                                 //Update the status to requested today
+                                                                 var newStatus = 'Requested ' + moment().format('M/D');
+                                                                 construction.changeValue('SonicRadioStatus', newStatus, store, function () {
+                                                                     store.SonicRadioStatus = newStatus;
+                                                                     $('input[data-editable="SonicRadioStatus"]').val(newStatus);
+
+                                                                     //Rerun the business rules to update the view
+                                                                     constructionRules.helper(view.el, store);
+
+                                                                     //Hide the view
+                                                                     mailView.dialog.hide();
+                                                                 });
+                                                             },
+																		error: function (data) {
+																		   logHelper.logDebugError("controller-summary","updated-dates error: " + data,overrideDebugForFile);
+                                                                       
+																		}
+                                                                });
+                                            //Notify that we're still sending the date update email
+                                            $('<div>Sending date update email to workflow queue...</div>').modal({
+                                                escapeClose: false,
+                                                clickClose: false,
+                                                showClose: false
+                                            });
+                                    }
                     });
+                    break;
+                    case 'sonic-radio-order-workflow':
+                        console.log("Inside sonic-radio-order-workflow:");
+                        triggerWorkflow(store.StoreNumber,"SonicRadio",false, null);
                     break;
                 case 'micros-audio-quote-request':
                     //Check to see if the address is correct
@@ -2074,143 +2330,10 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                         });
                     });
                     break;
-                    /*case 'fabcon-commworks-pops':
-                      require(['app/view/workflow/fabcon-commworks'], function (quote) {
-                        //Show the quote
-                        quote.render({
-                          type: 'pops',
-                          store: store,
-                          callback: function (mailView) {
-                            mailView.submit.on('click', function () {
-                              //Disable the button
-                              mailView.submit.setDisabled(true);
-                              
-                              //Get the escaped body with no breaks
-                              var msg = mailView.message.getData()
-                                .replace(/&/g, '&amp;')
-                                .replace(/</g, '&lt;')
-                                .replace(/>/g, '&gt;')
-                                .replace(/"/g, '&quot;')
-                                .replace(/'/g, '&apos;')
-                                .replace(/(\r\n|\n|\r)/gm, "");
-                              var subject = mailView.subject.getValue()
-                                .replace(/&/g, '&amp;')
-                                .replace(/</g, '&lt;')
-                                .replace(/>/g, '&gt;')
-                                .replace(/"/g, '&quot;')
-                                .replace(/'/g, '&apos;')
-                                .replace(/(\r\n|\n|\r)/gm, "");
-                              
-                              //Find the template id - this is a long story but a problem with the template id changing everytime a workflow is updated
-                              $().SPServices({
-                                operation: "GetTemplatesForItem",
-                                item: store.EncodedAbsoluteUrl,
-                                async: true,
-                                completefunc: function (xData, Status) {
-                                  $(xData.responseXML).find("WorkflowTemplates > WorkflowTemplate").each(function (i, e) {
-                                    if ($(this).attr("Name") == "FabCon - CommWorks PO") {
-                                      var guid = $(this).find("WorkflowTemplateIdSet").attr("TemplateId");
-                                      if (guid != null) {
-                                        //Fire the workflow on the construction list
-                                        $().SPServices({
-                                          operation: "StartWorkflow",
-                                          item: store.EncodedAbsoluteUrl,
-                                          templateId: "{" + guid + "}",
-                                          workflowParameters: "<Data>" +
-                                          "<eType>pops</eType>" +
-                                          "<eSubject>" + subject + "</eSubject>" +
-                                          "<eBody>" + msg + "</eBody>" +
-                                          "</Data>",
-                                          completefunc: function () {
-                                            //Update the Status & PAYS Status
-                                            var status = 'PO Requested ' + moment().format('M/D');
-                                            $('div[data-editable="PopsStatus"] div[contenteditable="true"]').html(status);
-                                            //Rerun the business rules on change to update the view
-                                            constructionRules.helper(view.el, store);
-                                            //Hide the view
-                                            mailView.dialog.hide();
-                                          }
-                                        });
-                                      }
-                                    }
-                                  });
-                                }
-                              });
-                            });
-                          }
-                        });
-                      });
-                      break;
-                    case 'fabcon-commworks-dt-base':
-                      require(['app/view/workflow/fabcon-commworks'], function (quote) {
-                        //Show the quote
-                        quote.render({
-                          type: 'dt-base-kit',
-                          store: store,
-                          callback: function (mailView) {
-                            mailView.submit.on('click', function () {
-                              //Disable the button
-                              mailView.submit.setDisabled(true);
-                              
-                              //Get the escaped body with no breaks
-                              var msg = mailView.message.getData()
-                                .replace(/&/g, '&amp;')
-                                .replace(/</g, '&lt;')
-                                .replace(/>/g, '&gt;')
-                                .replace(/"/g, '&quot;')
-                                .replace(/'/g, '&apos;')
-                                .replace(/(\r\n|\n|\r)/gm, "");
-                              var subject = mailView.subject.getValue()
-                                .replace(/&/g, '&amp;')
-                                .replace(/</g, '&lt;')
-                                .replace(/>/g, '&gt;')
-                                .replace(/"/g, '&quot;')
-                                .replace(/'/g, '&apos;')
-                                .replace(/(\r\n|\n|\r)/gm, "");
-                              
-                              //Find the template id - this is a long story but a problem with the template id changing everytime a workflow is updated
-                              $().SPServices({
-                                operation: "GetTemplatesForItem",
-                                item: store.EncodedAbsoluteUrl,
-                                async: true,
-                                completefunc: function (xData, Status) {
-                                  $(xData.responseXML).find("WorkflowTemplates > WorkflowTemplate").each(function (i, e) {
-                                    if ($(this).attr("Name") == "FabCon - CommWorks PO") {
-                                      var guid = $(this).find("WorkflowTemplateIdSet").attr("TemplateId");
-                                      if (guid != null) {
-                                        //Fire the workflow on the construction list
-                                        $().SPServices({
-                                          operation: "StartWorkflow",
-                                          item: store.EncodedAbsoluteUrl,
-                                          templateId: "{" + guid + "}",
-                                          workflowParameters: "<Data>" +
-                                          "<eType>dt-base-kit</eType>" +
-                                          "<eSubject>" + subject + "</eSubject>" +
-                                          "<eBody>" + msg + "</eBody>" +
-                                          "</Data>",
-                                          completefunc: function () {
-                                            //Update the Status
-                                            var status = 'PO Requested ' + moment().format('M/D');
-                                            combined.changeValue('DtPopsBaseStatus', status, store.CombinedId, function () {
-                                              $('input[data-editable="DtPopsBaseStatus"]').val(status);
-                                              store.DtPopsBaseStatus = status;
-                                              //Rerun the business rules on change to update the view
-                                              constructionRules.helper(view.el, store);
-                                              //Hide the view
-                                              mailView.dialog.hide();
-                                            });
-                                          }
-                                        });
-                                      }
-                                    }
-                                  });
-                                }
-                              });
-                            });
-                          }
-                        });
-                      });
-                      break;*/
+                case 'servereps-setup-workflow':
+                    console.log("Inside servereps-setup-workflow:");
+                    triggerWorkflow(store.StoreNumber,"ServerEPSSetup",false, null);
+                    break;       
                 case 'fabcon-id-tech-create-purchase-order':
                     require(['app/store/products', 'app/store/purchaseOrders', 'app/store/purchaseOrderItems', 'app/view/workflow/fabcon-create-purchase-order'], function (productStore, purchaseOrderStore, purchaseOrderItemStore, quote) {
                         
@@ -2505,6 +2628,10 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
 
                     });
                     break;
+                    case 'fabcon-create-purchase-order-workflow':
+                        console.log("Inside fabcon-create-purchase-order-workflow:");
+                        triggerWorkflow(store.StoreNumber,"FabconCPO",false, null);
+                    break; 
                 case 'idtech-create-purchase-order':
                     require(['app/store/products', 'app/store/purchaseOrders', 'app/store/purchaseOrderItems', 'app/view/workflow/fabcon-create-purchase-order'], function (productStore, purchaseOrderStore, purchaseOrderItemStore, quote) {
 
@@ -2855,12 +2982,17 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                     }
 
                     break;
+                    case 'promotion-order-workflow':
+                        console.log("Inside promotion-order-workflow:");
+                        triggerWorkflow(store.StoreNumber,"ProMotion",false, null);
+                    break; 
                 case 'hughes-request':
                     //Check to see if the address is correct
                     require(['app/view/workflow/hughes-request'], function (quote) {
                         //Show address warning
                         var warning = quote.renderAddressWarning({ store: store });
                         warning.Yes.click(function (e) {
+                           
                             //Show the upload form
                             var upload = quote.renderFileUpload({ store: store });
 
@@ -3261,6 +3393,254 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
                         }
                     });
                     break;
+                case 'hughes-request-workflow':
+                    //Check to see if the address is correct
+                    require(['app/view/workflow/hughes-request'], function (quote) {
+                        //Show address warning
+                        var warning = quote.renderAddressWarning({ store: store });
+                        warning.Yes.click(function (e) {
+                            const modal = document.getElementById('#store-address');
+                            if (modal) {
+                                modal.style.display = 'none'; // Hide the modal
+                            } 
+                            // $('#store-address').style.display = 'none';//.close();
+                            $.modal.close();
+                            //Show the upload form
+                            var upload = quote.renderFileUpload({ store: store });
+                            var fileName = null;
+                            var hasAttachment = false;
+                            //Start file upload if changed to a file/user selects file
+                            upload.Upload.change(function (e) {
+                                if (this.files.length > 0) {
+                                    //Disable the button
+                                    upload.UploadLabel.attr('disabled', true);
+                                    upload.UploadLabel.html('Uploading...');
+                                    //First make sure there aren't pre-existing uploaded files
+                                    combined.getDocuments(store, function (store) {
+                                        var exists = false;
+                                        _.each(store.CombinedDocuments, function (document, i) {
+                                            if (document.FileName.indexOf('Comcast-') !== -1 || document.FileName.indexOf('HAN Agreement.xlsx') !== -1) {
+                                                exists = true;
+                                                //Delete the file before uploading a new one
+                                                combined.deleteDocument(store.CombinedId, document.FilePath, uploadFile);
+                                            }
+                                        });
+
+                                        if (!exists) {
+                                            uploadFile();
+                                        }
+                                    });
+
+                                    //Then upload the new file after deleting old/confirm doesn't exist
+                                    function uploadFile() {
+                                        //Convert to Base 64
+                                        var file = upload.Upload[0].files[0];
+                                        var reader = new FileReader();
+                                        reader.readAsDataURL(file);
+                                        reader.onload = function () {
+                                            var n = reader.result.indexOf(";base64,") + 8;
+                                            var b64 = reader.result.substring(n);
+                                            var extension = file.name.substr(file.name.lastIndexOf('.') + 1);
+                                            fileName = 'Comcast-' + file.name;
+                                            hasAttachment = true;
+                                            //Upload the base 64 file
+                                            combined.uploadDocument(store, b64, fileName, function () {
+                                                //Go to the normal view
+                                                showStatusForm();
+                                                upload.UploadButton.attr('disabled', true); //disable 'uploading...' button
+                                                upload.SendWithout.attr('disabled', true); //disable 'Previously Uploaded/Send without HAN' button
+                                            });
+                                        };
+                                        reader.onerror = function (error) {
+                                            alert('Error Uploading File during base 64 conversion!')
+                                        };
+                                    }
+                                } else {
+                                    upload.UploadButton.attr('disabled', true); //disable 'Upload' button
+                                }
+                            });
+
+                            //Previously Uploaded/Send without HAN button clicked
+                            upload.SendWithout.click(function (e) {
+                                //Show the normal email form
+                                showStatusForm(hasAttachment,fileName);
+                                upload.UploadButton.attr('disabled', true); //disable 'uploading...' button
+                                upload.SendWithout.attr('disabled', true); //disable 'Previously Uploaded/Send without HAN' button
+                            });
+
+
+                        });
+
+                        warning.No.click(function (e) {
+                            //Hide the modal
+                            $.modal.close();
+                        });
+
+                        var updateStatus = {
+                            Vsat: false,
+                            Temp: false,
+                            Primary: false,
+                            Deinstall: false
+                        };
+
+                        function showStatusForm(hasAttachment,fileName) {
+                            //Create new statuses as requested if current status isn't "Not Required"
+                            var today = moment().format('M/D');
+
+                            store.NewHughesPrimaryStatus = 'Requested' + today;
+                            if (store.HughesVsatStatus.toUpperCase().indexOf('NOT REQUIRED') === -1) {
+                                store.NewHughesVsatRequestStatus = 'Initiate Order';
+                                store.NewHughesVsatStatus = 'Requested ' + today;
+                            }
+                            else {
+                                store.NewHughesVsatRequestStatus = store.HughesVsatStatus;
+                                store.NewHughesVsatStatus = store.HughesVsatStatus;
+                            }
+
+                            if (store.HughesTempStatus.toUpperCase().indexOf('NOT REQUIRED') === -1) {
+                                store.NewHughesTempRequestStatus = 'Initiate Order';
+                                store.NewHughesTempStatus = 'Requested ' + today;
+                            }
+                            else {
+                                store.NewHughesTempRequestStatus = store.HughesTempStatus;
+                                store.NewHughesTempStatus = store.HughesTempStatus;
+                            }
+
+                            if (store.HughesPrimaryStatus.toUpperCase().indexOf('NOT REQUIRED') === -1) {
+                                store.NewHughesPrimaryRequestStatus = 'Initiate Prequal';
+                                store.NewHughesPrimaryStatus = 'Prequal Requested ' + today;
+                            }
+                            else {
+                                store.NewHughesPrimaryRequestStatus = store.HughesPrimaryStatus;
+                                store.NewHughesPrimaryStatus = store.HughesPrimaryStatus;
+                            }
+
+                            if (store.HughesDeinstallStatus.toUpperCase().indexOf('NOT REQUIRED') === -1) {
+                                store.NewHughesDeinstallRequestStatus = 'Initiate Order';
+                                store.NewHughesDeinstallStatus = 'Requested ' + today;
+                            }
+                            else {
+                                store.NewHughesDeinstallRequestStatus = store.HughesDeinstallStatus;
+                                store.NewHughesDeinstallStatus = store.HughesDeinstallStatus;
+                            }
+
+                            //Render the view
+                            var statusCheck = quote.renderStatusCheck({ store: store });
+
+                            //Click handler
+                            statusCheck.Next.on('click', function (e) {
+                                //Check each checkbox
+                                updateStatus.Vsat = statusCheck.UpdateVsat.is(':checked');
+                                updateStatus.Temp = statusCheck.UpdateTemp.is(':checked');
+                                updateStatus.Primary = statusCheck.UpdatePrimary.is(':checked');
+                                updateStatus.Deinstall = statusCheck.UpdateDeinstall.is(':checked');
+
+                                //Update to request status if checked
+                                if (updateStatus.Vsat) store.HughesVsatStatus = store.NewHughesVsatRequestStatus;
+                                if (updateStatus.Temp) store.HughesTempStatus = store.NewHughesTempRequestStatus;
+                                if (updateStatus.Primary) store.HughesPrimaryStatus = store.NewHughesPrimaryRequestStatus;
+                                if (updateStatus.Primary && store.HughesPrimaryDateType === '') store.HughesPrimaryDateType = 'As Available';
+                                if (updateStatus.Deinstall) store.HughesDeinstallStatus = store.NewHughesDeinstallRequestStatus;
+
+                                submitEmailForm(hasAttachment,fileName);
+                                afterWorkflow();
+                            });
+                        }
+
+                        function submitEmailForm(hasAttachment,fileName) {
+
+                            console.log("Inside loop-request-workflow:");
+                            triggerWorkflow(store.StoreNumber,"ComcastRequest",hasAttachment,fileName);                       
+                            
+
+
+                        } 
+                                
+                        function afterWorkflow() {
+                                //Update to new status if checked , update in summary, store, and save
+                                var requests = [];
+                                if (updateStatus.Vsat) {
+                                    requests.push(function () {
+                                        combined.changeValue('HughesVsatStatus', store.NewHughesVsatStatus, store.CombinedId, function () {
+                                            store.HughesVsatStatus = store.NewHughesVsatStatus;
+                                            $('input[data-editable="HughesVsatStatus"]').val(store.HughesVsatStatus);
+
+                                            complete();
+                                        });
+                                    });
+                                }
+                                if (updateStatus.Temp) {
+                                    requests.push(function () {
+                                        combined.changeValue('HughesTempStatus', store.NewHughesTempStatus, store.CombinedId, function () {
+                                            store.HughesTempStatus = store.NewHughesTempStatus;
+                                            $('input[data-editable="HughesTempStatus"]').val(store.HughesTempStatus);
+
+                                            complete();
+                                        });
+                                    });
+                                }
+                                if (updateStatus.Primary) {
+                                    requests.push(function () {
+                                        combined.changeValue('HughesPrimaryStatus', store.NewHughesPrimaryStatus, store.CombinedId, function () {
+                                            store.HughesPrimaryStatus = store.NewHughesPrimaryStatus;
+                                            $('input[data-editable="HughesPrimaryStatus"]').val(store.HughesPrimaryStatus);
+
+                                            complete();
+                                        });
+                                    });
+                                }
+                                if (updateStatus.Primary && store.HughesPrimaryDateType === '') {
+                                    requests.push(function () {
+                                        combined.changeValue('HughesPrimaryDateType', 'As Available', store.CombinedId, function () {
+                                            store.HughesPrimaryDateType = 'As Available';
+                                            $('input[data-editable="HughesPrimaryDateType"]').val(store.HughesPrimaryDateType);
+
+                                            complete();
+                                        });
+                                    });
+                                }
+                                if (updateStatus.Deinstall) {
+                                    requests.push(function () {
+                                        combined.changeValue('HughesDeinstallStatus', store.NewHughesDeinstallStatus, store.CombinedId, function () {
+                                            store.HughesDeinstallStatus = store.NewHughesDeinstallStatus;
+                                            $('input[data-editable="HughesDeinstallStatus"]').val(store.HughesDeinstallStatus);
+
+                                            complete();
+                                        });
+                                    });
+                                }
+
+                                function complete() {
+                                    //Hide the mail view and re-run business rules if everything is done, otherwise call the next function
+                                    //TODO - note - this is a hack because sharepoint won't update 4 values at once, seems to be a bug but this fixes it
+                                    if (requests.length === 0) {
+                                        //Rerun the business rules on change to update the view
+                                        constructionRules.helper(view.el, store);
+
+                                        //Hide the view
+                                        //mailView.dialog.hide();
+                                    } else {
+                                        //Call the next function in the list
+                                        requests.shift()();
+                                    }
+                                }
+
+                                //Call complete once in case there were no updates checked
+                                complete();
+                        
+                            
+
+                            //Load the combined documents (will update the store object with a new property)
+                            combined.getDocuments(store, function () {
+                                //Hide the modal
+                                $.modal.close();
+                                //Show the quote
+                                location.reload();
+                                //quote.render(options);
+                            });
+                        }
+                    });
+                    break;
                 case 'select-workflow':
                 default:
                     //it's back on the default, do nothing
@@ -3377,7 +3757,7 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
             filepath.push(filename);
             filepath = filepath.join('/');
 
-            $.ajax('https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/SiteAssets/RenameListFileAttachment.aspx?listname=Combined%20Schedule&ID=' + store.CombinedId + '&filename=' + oldFilename + '&new=' + filename, {
+            $.ajax('https://irbpartners.sharepoint.com/sites/RetailTechDeployment/SiteAssets/RenameListFileAttachment.aspx?listname=Combined%20Schedule&ID=' + store.CombinedId + '&filename=' + oldFilename + '&new=' + filename, {
                 success: function () {
                     $.modal.close();
                     modal.remove();
@@ -3423,7 +3803,6 @@ function (summary, construction, issueStore, noteStore, combined, constructionRu
 
     return {
         show: function (target, storeNumber, routeCheck) {
-            console.log("target: " + target + " | storeNumber: " + storeNumber + " | routeCheck: " + routeCheck);
             //Show summary
             summary.render({
                 storeNumber: storeNumber,

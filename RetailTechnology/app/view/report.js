@@ -147,7 +147,7 @@ define([
                             $(xData.responseXML).SPFilterNode("z:row").each(function () {
                                 //skip if store already included
 
-                                //store.EncodedAbsoluteUrl = "https://www.sonicpartnernet.com/Scoop/Information%20Services/PMT/Roll%20Out/Lists/Construction%20Calls/" + $(this).attr("ows_ID") + "_.000";
+                                //store.EncodedAbsoluteUrl = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/Lists/Construction%20Calls/" + $(this).attr("ows_ID") + "_.000";
                                 //showAlert = true;
                                 var storeNumber = $(this).attr("ows_Store_x0020_Number");
                                 if (storeNumber.indexOf(";#") > -1)
