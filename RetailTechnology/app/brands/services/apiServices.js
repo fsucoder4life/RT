@@ -1,3 +1,7 @@
+/**
+ * apiServices is used to centralize reusable api calls that can included into any js file
+ * This will allow for the reduction of similar/same functions being created in individual js files.
+ **/
 define(
     [ "app/brands/services/brandServices",       
         "app/brands/services/logHelper"

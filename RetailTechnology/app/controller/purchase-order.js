@@ -274,6 +274,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
                        logHelper.logInfo("view.purchaseOrder: " + JSON.stringify(view.purchaseOrder));
                         console.log("Inside fabcon-create-purchase-order-workflow");
                         triggerWorkflow(view.purchaseOrder.StoreNumber,"FabconCPO",true, fileName);
+                        $.modal.close();
                       });
                   });
               });

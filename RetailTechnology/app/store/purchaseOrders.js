@@ -54,7 +54,7 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
 
     fields += "</ViewFields>";
 
-    //SP2010
+    //SP2010 - Deprecated
     function loadData2010(callback, options) {
         //-------------------------------------------------------Report Build
         //Empty query to load all if not passed
@@ -152,7 +152,7 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
        
     }
 
-    //SP2010 
+    //SP2010 - Deprecated 
     function create2010(store, callback) {
         var pairs = [];
         _.forOwn(store, function (value, key) {
@@ -198,7 +198,7 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
         
     }
 
-    //SP2010
+    //SP2010 - Deprecated
     function destroy2010(id, callback) {
         $().SPServices({
             operation: "UpdateListItems",
@@ -343,7 +343,7 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
         });
     }
 
-    //SP2010
+    //SP2010 - Deprecated
     function getDocuments2010(store, callback) {
         store.Documents = [];
 
@@ -406,8 +406,8 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
        
     }
 
-    //SP2010
-    function uploadDocument(store, file, name, callback) {
+    //SP2010 - Deprecated
+    function uploadDocument2010(store, file, name, callback) {
         $().SPServices({
             operation: "AddAttachment",
             listName: listName,
@@ -436,6 +436,7 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
 
     //REST API
     function uploadDocument(store, file, name, callback) {
+        logHelper.logInfo("Store Information: " + JSON.stringify(store));
         $().SPServices({
             operation: "AddAttachment",
             listName: listName,
@@ -444,22 +445,50 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
             async: true,
             attachment: file,
             completefunc: function (xData, Status) {
-                var test = utility.errorCheck(xData, Status); if (test.success === false) return callback(test.message);
+                if (utility.errorCheck(xData, Status) === false) return;
 
                 //TODO - find a way to add the document to the store.Documents list (FileName & FilePath) - this doesn't quite work!
                 store.Documents = (typeof store.Documents !== 'undefined' ? store.Documents : []);
-                var hostWebUrl = brandServices.getSharePointUrlByKeyFn("hostWebUrl");
-                var filePath = hostWebUrl + $(xData.responseXML).find("AddAttachmentResult").text(),
+                store.CombinedDocuments = (typeof store.CombinedDocuments !== 'undefined' ? store.CombinedDocuments : []);
+
+                var filePath = webUrl + "/" + $(xData.responseXML).find("AddAttachmentResult").text(),
                   arrString = filePath.split("/"),
                   fileName = arrString[arrString.length - 1];
 
                 store.Documents.push({ FileName: fileName, FilePath: filePath });
+                store.CombinedDocuments.push({ FileName: fileName, FilePath: filePath });
 
                 if (typeof callback !== 'undefined') {
                     callback(store);
                 }
             }
         });
+       
+       
+        // $().SPServices({
+        //     operation: "AddAttachment",
+        //     listName: listName,
+        //     listItemID: store["PurchaseOrderId"],
+        //     fileName: name,
+        //     async: true,
+        //     attachment: file,
+        //     completefunc: function (xData, Status) {
+        //         var test = utility.errorCheck(xData, Status); if (test.success === false) return callback(test.message);
+
+        //         //TODO - find a way to add the document to the store.Documents list (FileName & FilePath) - this doesn't quite work!
+        //         store.Documents = (typeof store.Documents !== 'undefined' ? store.Documents : []);
+        //         var hostWebUrl = brandServices.getSharePointUrlByKeyFn("hostWebUrl");
+        //         var filePath = hostWebUrl + $(xData.responseXML).find("AddAttachmentResult").text(),
+        //           arrString = filePath.split("/"),
+        //           fileName = arrString[arrString.length - 1];
+
+        //         store.Documents.push({ FileName: fileName, FilePath: filePath });
+
+        //         if (typeof callback !== 'undefined') {
+        //             callback(store);
+        //         }
+        //     }
+        // });
     }
 
     function getTotal(po) {

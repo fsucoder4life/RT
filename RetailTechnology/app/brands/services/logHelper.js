@@ -1,8 +1,8 @@
 /**
- * Make this hold all the stuff that displays an issue so it can be re-used in multiple views
+ * LogHelper is used to log info, warnings, and errors to the console - **IF logging is true in config.js**
+ * This will allow for verbose logging to be turned on or off during development and production
  **/
 define([
-    // "app/brands/services/logHelper",
     "app/brands/infrastructure/models/constants",
     "dojo/_base/lang"
 ], function (constants, lang) {
@@ -77,11 +77,7 @@ define([
         log: (async function (logType, text) {
             const logInfoFn = this.logInfo.bind(this);
             const consoleLoggingFn = this.consoleLogging.bind(this);
-            // var logFunct =
-            //  lang.hitch(lInfo, (function (logType,text) {
-            // var obj = this;
-            //const consoleLogging = localStorage.getItem(constants("LOCAL_STORAGE_CONSOLE_LOGGING"))
-
+           
             consoleLoggingFn().then((consoleLogging) => {
                 const logInfoFn = this.logInfo.bind(this);
                 const logErrorFn = this.logError.bind(this);
@@ -103,11 +99,7 @@ define([
                             logInfoFn(text);
                         case "error":
                             logErrorFn(text);
-                        // default:
-                        //     console.log("Default Incoming: " + text);
-                        //     logInfoFn(text);
-
-
+                       
                     }
                 }
             });

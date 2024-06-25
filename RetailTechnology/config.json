@@ -8,5 +8,6 @@
 		"stylesheet": "styles.css",
 		"favIcon": "favicon.ico"
 	},
-	"consoleLogging": "true"
+	"consoleLogging": "true",
+	"rootUrl":""
 }
