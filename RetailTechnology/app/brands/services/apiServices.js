@@ -11,9 +11,9 @@ define(
             addToList: (async function (list, itemData){
                 logHelper.logInfo("addToList (" + list + "): Adding data");
                
-                await brandServices.getSharePointUrlByKeyFn("hostWebUrl")
-                    .then((hostWebUrl) => {
-                         fetch(`${hostWebUrl}/_api/web/lists/getbytitle('${list}')/items`, {
+                await brandServices.getSharePointUrlByKeyFn("siteCollectionUrl")
+                    .then((siteCollectionUrl) => {
+                         fetch(`${siteCollectionUrl}/_api/web/lists/getbytitle('${list}')/items`, {
                             method: "POST",
                             headers: {
                               "Accept": "application/json;odata=verbose",
@@ -45,7 +45,7 @@ define(
             getListItems: (async function (list, options) {
                 //const getSharePointUrlByKeyFn = brandServices.getSharePointUrlByKey.bind(this);
                 
-                var queryUrl = hostWebUrl + "/_api/web/lists/getbytitle(" + list + ")/items";
+                var queryUrl = siteCollectionUrl + "/_api/web/lists/getbytitle(" + list + ")/items";
                 if (options){
                     if (options.query){                       
                         queryUrl = queryUrl + options.query;
@@ -59,17 +59,17 @@ define(
                
 
                 // Get all the Email Distribution data
-                await brandServices.getSharePointUrlByKeyFn("hostWebUrl")
-                    .then((hostWebUrl) => {
+                await brandServices.getSharePointUrlByKeyFn("siteCollectionUrl")
+                    .then((siteCollectionUrl) => {
 
                         try {
                             // resources are in URLs in the form:
                             // web_url/_layouts/15/resource
-                            var scriptbase = hostWebUrl + "/_layouts/15/";
+                            var scriptbase = siteCollectionUrl + "/_layouts/15/";
                             // Load the js files and continue to the successHandler
                             $.getScript(scriptbase + "SP.RequestExecutor.js", execCrossDomainRequest);
                             function execCrossDomainRequest() {
-                                var executor = new SP.RequestExecutor(hostWebUrl);
+                                var executor = new SP.RequestExecutor(siteCollectionUrl);
                                 executor.executeAsync(
                                     {
                                         url: queryUrl,
@@ -109,23 +109,23 @@ define(
             getListItemAttachments: (async function (list, itemId) {
                 //const getSharePointUrlByKeyFn = brandServices.getSharePointUrlByKey.bind(this);
                 
-                var queryUrl = hostWebUrl + `/_api/web/lists/getbytitle(${list})/items(${itemId})/AttachmentFiles?$select=ServerRelativeUrl,FileName`;
+                var queryUrl = siteCollectionUrl + `/_api/web/lists/getbytitle(${list})/items(${itemId})/AttachmentFiles?$select=ServerRelativeUrl,FileName`;
                
                   logHelper.logInfo("queryList (" + list + "): Get all the data for itemId: " + itemId);
                
 
                 // Get all the Email Distribution data
-                await brandServices.getSharePointUrlByKeyFn("hostWebUrl")
-                    .then((hostWebUrl) => {
+                await brandServices.getSharePointUrlByKeyFn("siteCollectionUrl")
+                    .then((siteCollectionUrl) => {
 
                         try {
                             // resources are in URLs in the form:
                             // web_url/_layouts/15/resource
-                            var scriptbase = hostWebUrl + "/_layouts/15/";
+                            var scriptbase = siteCollectionUrl + "/_layouts/15/";
                             // Load the js files and continue to the successHandler
                             $.getScript(scriptbase + "SP.RequestExecutor.js", execCrossDomainRequest);
                             function execCrossDomainRequest() {
-                                var executor = new SP.RequestExecutor(hostWebUrl);
+                                var executor = new SP.RequestExecutor(siteCollectionUrl);
                                 executor.executeAsync(
                                     {
                                         url: queryUrl,
@@ -163,10 +163,10 @@ define(
                     });
             }),
             deleteFromList: (async function(list, itemId) {
-                await brandServices.getSharePointUrlByKeyFn("hostWebUrl")
-                .then((hostWebUrl) => {
+                await brandServices.getSharePointUrlByKeyFn("siteCollectionUrl")
+                .then((siteCollectionUrl) => {
                     try {
-                        fetch(`${hostWebUrl}/_api/web/lists/getbytitle('${list}')/items(${itemId})`, {
+                        fetch(`${siteCollectionUrl}/_api/web/lists/getbytitle('${list}')/items(${itemId})`, {
                             method: "DELETE",
                             headers: {
                               "Accept": "application/json;odata=verbose",
@@ -189,10 +189,10 @@ define(
                 });
             }),
             getFormDigest: (async function() {
-                await brandServices.getSharePointUrlByKeyFn("hostWebUrl")
-                .then((hostWebUrl) => {
+                await brandServices.getSharePointUrlByKeyFn("siteCollectionUrl")
+                .then((siteCollectionUrl) => {
                     try {
-                        return fetch(`${hostWebUrl}/_api/web/getformdigestignorecache`, {
+                        return fetch(`${siteCollectionUrl}/_api/web/getformdigestignorecache`, {
                             method: "POST",
                             headers: {
                               "Accept": "application/json;odata=verbose"

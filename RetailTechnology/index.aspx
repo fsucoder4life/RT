@@ -1,19 +1,11 @@
 ﻿<!DOCTYPE html>
+
 <%@ Page Language="C#" %>
 
 <%@ Register TagPrefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
-<!-- <%@ Register TagPrefix="sld" TagName="PromoDisplay" Src="~/_controltemplates/RetailTechnology/GetCurrentUsersEmail.ascx" %> -->
-<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml">
+<!--%@ Register TagPrefix="sld" TagName="PromoDisplay" Src="~/_controltemplates/RetailTechnology/GetCurrentUsersEmail.ascx" %-->
+<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
 <head runat="server">
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-2931895-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'UA-2931895-1');
-    </script>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="cache-control" content="max-age=0">
@@ -22,9 +14,26 @@
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 11:00:00 GMT">
     <meta http-equiv="pragma" content="no-cache">
 
-    <title id="applicationId">Sonic Retail Technology</title>
+    <title id="currentAppTitle">Sonic Retail Technology</title>
     <link rel="shortcut icon" href="/_layouts/images/favicon.ico" type="image/vnd.microsoft.icon" />
     <!--Styles-->
+    <style>
+          .env-banner {
+      position: fixed;
+      font-size: 1.6rem;
+      bottom: -39px;
+      right: -75px;
+      transform: rotate(-45deg);
+      z-index: 9999;
+      padding: 35px 30px 55px;
+      width: 200px;
+      background-color: #d3583f;/*#2A3042;*/
+      color: #FFFFFF;
+      text-align: center;
+      font-style: italic;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  }
+    </style>
     <link rel="stylesheet" type="text/css" href="resources/style/main.css" />
     <link rel="stylesheet" type="text/css" href="resources/style/pure-min.css" />
     <link rel="stylesheet" type="text/css" href="resources/lib/dijit/themes/claro/claro.css" />
@@ -40,11 +49,13 @@
         type="application/opensearchdescription+xml"
         title="Sonic Search" />
     <!--SP Librarires-->
-   
+    <sharepoint:scriptlink name="MicrosoftAjax.js" runat="server" defer="False" localizable="false" />
+    <sharepoint:scriptlink name="SP.core.js" runat="server" defer="False" localizable="false" />
+    <sharepoint:scriptlink name="SP.js" runat="server" defer="True" localizable="false" />
     <!--Libraries-->
     <script language="javascript" type="text/javascript" src="resources/lib/jquery-1.11.1.min.js"></script>
     <script language="javascript" type="text/javascript" src="resources/lib/jquery.SPServices-2014.01.min.js"></script>
-    <script language="javascript" type="text/javascript" src="resources/lib/jquery-modal/jquery.modal.min.js"></script>
+    <script type="text/javascript" src="resources/lib/jquery-modal/jquery.modal.min.js"></script>
     <script language="javascript" type="text/javascript" src="resources/lib/date-picker/datepicker.min.js"></script>
     <script language="javascript" type="text/javascript" src="resources/lib/moment.min.js"></script>
     <script language="javascript" type="text/javascript" src="resources/lib/lodash.compat.min.js"></script>
@@ -56,11 +67,11 @@
     <script language="javascript" type="text/javascript" src="resources/lib/Blob.min.js"></script>
     <script language="javascript" type="text/javascript" src="resources/lib/FileSaver.min.js"></script>
     <script language="javascript" type="text/javascript" src="resources/lib/tableexport.min.js"></script>
-    <script language="javascript" type="text/javascript" src="resources/lib/jstree/jstree.min.js"></script>
+    <script type="text/javascript" src="resources/lib/jstree/jstree.min.js"></script>
     <script language="javascript" type="text/javascript" src="app/utility/asyncLoop.js"></script>
     <!--<script language="javascript" type="text/javascript" src="resources/lib/FileSaver.min.js"></script>-->
-    <script language="javascript" type="text/javascript" src="resources/lib/jspdf.min.js"></script>
-    <script language="javascript" type="text/javascript" src="resources/lib/jspdf.plugin.autotable.js"></script>
+    <!--<script language="javascript" type="text/javascript" src="resources/lib/jspdf.min.js"></script>-->
+    <!--<script language="javascript" type="text/javascript" src="resources/lib/jspdf.plugin.autotable.js"></script>-->
     <!--<script language="javascript" type="text/javascript" src="resources/lib/table2CSV.js"></script>-->
     <script language="javascript" type="text/javascript" src="resources/lib/big.min.js"></script>
     <%--<script>--%>
@@ -83,7 +94,6 @@
     <%--<script language="javascript" type="text/javascript" src="resources/lib/wkhtmltopdf_tableSplitHack.js"></script>--%>
     <!-- load Dojo -->
     <script type="text/javascript">
-       
         // Configure DOJO
         // Instead of using data-dojo-config, we're creating a dojoConfig
         // object *before* we load dojo.js; they're functionally identical,
@@ -111,7 +121,10 @@
     <script language="javascript">
         require(['app/router']);
     </script>
-    <script>
+     <script>
+				 
+	
+	
         require([
     
     
@@ -121,129 +134,142 @@
             'app/brands/services/domServices'
     
         ], function (brandServices, logHelper, when, domServices) {
-            const replaceLinkHrefFn = brandServices.replaceLinkHref.bind(this);
+            //console.log("index.aspx - Waiting on IsBrandReady to get set " + new Date().toISOString() );
+    const expected = "True";
+    var actual = localStorage.getItem("IsBrandReady");
+    //console.log("index.aspx - Still waiting on IsBrandReady to get set " + new Date().toISOString() );
+            when((actual !== null && actual !== "null") && expected === actual, function(){
+			//console.log("index.aspx - IsBrandReady is set " + new Date().toISOString() );
+			//console.log("index.aspx - Expected: " + expected +  " " + new Date().toISOString() );
+			//console.log("index.aspx - Actual: " + actual+  " " + new Date().toISOString());
+            
+
             loadConfigFile: (async function () {
+                
                 let retVal = false;
                 retVal = await brandServices.loadConfigFile();
                 if (retVal) {
-                    logHelper.logInfo("loadConfigFile: Config File Loaded");
-                    logHelper.logInfo("Step 1 Return Value: " + retVal);
+                   // logHelper.logDebug("index.aspx","loadConfigFile: Config File Loaded");
+                    //logHelper.logDebug("index.aspx","Step 1 Return Value: " + retVal);
                     retVal = false;
                     retVal = await brandServices.startApp();
     
                     if (retVal) {
-                        logHelper.logInfo("Step 2 Return Value: " + retVal);
+                       // logHelper.logDebug("index.aspx","Step 2 Return Value: " + retVal);
                         retVal = false;
                         retVal = await brandServices.setCurrentBrandConfig();
                     }
     
-                    if (retVal) {
-                        logHelper.logInfo("Step 3 Return Value: " + retVal);
-                        retVal = false;
-                        retVal = await logHelper.logInfo("loadConfigFile: App Started");
-                    }
-    
-                    //Only use if using mock data api
                     // if (retVal) {
-                    //     logHelper.logInfo("Step 4 Return Value: " + retVal);
-                    //     retVal = await brandServices.refreshCSS();
-                    //     brandServices.getReports();
+                    //    // logHelper.logDebug("index.aspx","Step 3 Return Value: " + retVal);
+                    //     retVal = false;
+                      
                     // }
     
-                    if (retVal) {
-                        logHelper.logInfo("Step 4 Return Value: " + retVal);
-                        dom.byId("current-date").innerHtml = new Date();
-                        $("#loading-mask").hide();
+                    // if (retVal) {
+                    //     retVal = false;
+                    //     logHelper.logInfo("Step 4 Return Value: " + retVal);
+                    //     var dom = document.getElementById("current-date")
+                    //     dom.innerHtml = new Date();
+                    //     $("#loading-mask").hide();
     
-                        logHelper.logInfo("before changing link");
-                        await brandServices.getSharePointUrlByKey("sitePage-RetailTechnology").then(async (url) => {
-                            var newUrl = url + "/index.aspx#reports/micros";
-                            logHelper.logInfo("after changing link" + url);
-                            brandServices.replaceLinkHref("posMicros", newUrl);
-                        });
+                    //     logHelper.logInfo("before changing link");
+                    //     await brandServices.getSharePointUrlByKey("sitePage-RetailTechnology").then(async (url) => {
+                    //         var newUrl = url + "/index.aspx#reports/micros";
+                    //         logHelper.logInfo("after changing link" + url);
+                    //         brandServices.replaceLinkHref("posMicros", newUrl);
+                    //     });
+                    //     return true;
     
-                    }
+                    // }
+
+                    // if (retVal) {
+                    //     retVal = false;
+                    //     logHelper.logInfo("Step 5 Return Value: " + retVal);
+                     
+
+                    //     //Set Home Link Url
+                    //     await brandServices.getSharePointUrlByKey("subSitePath").then(async (url) => {
+                    //         var newUrl = url;
+                    //         logHelper.logInfo("after changing Home link" + url);
+                    //         brandServices.replaceLinkHref("currentHomeUrl", newUrl);
+                    //     });
+                    //     return true;
+                    // }
     
                 }
     
-    
-    
-    
-    
-    
-    
             })();
-    
+        })
         });
     
     
     </script>
-   <script language="javascript">
-  
-    function triggerWorkflow(workFlowType) {
-        alert("Test");
-        var url = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/"; // Replace placeholders
-                           
-        var clientContext = new SP.ClientContext(url);
-        var currentUser = getCurrentUser();
 
-        // var webContext = clientContext.get_web();  
-        //         currentUser = webContext.get_currentUser();
-        var oList = clientContext.get_web().get_lists().getByTitle('WorkFlowTriggerRequest');
-            console.log("After retrieving the list:" + oList);
-        var itemCreateInfo = new SP.ListItemCreationInformation();
-        this.oListItem = oList.addItem(itemCreateInfo);
-        oListItem.set_item('Title', 'HCMAudioQuote - Trigger');
-        oListItem.set_item('Store', '9999');
-        oListItem.set_item('WFType', workFlowType);
-        oListItem.set_item('RequestBy', 'clayton.gause@inspirebrands.com');
-        oListItem.set_item('DateRequested', new Date());
-        console.log("Before updating the list:" + oList);
-        oListItem.update();
-    
-        clientContext.load(oListItem);
-        clientContext.executeQueryAsync(
-            Function.createDelegate(this, this.onQuerySucceeded), 
-            Function.createDelegate(this, this.onQueryFailed)
-        );
-    }
-    
-    function onQuerySucceeded() {
-        alert('Item created: ' + oListItem.get_id());
-    }
-    
-    function onQueryFailed(sender, args) {
-        alert('Request failed. ' + args.get_message() + 
-            '\n' + args.get_stackTrace());
-    }
-        
-        </script>
 </head>
 <body class="claro">
+    <div class="env-banner">DEV</div>
     <div id="main">
-        <div style="float: left;">
-            <h1 id="title" style="margin: 5px 0 0 0;">Retail Technology - Development Projects</h1>
-            <span id="sub-title">Search/Reports</span> - <span id="current-date"></span>
+        <div style="float: left; ">
+            <h1 id="CurrentAppTitle" class="currentAppTitle"></h1>
+            <span id="sub-title"></span> - <span id="current-date"></span>
         </div>
-        <div style="width: 300px; float: right; text-align: right; font-weight: bold; font-size: .8em;">
+        <div class="brandTitle">
             <a href="#index">
-                <img style="float: right; margin: 5px;width:138px;" src="https://d1bczdvydwfy0q.cloudfront.net/images/whats-cookin/TjR24U_newsonicbottomlogo_01222020.png" alt="Sonic Logo" /></a>
-            Sonic Corporate<br />
-            300 Johnny Bench Drive<br />
-            Oklahoma City, OK 73104<br />
-            405-225-5000
+                <img id="CurrentCompanyLogo" class="brandLogo" src="" alt="Logo" />
+            </a>
+            <div>
+                <span id="CurrentCompanyName"></span><br />
+                <span id="CurrentCompanyAddress"></span><br />
+                <span id="CurrentCompanyCityState"></span><span id="CurrentCompanyZip"></span><br />
+                <span id="CurrentCompanyPhone"></span>
+            </div>
+
         </div>
         <!--Search Box-->
         <div id="search-container">
+           
             Search Stores:<input id='search' style="display: inline-block; margin-left: 10px; width: 385px;" name="search" type="text" title="Search" /><div id="search-type"></div>
         </div>
+		<div style="margin-left:10px; font-weight: bold; font-size: .8em;">
+		<a id="currentHomeUrl" href="">Home</a>
+		<div id="currentUser" style="width: 300px; float: right; text-align: right; font-weight: bold; font-size: .9em;margin-right:10px;"></div>
+		</div>
         <div id="content">
             <!--Loading Mask-->
             <div id="loading-mask">
                 <img src="resources/images/loading.gif" alt="loading image" />
             </div>
         </div>
+		
     </div>
-    <iframe id="KeepCentrifyUserSessionAlive" name="KeepCentrifyUserSessionAlive" style="display: none;" src="KeepCentrifyUserSessionAlive.aspx" />
 </body>
 </html>
+<script type="text/javascript">  
+        ExecuteOrDelayUntilScriptLoaded(init,'sp.js');  
+        var currentUser;  
+        function init(){  
+            this.clientContext = new SP.ClientContext.get_current();  
+            this.oWeb = clientContext.get_web();  
+            currentUser = this.oWeb.get_currentUser();  
+            this.clientContext.load(currentUser);  
+            this.clientContext.executeQueryAsync(Function.createDelegate(this,this.onQuerySucceeded), Function.createDelegate(this,this.onQueryFailed));  
+			
+        }  
+          
+        function onQuerySucceeded() {  
+		var curUser = "Current User: " + currentUser.get_email();
+		localStorage.setItem("currentUser_userLoginName",currentUser.get_loginName());
+		localStorage.setItem("currentUser_userId",currentUser.get_id());
+		localStorage.setItem("currentUser_userTitle",currentUser.get_title());
+		localStorage.setItem("currentUser_userEmail",currentUser.get_email());
+         document.getElementById('currentUser').innerText = curUser;   
+            //document.getElementById('userId').innerHTML = currentUser.get_id();  
+            //document.getElementById('userTitle').innerHTML = currentUser.get_title();  
+            //document.getElementById('userEmail').innerHTML = currentUser.get_email();  
+        }  
+          
+        function onQueryFailed(sender, args) {  
+            alert('Request failed. \nError: ' + args.get_message() + '\nStackTrace: ' + args.get_stackTrace());  
+        }  
+    </script>

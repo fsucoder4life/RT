@@ -17,8 +17,9 @@ define(
                 });
                 let retVal = false;
                 let brandId = params.brandId;
+                //If there is no brandId in the querystring
                 if (!brandId) {
-                    brandId = '380fb82e-9c79-4903-a65a-425f551a84b1'; //Sonic
+                    brandId = '380fb82e-9c79-4903-a65a-425f551a84b1'; //Default to Sonic
                 }
                 //Don't use logHelper yet, it hasn't been loaded
                 logHelper.logInfo("Start app for brandId: " + brandId);
@@ -31,6 +32,7 @@ define(
             //Load Base config.json
             loadConfigFile: (async function () {
                 const setLoggingFlagFn = this.setLoggingFlag.bind(this);
+                const setsiteCollectionUrlFn = this.setsiteCollectionUrl.bind(this);
                 const setAllBrandsFileFn = this.setAllBrandsFile.bind(this);
                 let retVal = false;
                 var url = "config.json";
@@ -42,10 +44,13 @@ define(
                         localStorage.clear();
                         //store the config.json 
                         localStorage.setItem(constants("LOCAL_STORAGE_APP_CONFIG"), JSON.stringify(json));
+                        
                         console.log("config.json loaded")
 
                         var consoleLogging = (json.consoleLogging === 'true');
+                        var siteCollectionUrl = json.siteCollectionUrl;
                         retVal = await setLoggingFlagFn(consoleLogging);
+                        retVal = await setsiteCollectionUrlFn(siteCollectionUrl);
                         if (consoleLogging) {
                             console.log("loadConfigFile: Verbose logging has been enabled");
                         }
@@ -74,39 +79,9 @@ define(
                     });
 
                 return retVal;
-            }),
+            }),            
 
-            //Load Brands File
-            // loadAllBrandsFile: (async function () {
-            //     const getAllBrandsFilePathFn = this.getAllBrandsFilePath.bind(this);
-            //     const setAllBrandsFileFn = this.setAllBrandsFile.bind(this);
-            //     const setCurrentBrandConfigFn = this.setCurrentBrandConfig.bind(this);
-            //     var url = null;
-            //     var urlFn = await getAllBrandsFilePathFn()
-            //         .then((value) => {
-            //             logHelper.logInfo("loadAllBrandsFile: AllBrandsFilePath: " + value);
-            //             url = value
-
-            //             logHelper.logInfo(`loadAllBrandsFile: Try to fetch the brands json file from ${url}`);
-            //             fetch(url)
-            //                 .then(async (res) => {
-            //                     logHelper.logInfo(res.json);
-            //                     logHelper.logInfo("setup all brands file");
-            //                     await setAllBrandsFileFn(JSON.stringify(res.json));
-
-            //                 })
-            //                 .catch((err) => {
-            //                     logHelper.logError('loadAllBrandsFile: File Load Error!', {
-            //                         error: "Error fetching the Brand config file.",
-            //                         details: err,
-            //                     });
-            //                 });
-            //         }
-            //         );
-
-            // }),
-
-            //Setup Brand Config
+            //Setup Current Brand Configuration
             setCurrentBrandConfig: (async function () {
 
 
@@ -120,6 +95,7 @@ define(
                 const setBrandImagesFolderFn = this.setBrandImagesFolder.bind(this);
                 const setCurrentBrandConfigSettingsFn = this.setCurrentBrandConfigSettings.bind(this);
                 const setBrandCssThemeFilePathFn = this.setBrandCssThemeFilePath.bind(this);
+                logHelper.logInfo("get Current Brand Id");
                 await getBrandIdFn().then(async (val) => {
 
                     var brandId = val;
@@ -170,7 +146,7 @@ define(
                 return true;
             }),
 
-            //Load Brand Config File
+            //Load Current Brand Config File
             setCurrentBrandConfigSettings: (async function () {
                 const getBrandIdFn = this.getBrandId.bind(this);
                 let brandId = '';
@@ -179,6 +155,7 @@ define(
                     brandId = val;
                 })
                     .then(async () => {
+
                         const getBrandConfigFilePathFn = this.getBrandConfigFilePath.bind(this);
                         const setBrandConfigFileFn = this.setBrandConfigFile.bind(this);
                         const registerBrandThemeFn = this.registerBrandTheme.bind(this);
@@ -189,7 +166,7 @@ define(
                         const setQuoteDetailsFn = this.setQuoteDetails.bind(this);
                         const setSharePointUrlsFn = this.setSharePointUrls.bind(this);
                         const setHomeUrlFn = this.setHomeUrl.bind(this);
-
+                        const getsiteCollectionUrlFn = this.getsiteCollectionUrl.bind(this);
                         const setBrandLogoFn = this.setBrandLogo.bind(this);
                         const setBrandInfoFn = this.setBrandInfo.bind(this);
                        // const queryEmailDistributionListFn = this.queryEmailDistributionList.bind(this);
@@ -224,15 +201,28 @@ define(
 
                                     //SharePoint Url array
                                     var SPUrls = item[5];
-                                    //Brand specific SharePoint Base Url; will be used to replace placeholders to build the some of the SharePoint Urls
-                                    const hostWebUrl = SPUrls["hostWebUrl"];
-                                    const sharePointBaseUrl = SPUrls["sharePointBaseUrl"];
+                                    
                                     var stringified = JSON.stringify(SPUrls);
-
+                                    //**NOTE**  json has to be parsed and stringified each time you do a replace or the next replace won't work
                                     //replace placeholders with actual values
-                                    stringified = stringified.replace(/__sharePointBaseUrl__/g, sharePointBaseUrl);
-                                    //json has to be parsed and stringified each time you do a replace or the next replace won't work
+                                    var rootUrl = await getsiteCollectionUrlFn();
+                                    stringified = stringified.replace(/__siteCollectionUrl__/g, rootUrl);
                                     SPUrls = JSON.parse(stringified);
+                                     const varsubSitePath = SPUrls["subSitePath"];
+                                    stringified = stringified.replace(/__subSitePath__/g, varsubSitePath);
+                                    logHelper.logInfo("Stringified: " + stringified);
+                                    //Brand specific SharePoint Base Url; will be used to replace placeholders to build the some of the SharePoint Urls
+                                    //const siteCollectionUrl = SPUrls["siteCollectionUrl"];
+                                    SPUrls = JSON.parse(stringified);
+                                    const subSitePath = SPUrls["subSitePath"];
+                                    var homepageUrl = SPUrls["homepageUrl"];
+
+                                    if (brandId != '380fb82e-9c79-4903-a65a-425f551a84b1'){
+                                        homepageUrl = homepageUrl + homeUrl;
+                                    }
+
+                                    logHelper.logInfo("Homepage Url: " + homepageUrl);
+                                    
                                     stringified = JSON.stringify(SPUrls);
 
                                     //Brand specific Payment Survey Signoff Site Page Base Url; will be used to replace placeholders to build the Urls that leverage this site page
@@ -295,10 +285,10 @@ define(
                                     retVal = await setBrandLogoFn(logoFilePath, logoDescription);
                                     retVal = await setBrandInfoFn(companyInfo);
                                     logHelper.logInfo("Before looping through sharePointUrls");
-                                    logHelper.logInfo(sharePointBaseUrl);
+                                    logHelper.logInfo(subSitePath);
 
                                     if (SPUrls) {
-                                        retVal = await setSharePointUrlsFn(hostWebUrl, sharePointBaseUrl, apipdfGenerator, formPOSSurvey, listCombinedSchedule, listConstructionCalls, listConstructionCallsDispForm,
+                                        retVal = await setSharePointUrlsFn(subSitePath,homepageUrl, apipdfGenerator, formPOSSurvey, listCombinedSchedule, listConstructionCalls, listConstructionCallsDispForm,
                                             listInstallQuoteGen, listLevel2010Orders, listPurchaseOrders, siteAssetsRenameListFileAttachments, sitePageDailyUpdates, sitePageMasterPortal, sitePagePaymentSignOff,
                                             sitePagePSOSurvey, sitePagePSOViewAll, sitePagePSOViewAll, sitePagePSOViewAllSurvey, sitePagePSOCheckin, sitePagePSODailyUpdate,
                                             sitePageProjectReviewPayMod, sitePageRetailTech, sitePageRetailTechSearch, sitePageRetailTechPaymentModProjectDates, sitePageRetailTechStoreConfigurationSearch)
@@ -327,7 +317,7 @@ define(
 
             }),
 
-            //Brand Theme
+            //Load the Current Brand Theme
             registerBrandTheme: (async function () {
                 const setPageTitleFn = this.setPageTitle.bind(this);
                 const getBrandReadyFn = this.getBrandReady.bind(this);
@@ -348,7 +338,7 @@ define(
 
 
 
-            //Cache Brands CssFile Path
+            //Cache Current Brand CssFile Path
             setBrandCssThemeFilePath: (async function (filePath) {
 
                 try {
@@ -373,8 +363,8 @@ define(
                 return filePath;
             }),
 
-
-            //Cache Brands File Path
+            //*****ALL BRANDS JSON PATH
+            //Cache All Brands JSON File Path
             setAllBrandsFilePath: (async function () {
 
                 try {
@@ -404,7 +394,8 @@ define(
 
             }),
 
-            //Cache Brands Config File
+            //*****ALL Brands JSON File
+            //Cache All Brands JSON File
             setAllBrandsFile: (async function (json) {
                 localStorage.setItem(constants("LOCAL_STORAGE_ALL_BRANDS"), JSON.stringify(json));
                 logHelper.logInfo("setAllBrandsFile: Brands.json loaded into cache");
@@ -420,7 +411,8 @@ define(
                 return JSON.parse(brandsConfig);
             }),
 
-            //Cache Page Title
+            //*****Page Title
+            //Cache Current Brand Page Title
             cachePageAndSiteTitle: (async function (pageTitle, siteTitle) {
                 localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_PAGE_TITLE"), pageTitle);
                 localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_SITE_TITLE"), siteTitle);
@@ -430,9 +422,9 @@ define(
             }),
 
             getPageTitle: (async function () {
-                logHelper.logInfo("who called you?");
+                
                 var pageTitle = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_PAGE_TITLE"));
-
+                logHelper.logInfo("Get current page title: " + pageTitle);
                 if (!pageTitle) {
                     logHelper.logError("getPageTitle: Page Title not set");
                     return false
@@ -440,29 +432,614 @@ define(
                 return pageTitle;
             }),
 
-            queryEmailDistributionList: (async function (brandId) {
+            //*****Site Title
+            getSiteTitle: (async function () {
+               
+                var siteTitle = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_SITE_TITLE"));
+                logHelper.logInfo("Get current site title: " + siteTitle);
+                if (!siteTitle) {
+                    logHelper.logError("getSiteTitle: Site Title not set");
+                    return false
+                }
+                return siteTitle;
+            }),
+
+           
+            //Cache Sharepoint URLs
+            setSharePointUrls: (async function ( baseUrl,homepageUrl, pdfApi, posSurvey, combSchedule, constrCalls, constrCalls2, quoteGen,
+                levelOrders, dailyUpdates, siteAssets, masterPortal, surveySignOff, survSignOff2, surveySignOff3, surveySignOff4,
+                surveySignOff5, surveySignOff6, projectReview, retailTech, retailTech2, retailTech3, retailTech4) {
+                //setting siteCollectionUrl in config.json
+                    //localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL"), siteCollectionUrl);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SUBSITE_PATH"), baseUrl);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_HOMEPAGE_URL"), homepageUrl);
+                localStorage.setItem(constants("LOCAL_STORAGE_API_GENERATE_PDF"), pdfApi);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_FORM_POSSURVEY"), posSurvey);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_LIST_COMBINED_SCHEDULE"), combSchedule);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_LIST_CONSTRUCTION_CALLS"), constrCalls);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_LIST_CONSTRUCTION_CALLS_DISPFORM"), constrCalls2);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_LIST_INSTALL_QUOTE_GEN"), quoteGen);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_LIST_LEVEL2010ORDERS"), levelOrders);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_DAILY_UPDATES"), dailyUpdates);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEASSETS_RENAME_LIST_FILE_ATTACHMENTS"), siteAssets);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_MASTER_PORTAL"), masterPortal);
+
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PAYMENT_SURVEY_SIGNOFF"), surveySignOff);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PAYMENT_SURVEY_SIGNOFF_SURVEY"), survSignOff2);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PAYMENT_SURVEY_SIGNOFF_VIEW_PHOTOS_ALL_AREA_SURVEY_START"), surveySignOff3);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PAYMENT_SURVEY_SIGNOFF_VIEW_PHOTOS_ALL_AREA"), surveySignOff4);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PAYMENT_SURVEY_SIGNOFF_CHECKIN"), surveySignOff5);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PAYMENT_SURVEY_SIGNOFF_DAILY_UPDATE"), surveySignOff6);
+
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PROJECTREVIEWPAYMOD"), projectReview);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_RETAILTECHNOLOGY"), retailTech);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_RETAILTECHNOLOGY_SEARCH"), retailTech2);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_RETAILTECHNOLOGY_PAYMENT_MOD_PROJECT_DATES"), retailTech3);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_RETAILTECHNOLOGY_STORE_CONFIGURATION_SEARCH"), retailTech4);
+
+                logHelper.logInfo("setSharePointUrls: SharePointUrls have been cached");
+                return true;
+            }),
+
+            getSharePointUrlByKey: (async function (key) {
+                if (!key) {
+                    logHelper.logError("getSharePointUrlByKey: Invalid Constant Key!");
+                    return false
+                }
+                logHelper.logInfo("getSharePointUrlByKey: Attempting to get key: " + key);
+                var url = localStorage.getItem(key);
+                logHelper.logInfo("getSharePointUrlByKey: localStorage result: " + url);
+                if (!url) {
+                    logHelper.logError("getSharePointUrlByKey: SharePoint Url not cached");
+                    return false
+                }
+                return url;
+            }),
+
+            //Cache Home URL
+            setHomeUrl: (async function (url) {
+                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_BASE_URL"), url);
+                logHelper.logInfo("setHomeUrl: BaseUrl has been cached");
+                return true;
+            }),
+
+            getHomeUrl: (async function () {
+                var url = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_BASE_URL"));
+                if (!url) {
+                    logHelper.logError("Base Url not set");
+                    return false
+                }
+                return url;
+            }),
+
+            //Cache Subsite Path
+            setSubsitePath: (async function (url) {
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SUBSITE_PATH"), url);
+                logHelper.logInfo("setSubsitePath: Subsite path has been cached");
+                return true;
+            }),
+
+            getSubsitePath: (async function () {
+                var url = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_SUBSITE_PATH"));
+                if (!url) {
+                    logHelper.logError("Subsite path not set");
+                    return false
+                }
+                return url;
+            }),
+
+            getHomePageUrl: (async function () {
+                var url = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_HOMEPAGE_URL"));
+                if (!url) {
+                    logHelper.logError("Homepage Url not set");
+                    return false
+                }
+                return url;
+            }),
+            
+            //Cache Logging Flag
+            setLoggingFlag: (async function (flag) {
+                localStorage.setItem(constants("LOCAL_STORAGE_CONSOLE_LOGGING"), flag);
+                logHelper.logInfo("setLoggingFlag: Logging flag cached");
+                return true;
+            }),
+
+            getLoggingFlag: (async function () {
+                var loggingFlag = localStorage.getItem(constants("LOCAL_STORAGE_CONSOLE_LOGGING"));
+                if (!loggingFlag) {
+                    logHelper.logError("getLoggingFlag: Logging flag not set");
+                    return false
+                }
+                return loggingFlag;
+            }),
+
+             //Cache Host Url
+             setsiteCollectionUrl: (async function (siteCollectionUrl) {
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL"), siteCollectionUrl);
+                logHelper.logInfo("setsiteCollectionUrl: Host Web Url cached");
+                return true;
+            }),
+
+            getsiteCollectionUrl: (async function () {
+                var siteCollectionUrl = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL"));
+                if (!siteCollectionUrl) {
+                    logHelper.logError("getsiteCollectionUrl: Host Web Url not set");
+                    return null;
+                }
+                return siteCollectionUrl;
+            }),
+
+            //Cache BrandId
+            setBrandId: (async function (brandId) {
+                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_BRANDID"), brandId);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_READY"), false);
+                logHelper.logInfo("setBrandId: BrandId: " + brandId + " has been cached");
+                return true;
+            }),
+
+            //Get the current brandId
+            getBrandId: (async function () {
+                var brandId = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_BRANDID"));
+                if (!brandId) {
+                    brandId = '380fb82e-9c79-4903-a65a-425f551a84b1'; //Sonic
+
+                }
+
+                return brandId;
+            }),
+
+            //Get the current brand readiness flag
+            getBrandReady: (async function () {
+                var isBrandReady = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_READY"));
+                return isBrandReady ?? false;
+            }),
+
+            //Cache current brand name
+            setBrandName: (async function (brandNameToSet) {
+
+
+                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_BRAND_NAME"), brandNameToSet);
+                logHelper.logInfo("setBrandName: Brand Name: " + brandNameToSet + " has been cached");
+                return true;
+            }),
+
+            //Get the current brand name
+            getBrandName: (async function () {
+                var brandName = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_BRAND_NAME"));
+                if (!brandName) {
+                    logHelper.logError("getBrandName: Brand has not been cached!");
+                    return null;
+                }
+                return brandName;
+            }),
+
+            //Cache currentBrand Info
+            setBrandInfo: (async function (companyInfo) {
+
+                var legalName = companyInfo.companyLegalName;
+                var shortName = companyInfo.companyShortName;
+                var address = companyInfo.companyStreetAddress;
+                var cityState = companyInfo.companyCityState;
+                var zipCode = companyInfo.companyZipCode;
+                var phoneNumber = companyInfo.companyPhone;
+                var copyright = companyInfo.copyright;
+
+                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LEGAL_NAME"), legalName);
+                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_SHORT_NAME"), shortName);
+                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_CITYSTATE"), cityState);
+                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_ADDRESS"), address);
+                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_ZIP"), zipCode);
+                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_PHONE"), phoneNumber);
+                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COPYRIGHT"), copyright);
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_READY"), true);
+                logHelper.logInfo("setBrandInfo: Brand Info cached");
+                return true;
+            }),
+
+            getBrandInfo: (async function () {
+                var brandInfo = [{
+                    "legalName": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LEGAL_NAME")),
+                    "shortName": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_SHORT_NAME")),
+                    "cityState": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_CITYSTATE")),
+                    "address": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_ADDRESS")),
+                    "zipCode": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_ZIP")),
+                    "phone": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_PHONE")),
+                    "copyright": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COPYRIGHT"))
+                }];
+                logHelper.logInfo(brandInfo);
+              
+                return brandInfo;
+            }),
+
+
+            //Cache current brand config file path
+            setBrandConfigFilePath: (async function (configFilePath) {
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_CONFIG_FILE_PATH"), configFilePath);
+                logHelper.logInfo(" setBrandConfigFilePath: Brand config file path set");
+                return true;
+            }),
+
+            //Get the current brand JSON config file path
+            getBrandConfigFilePath: (async function () {
+                var configFilePath = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_CONFIG_FILE_PATH"));
+                if (!configFilePath) {
+                    logHelper.logError("getBrandConfigFilePath: Error loading Brand config file path!")
+                    return null;
+                }
+                return configFilePath;
+            }),
+
+            //Cache current brand JSON config file
+            setBrandConfigFile: (async function (configFile) {
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_CONFIG_FILE"), configFile);
+                logHelper.logInfo("setBrandConfigFile: Brand config.file loaded");
+                return true;
+            }),
+            //Get the current brand config file
+            getBrandConfigFile: (async function () {
+                var configFile = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_CONFIG_FILE"));
+                if (!configFile) {
+                    logHelper.logError("getBrandConfigFile: Error loading Brand config file!")
+                    return null;
+                }
+                return configFile;
+            }),
+
+            //Cache current brand base folder
+            setBrandBaseFolder: (async function (folderPath) {
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_BASE_FOLDER"), JSON.stringify(folderPath));
+                logHelper.logInfo("setBrandBaseFolder: Brand base folder path set.");
+                return true;
+            }),
+
+            //Get the current brand base folder
+            getBrandBaseFolder: (async function () {
+                var folderPath = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_BASE_FOLDER"));
+                if (!folderPath) {
+                    logHelper.logError("getBrandBaseFolder: Error loading Brand base folder!")
+                    return null;
+                }
+                return folderPath;
+            }),
+
+            //Cache images folder file path
+            setBrandImagesFolder: (async function (folderPath) {
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_IMAGES_FOLDER"), JSON.stringify(folderPath));
+                logHelper.logInfo("setBrandImagesFolder: Brand images folder path set");
+                return true;
+            }),
+            //Get the current brand images folder
+            getBrandImagesFolder: (async function () {
+                var folderPath = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_IMAGES_FOLDER"));
+                if (!folderPath) {
+                    logHelper.logError("getBrandImagesFolder: Error loading Brand images folder path!")
+                    return null;
+                }
+                return folderPath;
+            }),
+
+            //Cache Brand Logo             
+            setBrandLogo: (async function (filePath, description) {
+
+                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO_FILE_PATH"), filePath);
+                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO_DESCRIPTION"), description);
+                return true;
+            }),
+            //Get the current brand logo file path
+            getBrandLogoFilePath: (async function () {
+                var logoFilePath = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO_FILE_PATH"));
+                logHelper.logInfo(logoFilePath);
+                if (!logoFilePath) {
+                    logHelper.logError("getBrandLogoFilePath: Logo File Path not set");
+                    return false
+                }
+                return logoFilePath;
+            }),
+
+            //Get the current brand logo file path
+            getBrandLogoDescription: (async function () {
+                var description = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO_DESCRIPTION"));
+                logHelper.logInfo(description);
+                if (!description) {
+                    logHelper.logError("getBrandLogoDescription: Logo Description not set");
+                    return false
+                }
+                return description;
+            }),
+
+          
+            //Set the current brand page and site titles..... check the tab to verify it updated
+            setPageTitle: (async function () {
+                const getPageTitleFn = this.getPageTitle.bind(this);
+
+
+                let retVal = false;
+                logHelper.logInfo(`setPageTitle: Try to set the app title`);
+                const setTextFn = this.setText.bind(this);
+                try {
+                    getPageTitleFn().then(async (selector) => {
+                        var text = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_PAGE_TITLE"));
+                        var siteText = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_SITE_TITLE"));
+                        retVal = await setTextFn(constants("LOCAL_STORAGE_CURRENT_PAGE_TITLE"), text);
+                        logHelper.logInfo('Page Title set to: ' + text);
+                        retVal = await setTextFn(constants("LOCAL_STORAGE_CURRENT_SITE_TITLE"), siteText);
+                        logHelper.logInfo('Site Title set to: ' + siteText);
+                    });
+                    return retVal;
+                } catch (error) {
+                    logHelper.logInfo(error);
+                }
+
+            }),
+
+            //Set the current brand css in the index.aspx
+            setBrandCSS: (async function (link) {
+                let links = document.getElementsByTagName('link');
+                for (let i = 0; i < links.length; i++) {
+                    if (links[i].getAttribute('id') === constants("LOCAL_STORAGE_CURRENT_BRAND_CSS_THEME_FILE")) {
+                        let href = links[i].getAttribute('href');
+
+                        let newHref = link + '?version='
+                            + new Date().getMilliseconds();
+
+                        links[i].setAttribute('href', newHref);
+
+                        logHelper.logInfo("href: " + href);
+                        logHelper.logInfo("newHref: " + newHref);
+                    }
+                }
+            }),
+
+            //Refresh the CSS after loading a new css theme file
+            refreshCSS: (async function () {
+                let links = document.getElementsByTagName('link');
+                for (let i = 0; i < links.length; i++) {
+                    if (links[i].getAttribute('id') === constants("LOCAL_STORAGE_CURRENT_BRAND_CSS_THEME_FILE")) {
+                        let href = links[i].getAttribute('href');
+
+                        let newHref = href + '?version='
+                            + new Date().getMilliseconds();
+
+                        links[i].setAttribute('href', newHref);
+
+                        logHelper.logInfo("href: " + href);
+                        logHelper.logInfo("newHref: " + newHref);
+                    }
+                }
+            }),
+
+            //sets the current time in the header
+            setCurrentTime: (async function () {
+                let currentTime = new Date();
+                let timeNow = currentTime.toLocaleTimeString(undefined, {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
+                const dayName = currentTime.toLocaleString('en-us', { weekday: 'long' });
+                const pluralRules = new Intl.PluralRules('en-US', {
+                    type: 'ordinal'
+                })
+                const suffixes = {
+                    'one': 'st',
+                    'two': 'nd',
+                    'few': 'rd',
+                    'other': 'th'
+                }
+                const convertToOrdinal = (number) => `${number}${suffixes[pluralRules.select(number)]}`
+                // At this point:
+                // convertToOrdinal("1") === "1st"
+                // convertToOrdinal("2") === "2nd"
+                // etc.
+
+                const extractValueAndCustomizeDayOfMonth = (part) => {
+                    if (part.type === "day") {
+                        return convertToOrdinal(part.value);
+                    }
+                    return part.value;
+                };
+                const longEnUSFormatter = new Intl.DateTimeFormat('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                });
+
+                let mid = longEnUSFormatter.formatToParts(currentTime)
+                    .map(extractValueAndCustomizeDayOfMonth)
+                    .join("");
+
+                var displayText = dayName + ", " + mid + " - " + timeNow;
+                dom.byId("current-date").innerText = displayText;
+            }),
+
+            //Load the current brand's css theme file to the <head> section of the index.aspx page
+            loadBrandStyleSheet: (async function (newHref) {
+
+                let link = domConstruct.create("link", { id: constants("LOCAL_STORAGE_CURRENT_BRAND_CSS_THEME_FILE"), rel: "stylesheet", type: "text/css", href: newHref });
+                document.head.append(link);
+
+                return true;
+
+            }),
+
+            //Set the current brand's information
+            setCompanyInfo: (async function () {
+                const getBrandInfoFn = this.getBrandInfo.bind(this);
+                const getBrandNameFn = this.getBrandName.bind(this);
+                const getBrandLogoFilePathFn = this.getBrandLogoFilePath.bind(this);
+                const getBrandLogoDescriptionFn = this.getBrandLogoDescription.bind(this);
+                const getSharePointUrlByKeyFn = this.getSharePointUrlByKey.bind(this);
+                const replaceLinkHrefFn = this.replaceLinkHref.bind(this);
+                let retVal = false;
+                logHelper.logInfo(`setCompanyInfo: Try to set the company header info`);
+                const setTextFn = this.setText.bind(this);
+
+                try {
+                    getBrandInfoFn().then((res) => res).then(async (brandInfo) => {
+
+                        addressText = brandInfo[0].address;
+                        addressSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_ADDRESS");
+                        cityStateText = brandInfo[0].cityState + ' ' + brandInfo[0].zipCode;
+                        cityStateSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_CITYSTATE");
+                        //zipText = brandInfo[0].zipCode;
+                        //zipSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_ZIP");
+                        phoneText = brandInfo[0].phone;
+                        phoneSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_PHONE");
+                        legalNameText = brandInfo[0].legalName;
+                        legalNameSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_LEGAL_NAME");
+                        shortNameText = brandInfo[0].shortName;
+                        shortNameSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_SHORT_NAME");
+                        copyrightText = brandInfo[0].copyright;
+                        copyrightSelector = constants("LOCAL_STORAGE_CURRENT_COPYRIGHT");
+                        logHelper.logInfo("Trying to retrieve the Brand Info");
+                        logHelper.logInfo(brandInfo[0].address);
+                        //  var text = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_PAGE_TITLE"));
+                        retVal = await setTextFn(addressSelector, addressText);
+                        retVal = await setTextFn(cityStateSelector, cityStateText);
+                        //retVal = await setTextFn(zipSelector, zipText);
+                        retVal = await setTextFn(phoneSelector, phoneText);
+                        //  retVal = await setTextFn(legalNameSelector, legalNameText);
+                        //  retVal = await setTextFn(shortNameSelector, shortNameText);
+                        //  retVal = await setTextFn(copyrightSelector, copyrightText);
+                        retVal = await getBrandNameFn().then(async (respB) => {
+                            brandNameText = respB;
+                            brandNameSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_NAME");
+                            retVal = await setTextFn(brandNameSelector, brandNameText);
+                        });
+
+                         //Set Home Link Url
+                         retVal = await getSharePointUrlByKeyFn("homepageUrl").then(async (url) => {
+                            var newUrl = url;
+                            logHelper.logInfo("after changing Home link" + url);
+                            await replaceLinkHrefFn("currentHomeUrl", newUrl);
+                        });
+
+                        retVal = await getBrandLogoFilePathFn()
+                            .then(async (respC) => {
+                                const logoFilePath = respC;
+                                var logoDescription = null;
+                                await getBrandLogoDescriptionFn().then((respD) => {
+                                    logoDescription = respD;
+                                });
+
+                                logHelper.logInfo("Logo File Path: " + logoFilePath);
+                                logHelper.logInfo("Logo Description: " + logoDescription);
+                                //    // JSON.stringify(respC)
+                                //    var jObject = new JSONObject(respC);
+                                logHelper.logInfo(respC);
+                                const getBrandImagesFolderFn = this.getBrandImagesFolder.bind(this);
+                                const setImageFn = this.setImage.bind(this);
+                                const getBrandCssThemeFilePathFn = this.getBrandCssThemeFilePath.bind(this);
+                                const replaceLinkHrefFn = this.replaceLinkHref.bind(this);
+                                const setBrandCSSFn = this.setBrandCSS.bind(this);
+                                const refreshCSSFn = this.refreshCSS.bind(this);
+                                const loadBrandStyleSheetFn = this.loadBrandStyleSheet.bind(this);
+                                const setCurrentTimeFn = this.setCurrentTime.bind(this);
+                                getBrandImagesFolderFn().then(async (fldr) => {
+                                    imagesFolderPath = JSON.parse(fldr);
+                                    logHelper.logInfo("Images Folder Path: " + imagesFolderPath);
+                                    var selector = constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO");
+                                    var description = logoDescription;
+                                    var logo = imagesFolderPath + logoFilePath;
+                                    await setImageFn(selector, logo, description);
+                                    logHelper.logInfo("Setting Logo: " + logo);
+
+                                });
+                                getBrandCssThemeFilePathFn().then(async (path) => {
+                                    themeFilePath = JSON.parse(path);
+                                    var divSelector = constants("LOCAL_STORAGE_CURRENT_BRAND_CSS_THEME_FILE");
+                                    var whatChanged = await loadBrandStyleSheetFn(themeFilePath);
+                                    await setCurrentTimeFn();
+                                    logHelper.logInfo("Link changed? " + whatChanged);
+                                    return true;
+                                })
+
+                            })
+      
+                        return retVal;
+                    })
+                }
+                catch (error) {
+                    logHelper.logInfo(error);
+                }
+
+            }),
+
+
+           
+
+
+            //******************************************************************************************** */
+            //UTILITY FUNCTIONS
+            
+            //Sets the innerText for an element;  The element MUST use the id attribute
+            setText: (async function (selector, text) {
+
+                logHelper.logInfo("Selector: " + selector + " - " + " Text: " + text);
+                const title = dom.byId(selector);
+                if (!title) {
+                    return false;
+                }
+                title.innerText = text;
+                return true;
+            }),
+
+            //Sets the image for an element;  The element MUST use the id attribute
+            setImage: (async function (selector, sourceText, altText) {
+
+                logHelper.logInfo("Selector: " + selector + " - " + " Text: " + altText);
+                const div = dom.byId(selector);
+                if (!div) {
+                    return false;
+                }
+                div.src = sourceText;
+                div.alt = altText;
+                return true;
+            }),
+
+            //Replaces the href attribute in a link;  The link MUST use the id attribute
+            replaceLinkHref: (async function (selector, newHref) {
+                logHelper.logInfo("Replace Link: Selector: " + selector + " , NewHRef: " + newHref);
+                const link = dom.byId(selector);
+                if (!link) {
+                    return false;
+                }
+                link.href = newHref;
+                logHelper.logInfo("Replace Link: Selector: " + selector + " , NewHRef: " + newHref);
+                return true;
+            }),
+//******************************************************************************************** */
+
+
+
+
+
+            // **************************************************************************************************************************
+            // The function below are now obsolete since we are using Power Automate to send emails
+            // They are being left here for posterity
+             //Obsolete - Emails are being queried in Power Automate
+             queryEmailDistributionList: (async function (brandId) {
                 const getSharePointUrlByKeyFn = this.getSharePointUrlByKey.bind(this);
                 const _brandId = brandId;
                 logHelper.logInfo("queryEmailDistributionList (JSON): Get all the Email Distribution data for brandId: " + brandId);
 
                 // Get all the Email Distribution data
-                await getSharePointUrlByKeyFn("hostWebUrl")
-                    .then((hostWebUrl) => {
+                await getSharePointUrlByKeyFn("siteCollectionUrl")
+                    .then((siteCollectionUrl) => {
 
                         try {
 
 
                             // resources are in URLs in the form:
                             // web_url/_layouts/15/resource
-                            var scriptbase = hostWebUrl + "/_layouts/15/";
+                            var scriptbase = siteCollectionUrl + "/_layouts/15/";
                             // Load the js files and continue to the successHandler
                             $.getScript(scriptbase + "SP.RequestExecutor.js", execCrossDomainRequest);
                             function execCrossDomainRequest() {
-                                var executor = new SP.RequestExecutor(hostWebUrl);
+                                var executor = new SP.RequestExecutor(siteCollectionUrl);
                                 executor.executeAsync(
                                     {
                                         url:
-                                            hostWebUrl +
+                                            siteCollectionUrl +
                                             "/_api/web/lists/getbytitle('EmailDistributionList')/items",
                                         headers: { "Accept": "Application/json; odata=verbose" },
                                         method: "GET",
@@ -534,20 +1111,11 @@ define(
                     });
             }),
 
-
             //Cache Email Distribution Details
             setEmailDistributionDetails: (async function (details) {
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_EMAIL_DISTRIBUTION_DETAILS"), JSON.stringify(details));
 
                 logHelper.logInfo("setEmailDistributionDetails: Email Distribution Details have been cached");
-                return true;
-            }),
-
-            //Cache Quote Details
-            setQuoteDetails: (async function (details) {
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_QUOTE_DETAILS"), JSON.stringify(details));
-
-                logHelper.logInfo("setQuoterDetails: Quote Details have been cached");
                 return true;
             }),
             getEmailDistributionDetails: (async function () {
@@ -560,18 +1128,6 @@ define(
 
                 return JSON.parse(emailDistributionDetails);
             }),
-            getQuoteDetails: (async function () {
-
-                var quoteDetails = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_QUOTE_DETAILS"));
-                if (!quoteDetails) {
-                    logHelper.logError("getQuoteDetails: Quote Details have not been cached");
-                    return false
-                }
-
-                return JSON.parse(quoteDetails);
-            }),
-
-
             //Get email distribution from SharePoint List by FormType and DistributionType (ex: "PurchaseOrder","default")
             getEmailDistributionDetails: (async function (formType,distributionType) {
                 const emailDistributionDetailsFn = this.getEmailDistributionDetails.bind(this);
@@ -611,8 +1167,8 @@ define(
                 return emailDistributionDetails;
             }),
 
-             //Get email distribution from SharePoint List by FormType, DistributionType, and UniqueIdentifier (ex: "Notification","ConstructionManager","TRAINER")
-             getEmailDistributionDetails: (async function (formType,distributionType, uniqueIdentifier) {
+            //Get email distribution from SharePoint List by FormType, DistributionType, and UniqueIdentifier (ex: "Notification","ConstructionManager","TRAINER")
+            getEmailDistributionDetails: (async function (formType,distributionType, uniqueIdentifier) {
                 const emailDistributionDetailsFn = this.getEmailDistributionDetails.bind(this);
                 const emailDistributionDetails = await getEmailDistributionDetailsFn();
                 const emailDetails = [];
@@ -650,6 +1206,25 @@ define(
                 return emailDistributionDetails;
             }),
 
+
+            //Cache Quote Details
+            setQuoteDetails: (async function (details) {
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_QUOTE_DETAILS"), JSON.stringify(details));
+
+                logHelper.logInfo("setQuoterDetails: Quote Details have been cached");
+                return true;
+            }),
+           
+            getQuoteDetails: (async function () {
+
+                var quoteDetails = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_QUOTE_DETAILS"));
+                if (!quoteDetails) {
+                    logHelper.logError("getQuoteDetails: Quote Details have not been cached");
+                    return false
+                }
+
+                return JSON.parse(quoteDetails);
+            }),
             getQuoteEmailDetails: (async function (distributionType) {
                 const getQuoteDetailsFn = this.getQuoteDetails.bind(this);
                 const quoteDetails = await getQuoteDetailsFn();
@@ -671,547 +1246,6 @@ define(
                 emailDetails.push(emailCC);
                 return emailDistributionDetails;
             }),
-            //Cache Sharepoint URLs
-            setSharePointUrls: (async function (hostWebUrl, baseUrl, pdfApi, posSurvey, combSchedule, constrCalls, constrCalls2, quoteGen,
-                levelOrders, dailyUpdates, siteAssets, masterPortal, surveySignOff, survSignOff2, surveySignOff3, surveySignOff4,
-                surveySignOff5, surveySignOff6, projectReview, retailTech, retailTech2, retailTech3, retailTech4) {
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SHAREPOINT_HOST_WEB_URL"), hostWebUrl);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SHAREPOINT_BASE_URL"), baseUrl);
-                localStorage.setItem(constants("LOCAL_STORAGE_API_GENERATE_PDF"), pdfApi);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_FORM_POSSURVEY"), posSurvey);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_LIST_COMBINED_SCHEDULE"), combSchedule);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_LIST_CONSTRUCTION_CALLS"), constrCalls);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_LIST_CONSTRUCTION_CALLS_DISPFORM"), constrCalls2);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_LIST_INSTALL_QUOTE_GEN"), quoteGen);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_LIST_LEVEL2010ORDERS"), levelOrders);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_DAILY_UPDATES"), dailyUpdates);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEASSETS_RENAME_LIST_FILE_ATTACHMENTS"), siteAssets);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_MASTER_PORTAL"), masterPortal);
-
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PAYMENT_SURVEY_SIGNOFF"), surveySignOff);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PAYMENT_SURVEY_SIGNOFF_SURVEY"), survSignOff2);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PAYMENT_SURVEY_SIGNOFF_VIEW_PHOTOS_ALL_AREA_SURVEY_START"), surveySignOff3);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PAYMENT_SURVEY_SIGNOFF_VIEW_PHOTOS_ALL_AREA"), surveySignOff4);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PAYMENT_SURVEY_SIGNOFF_CHECKIN"), surveySignOff5);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PAYMENT_SURVEY_SIGNOFF_DAILY_UPDATE"), surveySignOff6);
-
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_PROJECTREVIEWPAYMOD"), projectReview);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_RETAILTECHNOLOGY"), retailTech);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_RETAILTECHNOLOGY_SEARCH"), retailTech2);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_RETAILTECHNOLOGY_PAYMENT_MOD_PROJECT_DATES"), retailTech3);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_RETAILTECHNOLOGY_STORE_CONFIGURATION_SEARCH"), retailTech4);
-
-                logHelper.logInfo("setSharePointUrls: SharePointUrls have been cached");
-                return true;
-            }),
-
-            getSharePointUrlByKey: (async function (key) {
-                if (!key) {
-                    logHelper.logError("getSharePointUrlByKey: Invalid Constant Key!");
-                    return false
-                }
-                logHelper.logInfo("getSharePointUrlByKey: Attempting to get key: " + key);
-                var url = localStorage.getItem(key);
-                logHelper.logInfo("getSharePointUrlByKey: localStorage result: " + url);
-                if (!url) {
-                    logHelper.logError("getSharePointUrlByKey: SharePoint Url not cached");
-                    return false
-                }
-                return url;
-            }),
-
-            //Cache Home URL
-            setHomeUrl: (async function (url) {
-                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_BASE_URL"), url);
-                logHelper.logInfo("setHomeUrl: BaseUrl has been cached");
-                return true;
-            }),
-
-            getHometUrl: (async function () {
-                var url = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_BASE_URL"));
-                if (!url) {
-                    logHelper.logError("Base Url not set");
-                    return false
-                }
-                return url;
-            }),
-
-
-
-            //Cache Logging Flag
-            setLoggingFlag: (async function (flag) {
-                localStorage.setItem(constants("LOCAL_STORAGE_CONSOLE_LOGGING"), flag);
-                logHelper.logInfo("setLoggingFlag: Logging flag cached");
-                return true;
-            }),
-
-            getLoggingFlag: (async function () {
-                var loggingFlag = localStorage.getItem(constants("LOCAL_STORAGE_CONSOLE_LOGGING"));
-                if (!loggingFlag) {
-                    logHelper.logError("getLoggingFlag: Logging flag not set");
-                    return false
-                }
-                return loggingFlag;
-            }),
-
-            //Cache BrandId
-            setBrandId: (async function (brandId) {
-                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_BRANDID"), brandId);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_READY"), false);
-                logHelper.logInfo("setBrandId: BrandId: " + brandId + " has been cached");
-                return true;
-            }),
-
-            getBrandId: (async function () {
-                var brandId = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_BRANDID"));
-                if (!brandId) {
-                    brandId = '380fb82e-9c79-4903-a65a-425f551a84b1'; //Sonic
-
-                }
-
-                return brandId;
-            }),
-
-            getBrandReady: (async function () {
-                var isBrandReady = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_READY"));
-                return isBrandReady ?? false;
-            }),
-
-            //Cache Brand Name
-            setBrandName: (async function (brandNameToSet) {
-
-
-                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_BRAND_NAME"), brandNameToSet);
-                logHelper.logInfo("setBrandName: Brand Name: " + brandNameToSet + " has been cached");
-                return true;
-            }),
-
-            getBrandName: (async function () {
-                var brandName = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_BRAND_NAME"));
-                if (!brandName) {
-                    logHelper.logError("getBrandName: Brand has not been cached!");
-                    return null;
-                }
-                return brandName;
-            }),
-
-            //Cache Brand Info
-            setBrandInfo: (async function (companyInfo) {
-
-                var legalName = companyInfo.companyLegalName;
-                var shortName = companyInfo.companyShortName;
-                var address = companyInfo.companyStreetAddress;
-                var cityState = companyInfo.companyCityState;
-                var zipCode = companyInfo.companyZipCode;
-                var phoneNumber = companyInfo.companyPhone;
-                var copyright = companyInfo.copyright;
-
-                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LEGAL_NAME"), legalName);
-                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_SHORT_NAME"), shortName);
-                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_CITYSTATE"), cityState);
-                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_ADDRESS"), address);
-                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_ZIP"), zipCode);
-                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_PHONE"), phoneNumber);
-                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COPYRIGHT"), copyright);
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_READY"), true);
-                logHelper.logInfo("setBrandInfo: Brand Info cached");
-                return true;
-            }),
-
-            getBrandInfo: (async function () {
-                var brandInfo = [{
-                    "legalName": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LEGAL_NAME")),
-                    "shortName": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_SHORT_NAME")),
-                    "cityState": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_CITYSTATE")),
-                    "address": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_ADDRESS")),
-                    "zipCode": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_ZIP")),
-                    "phone": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_PHONE")),
-                    "copyright": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COPYRIGHT"))
-                }];
-                logHelper.logInfo(brandInfo);
-                // var legalName = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LEGAL_NAME"));
-                // var shortName = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_SHORT_NAME"));
-                // var cityState = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_CITYSTATE"));
-                // var address = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_ADDRESS"));
-                // var zipCode = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_ZIP"));
-                // var phone = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_PHONE"));
-                // var copyright = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COPYRIGHT"));
-                // brandInfo.push(legalName);
-                // brandInfo.push(shortName);
-                // brandInfo.push(cityState);
-                // brandInfo.push(address);
-                // brandInfo.push(zipCode);
-                // brandInfo.push(phone);
-                // brandInfo.push(copyright);
-
-
-                return brandInfo;
-            }),
-
-
-            //Cache Brand Config File Path
-            setBrandConfigFilePath: (async function (configFilePath) {
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_CONFIG_FILE_PATH"), configFilePath);
-                logHelper.logInfo(" setBrandConfigFilePath: Brand config file path set");
-                return true;
-            }),
-
-            getBrandConfigFilePath: (async function () {
-                var configFilePath = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_CONFIG_FILE_PATH"));
-                if (!configFilePath) {
-                    logHelper.logError("getBrandConfigFilePath: Error loading Brand config file path!")
-                    return null;
-                }
-                return configFilePath;
-            }),
-
-            //Cache Brand Config File
-            setBrandConfigFile: (async function (configFile) {
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_CONFIG_FILE"), configFile);
-                logHelper.logInfo("setBrandConfigFile: Brand config.file loaded");
-                return true;
-            }),
-
-            getBrandConfigFile: (async function () {
-                var configFile = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_CONFIG_FILE"));
-                if (!configFile) {
-                    logHelper.logError("getBrandConfigFile: Error loading Brand config file!")
-                    return null;
-                }
-                return configFile;
-            }),
-
-            //Cache Base folder
-            setBrandBaseFolder: (async function (folderPath) {
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_BASE_FOLDER"), JSON.stringify(folderPath));
-                logHelper.logInfo("setBrandBaseFolder: Brand base folder path set.");
-                return true;
-            }),
-
-            getBrandBaseFolder: (async function () {
-                var folderPath = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_BASE_FOLDER"));
-                if (!folderPath) {
-                    logHelper.logError("getBrandBaseFolder: Error loading Brand base folder!")
-                    return null;
-                }
-                return folderPath;
-            }),
-
-            //Cache Images Folder Path
-            setBrandImagesFolder: (async function (folderPath) {
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_IMAGES_FOLDER"), JSON.stringify(folderPath));
-                logHelper.logInfo("setBrandImagesFolder: Brand images folder path set");
-                return true;
-            }),
-
-            getBrandImagesFolder: (async function () {
-                var folderPath = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_IMAGES_FOLDER"));
-                if (!folderPath) {
-                    logHelper.logError("getBrandImagesFolder: Error loading Brand images folder path!")
-                    return null;
-                }
-                return folderPath;
-            }),
-
-            //Cache Brand Logo             
-            setBrandLogo: (async function (filePath, description) {
-
-                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO_FILE_PATH"), filePath);
-                localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO_DESCRIPTION"), description);
-                return true;
-            }),
-
-            getBrandLogoFilePath: (async function () {
-                var logoFilePath = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO_FILE_PATH"));
-                logHelper.logInfo(logoFilePath);
-                if (!logoFilePath) {
-                    logHelper.logError("getBrandLogoFilePath: Logo File Path not set");
-                    return false
-                }
-                return logoFilePath;
-            }),
-
-            getBrandLogoDescription: (async function () {
-                var description = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO_DESCRIPTION"));
-                logHelper.logInfo(description);
-                if (!description) {
-                    logHelper.logError("getBrandLogoDescription: Logo Description not set");
-                    return false
-                }
-                return description;
-            }),
-
-
-
-
-
-
-
-
-
-            //******************************************************************************************** */
-
-
-            setText: (async function (selector, text) {
-
-                logHelper.logInfo("Selector: " + selector + " - " + " Text: " + text);
-                const title = dom.byId(selector);
-                if (!title) {
-                    return false;
-                }
-                title.innerText = text;
-                return true;
-            }),
-
-            setImage: (async function (selector, sourceText, altText) {
-
-                logHelper.logInfo("Selector: " + selector + " - " + " Text: " + altText);
-                const div = dom.byId(selector);
-                if (!div) {
-                    return false;
-                }
-                div.src = sourceText;
-                div.alt = altText;
-                return true;
-            }),
-
-            replaceLinkHref: (async function (selector, newHref) {
-                logHelper.logInfo("Replace Link: Selector: " + selector + " , NewHRef: " + newHref);
-                const link = dom.byId(selector);
-                if (!link) {
-                    return false;
-                }
-                link.href = newHref;
-                window.alert("Replace Link: Selector: " + selector + " , NewHRef: " + newHref);
-                return true;
-            }),
-
-            setPageTitle: (async function () {
-                const getPageTitleFn = this.getPageTitle.bind(this);
-
-
-                let retVal = false;
-                logHelper.logInfo(`setPageTitle: Try to set the app title`);
-                const setTextFn = this.setText.bind(this);
-                try {
-                    getPageTitleFn().then(async (selector) => {
-                        var text = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_PAGE_TITLE"));
-                        var siteText = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_SITE_TITLE"));
-                        retVal = await setTextFn(constants("LOCAL_STORAGE_CURRENT_PAGE_TITLE"), text);
-                        retVal = await setTextFn(constants("LOCAL_STORAGE_CURRENT_SITE_TITLE"), siteText);
-                    });
-                    return retVal;
-                } catch (error) {
-                    logHelper.logInfo(error);
-                }
-
-            }),
-
-            setBrandCSS: (async function (link) {
-                let links = document.getElementsByTagName('link');
-                for (let i = 0; i < links.length; i++) {
-                    if (links[i].getAttribute('id') === constants("LOCAL_STORAGE_CURRENT_BRAND_CSS_THEME_FILE")) {
-                        let href = links[i].getAttribute('href');
-
-                        let newHref = link + '?version='
-                            + new Date().getMilliseconds();
-
-                        links[i].setAttribute('href', newHref);
-
-                        logHelper.logInfo("href: " + href);
-                        logHelper.logInfo("newHref: " + newHref);
-                    }
-                }
-            }),
-            refreshCSS: (async function () {
-                let links = document.getElementsByTagName('link');
-                for (let i = 0; i < links.length; i++) {
-                    if (links[i].getAttribute('id') === constants("LOCAL_STORAGE_CURRENT_BRAND_CSS_THEME_FILE")) {
-                        let href = links[i].getAttribute('href');
-
-                        let newHref = href + '?version='
-                            + new Date().getMilliseconds();
-
-                        links[i].setAttribute('href', newHref);
-
-                        logHelper.logInfo("href: " + href);
-                        logHelper.logInfo("newHref: " + newHref);
-                    }
-                }
-            }),
-
-            setCurrentTime: (async function () {
-                let currentTime = new Date();
-                let timeNow = currentTime.toLocaleTimeString(undefined, {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                });
-                const dayName = currentTime.toLocaleString('en-us', { weekday: 'long' });
-                const pluralRules = new Intl.PluralRules('en-US', {
-                    type: 'ordinal'
-                })
-                const suffixes = {
-                    'one': 'st',
-                    'two': 'nd',
-                    'few': 'rd',
-                    'other': 'th'
-                }
-                const convertToOrdinal = (number) => `${number}${suffixes[pluralRules.select(number)]}`
-                // At this point:
-                // convertToOrdinal("1") === "1st"
-                // convertToOrdinal("2") === "2nd"
-                // etc.
-
-                const extractValueAndCustomizeDayOfMonth = (part) => {
-                    if (part.type === "day") {
-                        return convertToOrdinal(part.value);
-                    }
-                    return part.value;
-                };
-                const longEnUSFormatter = new Intl.DateTimeFormat('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                });
-
-                let mid = longEnUSFormatter.formatToParts(currentTime)
-                    .map(extractValueAndCustomizeDayOfMonth)
-                    .join("");
-
-                var displayText = dayName + ", " + mid + " - " + timeNow;
-                dom.byId("current-date").innerText = displayText;
-            }),
-
-            loadBrandStyleSheet: (async function (newHref) {
-
-                let link = domConstruct.create("link", { id: constants("LOCAL_STORAGE_CURRENT_BRAND_CSS_THEME_FILE"), rel: "stylesheet", type: "text/css", href: newHref });
-                // link.href = src;
-                // link.rel = 'stylesheet';
-
-                // link.onload = () => resolve(link);
-                // link.onerror = () => reject(new Error(`Style load error for ${src}`));
-
-                document.head.append(link);
-
-                return true;
-
-            }),
-
-            setCompanyInfo: (async function () {
-                const getBrandInfoFn = this.getBrandInfo.bind(this);
-                const getBrandNameFn = this.getBrandName.bind(this);
-                const getBrandLogoFilePathFn = this.getBrandLogoFilePath.bind(this);
-                const getBrandLogoDescriptionFn = this.getBrandLogoDescription.bind(this);
-
-                let retVal = false;
-                logHelper.logInfo(`setCompanyInfo: Try to set the company header ino`);
-                const setTextFn = this.setText.bind(this);
-
-                try {
-                    getBrandInfoFn().then((res) => res).then(async (brandInfo) => {
-
-                        addressText = brandInfo[0].address;
-                        addressSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_ADDRESS");
-                        cityStateText = brandInfo[0].cityState + ' ' + brandInfo[0].zipCode;
-                        cityStateSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_CITYSTATE");
-                        //zipText = brandInfo[0].zipCode;
-                        //zipSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_ZIP");
-                        phoneText = brandInfo[0].phone;
-                        phoneSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_PHONE");
-                        legalNameText = brandInfo[0].legalName;
-                        legalNameSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_LEGAL_NAME");
-                        shortNameText = brandInfo[0].shortName;
-                        shortNameSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_SHORT_NAME");
-                        copyrightText = brandInfo[0].copyright;
-                        copyrightSelector = constants("LOCAL_STORAGE_CURRENT_COPYRIGHT");
-                        logHelper.logInfo("Trying to retrieve the Brand Info");
-                        logHelper.logInfo(brandInfo[0].address);
-                        //  var text = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_PAGE_TITLE"));
-                        retVal = await setTextFn(addressSelector, addressText);
-                        retVal = await setTextFn(cityStateSelector, cityStateText);
-                        //retVal = await setTextFn(zipSelector, zipText);
-                        retVal = await setTextFn(phoneSelector, phoneText);
-                        //  retVal = await setTextFn(legalNameSelector, legalNameText);
-                        //  retVal = await setTextFn(shortNameSelector, shortNameText);
-                        //  retVal = await setTextFn(copyrightSelector, copyrightText);
-                        retVal = await getBrandNameFn().then(async (respB) => {
-                            brandNameText = respB;
-                            brandNameSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_NAME");
-                            retVal = await setTextFn(brandNameSelector, brandNameText);
-                        });
-
-                        retVal = await getBrandLogoFilePathFn()
-                            .then(async (respC) => {
-                                const logoFilePath = respC;
-                                var logoDescription = null;
-                                await getBrandLogoDescriptionFn().then((respD) => {
-                                    logoDescription = respD;
-                                });
-
-                                logHelper.logInfo("Logo File Path: " + logoFilePath);
-                                logHelper.logInfo("Logo Description: " + logoDescription);
-                                //    // JSON.stringify(respC)
-                                //    var jObject = new JSONObject(respC);
-                                logHelper.logInfo(respC);
-                                const getBrandImagesFolderFn = this.getBrandImagesFolder.bind(this);
-                                const setImageFn = this.setImage.bind(this);
-                                const getBrandCssThemeFilePathFn = this.getBrandCssThemeFilePath.bind(this);
-                                const replaceLinkHrefFn = this.replaceLinkHref.bind(this);
-                                const setBrandCSSFn = this.setBrandCSS.bind(this);
-                                const refreshCSSFn = this.refreshCSS.bind(this);
-                                const loadBrandStyleSheetFn = this.loadBrandStyleSheet.bind(this);
-                                const setCurrentTimeFn = this.setCurrentTime.bind(this);
-                                getBrandImagesFolderFn().then(async (fldr) => {
-                                    imagesFolderPath = JSON.parse(fldr);
-                                    logHelper.logInfo("Images Folder Path: " + imagesFolderPath);
-                                    var selector = constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO");
-                                    var description = logoDescription;
-                                    var logo = imagesFolderPath + logoFilePath;
-                                    await setImageFn(selector, logo, description);
-
-                                });
-                                getBrandCssThemeFilePathFn().then(async (path) => {
-                                    themeFilePath = JSON.parse(path);
-                                    var divSelector = constants("LOCAL_STORAGE_CURRENT_BRAND_CSS_THEME_FILE");
-                                    var whatChanged = await loadBrandStyleSheetFn(themeFilePath);
-                                    await setCurrentTimeFn();
-                                    logHelper.logInfo("Link changed? " + whatChanged);
-                                    return true;
-                                })
-
-                            })
-                        //    var logoString = JSON.stringify(respC);
-                        //    var logoJSON = JSON.parse(logoString);
-                        //         logHelper.logInfo(logoString);
-                        //         logHelper.logInfo(logoJSON);
-
-                        //         logHelper.logInfo(logoJSON[0]);
-                        //         //logHelper.logInfo(respC[0]["logo"]);
-                        //     });
-                        // .then((abc) => {
-                        //     logHelper.logInfo("ResponseC: " + respC);
-                        //     logHelper.logInfo("After Then: " + abc);
-                        // }
-                        // )
-                        // .then(async (image) => {
-                        //         logHelper.logInfo("Trying to get the image");
-                        //         logHelper.logInfo(JSON.parse(image));
-                        //         const setImageFn = this.setImage.bind(this);
-                        //         var selector = constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO");
-                        //         var description = image["logo"].description;
-                        //         var logo = image["logo"].uri;
-                        //         await setImageFn(selector, logo, description);
-                        //     }) ;                             
-
-                        return retVal;
-                    })
-                }
-                catch (error) {
-                    logHelper.logInfo(error);
-                }
-
-            }),
-
 
             getReports: (async function (brandId) {
                 var url = "http://localhost:3000/BrandLinkMapping?BrandId=" + brandId;
@@ -1219,8 +1253,7 @@ define(
                     logHelper.logInfo(res);
                 });
                 logHelper.logInfo(reports);
-            })
-
+            }),
 
 
         }

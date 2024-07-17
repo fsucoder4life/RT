@@ -5,7 +5,7 @@ define(['app/brands/services/brandServices'],async function(brandServices){
     var listName = 'Project Issues';
 
     //Point towards the sharepoint site
-    var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+    var webUrl = await brandServices.getSharePointUrlByKey("subSitePath");
     $().SPServices.defaults.webURL = webUrl;//  // URL of the target Web
 
     //Request fields mapping from internal names

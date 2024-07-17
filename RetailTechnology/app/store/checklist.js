@@ -4,7 +4,7 @@ define(['app/brand/services/brandServices'],async function(brandServices){
     $.support.cors = true;
     var listName = 'Project Checklist';
 
-    let webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+    let webUrl = await brandServices.getSharePointUrlByKey("subSitePath");
     //Point towards the sharepoint site
     $().SPServices.defaults.webURL = webUrl;  // URL of the target Web
 

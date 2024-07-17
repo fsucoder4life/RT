@@ -30,7 +30,7 @@ define([
 ], async function (construction, combined, combinedconstructionextend, issues, notes, updateStore, constructionSummaryTemplate, conversionSummaryTemplate, OTISummaryTemplate, notesTemplate, issuesTemplate, renameTemplate, deleteTemplate, searchController, dropdown, datePicker, textfield, widgetHelper, router,
              DropDownButton, Button, Select, DropDownMenu, Dialog, uuid, registry, purchaseOrderStore, brandServices) {
                
-                const webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+                const webUrl = await brandServices.getSharePointUrlByKey("subSitePath");
                 const masterPortalUrl = await brandServices.getSharePointUrlByKey("sitePage-MasterPortal");
                 $().SPServices.defaults.webURL = webUrl;
                 var storeCombinedId = 0;

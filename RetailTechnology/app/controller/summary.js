@@ -1,7 +1,7 @@
 define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues', 'app/store/notes', 'app/store/combined', 'app/rules/construction','app/brands/services/brandServices','app/brands/services/logHelper'], function (summary, construction, issueStore, noteStore, combined, constructionRules,brandServices,logHelper) {
 
 
-    var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+    var webUrl = brandServices.getSharePointUrlByKey("subSitePath");
     $().SPServices.defaults.webURL = webUrl;
 
     function applyIssueEventListeners(view) {
@@ -602,6 +602,14 @@ var siteUrl2
                     console.log("Inside audio-quote-request-workflow:");
                      triggerWorkflow(store.StoreNumber,"HMEAudioQuote",false, null);
                     break;
+                case 'promotion-order-workflow':
+                        console.log("Inside promotion-order-workflow:");
+                         triggerWorkflow(store.StoreNumber,"ProMotion",false, null);
+                        break;
+                case 'hughes-request-workflow':
+					console.log("Inside hughes-request-workflow:");
+					 triggerWorkflow(store.StoreNumber,"ComcastRequest",false, null);
+					break;
                 case 'installer-quote-request':
                     window.open('#quotegen/' + store.StoreNumber);
                     break;

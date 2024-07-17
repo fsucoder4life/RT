@@ -4,7 +4,7 @@ define(['app/store/combined','app/brands/services/brandServices'], async functio
     $.support.cors = true;
 
     //Point towards the sharepoint site
-    var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+    var webUrl = await brandServices.getSharePointUrlByKey("subSitePath");
     $().SPServices.defaults.webURL = webUrl;//  // URL of the target Web
     $().SPServices.defaults.listName = "Combined Construction Extend";  // Name of the list for list
     var today = moment().format('M/D');

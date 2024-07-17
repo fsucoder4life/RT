@@ -6,8 +6,8 @@ define(['app/store/combined','app/brands/services/brandServices','app/brands/ser
     //Point towards the sharepoint site
 	//console.log("construction.js before webUrl: " );
 	
-     //var webUrl = brandServices.getSharePointBaseUrl();
-	 var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+     //var webUrl = brandServices.getsubSitePath();
+	 var webUrl = brandServices.getSharePointUrlByKey("subSitePath");
     $().SPServices.defaults.webURL = webUrl;
 	logHelper.logDebug("construction.js","webUrl: " +  webUrl);
     //$().SPServices.defaults.webURL = "/sites/SonicRTD";  // URL of the  target Web

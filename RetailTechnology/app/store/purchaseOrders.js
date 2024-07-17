@@ -5,7 +5,7 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
     var listName = 'Purchase Order';
 
     //Point towards the sharepoint site
-    var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+    var webUrl = await brandServices.getSharePointUrlByKey("subSitePath");
 
     //NOTE: 2024   ******** $().SPServices interacts with SharePoint on-premises using SOAP services, while SharePoint Online uses the REST API for data access
     //All calls using $().SPServices will have to be refactored to use REST API.  app/brands/services/apiServices has generic functions for querying and saving data to SharePoint Online
@@ -477,8 +477,8 @@ define(['app/utility/sp-utility', 'dojo/number','app/brands/services/brandServic
 
         //         //TODO - find a way to add the document to the store.Documents list (FileName & FilePath) - this doesn't quite work!
         //         store.Documents = (typeof store.Documents !== 'undefined' ? store.Documents : []);
-        //         var hostWebUrl = brandServices.getSharePointUrlByKeyFn("hostWebUrl");
-        //         var filePath = hostWebUrl + $(xData.responseXML).find("AddAttachmentResult").text(),
+        //         var siteCollectionUrl = brandServices.getSharePointUrlByKeyFn("siteCollectionUrl");
+        //         var filePath = siteCollectionUrl + $(xData.responseXML).find("AddAttachmentResult").text(),
         //           arrString = filePath.split("/"),
         //           fileName = arrString[arrString.length - 1];
 

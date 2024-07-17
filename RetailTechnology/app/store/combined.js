@@ -6,8 +6,8 @@ define(['app/store/issues', 'app/store/notes', 'app/store/sp-utility','app/brand
     var listName = 'Combined Schedule';
     //Point towards the sharepoint site
 	//console.log("combined.js before webUrl: ");
-	 //var webUrl = brandServices.getSharePointBaseUrl();
-    var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+	 //var webUrl = brandServices.getsubSitePath();
+    var webUrl = brandServices.getSharePointUrlByKey("subSitePath");
      
     $().SPServices.defaults.webURL = webUrl;
 	logHelper.logDebug("combined.js","webUrl: " +  webUrl);

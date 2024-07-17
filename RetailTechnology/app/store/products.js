@@ -4,7 +4,7 @@ define(['app/utility/sp-utility','app/brand/services/brandServices'], async func
   var listName = 'Products';
   
   //Point towards the sharepoint site
-  var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+  var webUrl = await brandServices.getSharePointUrlByKey("subSitePath");
   $().SPServices.defaults.webURL = webUrl + "/";//  // URL of the target Web
   
   //Request fields mapping from internal names

@@ -1,13 +1,13 @@
 {
 	
 	"THEME_CONFIG": {
-		"version": "1.0.0",
+		"version": "2.0.0",
 		"styleVar": "css-vars.css",
 		"config": "brand-configs.json",
 		"font": "fonts.css",
 		"stylesheet": "styles.css",
 		"favIcon": "favicon.ico"
 	},
-	"consoleLogging": "true",
-	"siteCollectionUrl":"https://irbpartners.sharepoint.com/sites/RetailTechnologyDev"
+	"consoleLogging": "false",
+	"siteCollectionUrl":"https://irbpartners.sharepoint.com/sites/RetailTechDeployment"
 }

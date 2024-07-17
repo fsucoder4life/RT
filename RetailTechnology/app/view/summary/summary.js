@@ -104,7 +104,7 @@ define([
 ], function (construction, combined, combinedconstructionextend, issues, notes, updateStore, constructionSummaryTemplate, conversionSummaryTemplate, OTISummaryTemplate, notesTemplate, issuesTemplate, renameTemplate, deleteTemplate, searchController, dropdown, datePicker, textfield, widgetHelper, router,
              DropDownButton, Button, Select, DropDownMenu, Dialog, uuid, registry, purchaseOrderStore, brandServices, logHelper) {
 
-    var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+    var webUrl = brandServices.getSharePointUrlByKey("subSitePath");
 
     function typeCheck(options) {
         var query = new CamlBuilder().Where().TextField('Title').EqualTo(options.storeNumber);
@@ -118,7 +118,7 @@ define([
             var store = data[_.keys(data)[0]];
 			
 			
-			//var webUrl = brandServices.getSharePointBaseUrl();
+			//var webUrl = brandServices.getsubSitePath();
 			
 			$().SPServices.defaults.webURL = webUrl;
 			logHelper.logDebug("summary.js","webUrl: " +  webUrl);

@@ -4,7 +4,7 @@ define(['app/brand/services/brandServices'],async function(brandServices){
     $.support.cors = true;
 
     //Point towards the sharepoint site
-    var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
+    var webUrl = await brandServices.getSharePointUrlByKey("subSitePath");
     $().SPServices.defaults.webURL = webUrl;//  // URL of the target Web
 
     function loadData () {
