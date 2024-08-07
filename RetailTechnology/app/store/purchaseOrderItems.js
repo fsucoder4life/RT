@@ -1,12 +1,12 @@
-define(['app/utility/sp-utility','app/brand/services/brandServices'], async function(utility,brandServices){
+define(['app/utility/sp-utility', 'app/brands/services/brandServices', 'app/brands/services/logHelper'], function (utility, brandServices, logHelper) {
   //Setup
   //Turn Cross Origin Resource Sharing On to get sharepoint data from outside site
   var listName = 'Purchase Order Item';
   
   //Point towards the sharepoint site
-  var webUrl = await brandServices.getSharePointUrlByKey("subSitePath");
+  var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
     $().SPServices.defaults.webURL = webUrl + "/";//";  // URL of the target Web
-  
+    logHelper.logDebug("purchaseOrderItems.js", "webUrl: " + webUrl);
   //Request fields mapping from internal names
   var mapping = {
     ows_ID: {mappedName: 'PurchaseOrderItemId', objectType: "Text"},

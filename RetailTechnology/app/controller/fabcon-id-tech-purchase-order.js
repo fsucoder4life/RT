@@ -174,7 +174,7 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
       };
 
       self.buildPdf = async function (view, callback) {
-        var pdfAPIUrl = await brandServices.getSharePointUrlByKey('api-pdfGenerator');
+        var pdfAPIUrl = brandServices.getSharePointUrlByKey('api-pdfGenerator');
           //Make the date input plain html
           view.html.find('#po-delivery').closest('td').html(view.html.find('#po-delivery').val());
 

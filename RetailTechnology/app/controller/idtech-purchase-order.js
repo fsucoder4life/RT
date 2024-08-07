@@ -142,7 +142,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
   };
   
   self.buildPdf = async function (view, callback) {
-    var pdfAPIUrl = await brandServices.getSharePointUrlByKey('api-pdfGenerator');
+    var pdfAPIUrl = brandServices.getSharePointUrlByKey('api-pdfGenerator');
     //Make the date input plain html
     view.html.find('#po-delivery').closest('td').html(view.html.find('#po-delivery').val());
     

@@ -335,7 +335,7 @@ function pdfUploadComplete(){
     //                 CC += "skalisek@avitprousa.com";
 
 
-    //             let baseUrl = await brandServices.getSharePointUrlByKey("subSitePath");
+    //             let baseUrl = await brandServices.getSharePointUrlByKey("siteCollectionUrl");
     //             //Show the quote
     //             form.render({
     //                 subject: 'Sonic #' + store.StoreNumber + ' Technology Installation Quote Request',

@@ -53,7 +53,7 @@
     <sharepoint:scriptlink name="SP.core.js" runat="server" defer="False" localizable="false" />
     <sharepoint:scriptlink name="SP.js" runat="server" defer="True" localizable="false" />
     <!--Libraries-->
-    <script language="javascript" type="text/javascript" src="resources/lib/jquery-1.11.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="resources/lib/jquery.min.js"></script>
     <script language="javascript" type="text/javascript" src="resources/lib/jquery.SPServices-2014.01.min.js"></script>
     <script type="text/javascript" src="resources/lib/jquery-modal/jquery.modal.min.js"></script>
     <script language="javascript" type="text/javascript" src="resources/lib/date-picker/datepicker.min.js"></script>
@@ -122,89 +122,89 @@
         require(['app/router']);
     </script>
      <script>
-				 
-	
-	
-        require([
-    
-    
-            'app/brands/services/brandServices',
-            "app/brands/services/logHelper",
-            'dojo/when',
-            'app/brands/services/domServices'
-    
-        ], function (brandServices, logHelper, when, domServices) {
-            //console.log("index.aspx - Waiting on IsBrandReady to get set " + new Date().toISOString() );
-    const expected = "True";
-    var actual = localStorage.getItem("IsBrandReady");
-    //console.log("index.aspx - Still waiting on IsBrandReady to get set " + new Date().toISOString() );
-            when((actual !== null && actual !== "null") && expected === actual, function(){
-			//console.log("index.aspx - IsBrandReady is set " + new Date().toISOString() );
-			//console.log("index.aspx - Expected: " + expected +  " " + new Date().toISOString() );
-			//console.log("index.aspx - Actual: " + actual+  " " + new Date().toISOString());
-            
 
-            loadConfigFile: (async function () {
-                
-                let retVal = false;
-                retVal = await brandServices.loadConfigFile();
-                if (retVal) {
-                   // logHelper.logDebug("index.aspx","loadConfigFile: Config File Loaded");
-                    //logHelper.logDebug("index.aspx","Step 1 Return Value: " + retVal);
-                    retVal = false;
-                    retVal = await brandServices.startApp();
-    
-                    if (retVal) {
-                       // logHelper.logDebug("index.aspx","Step 2 Return Value: " + retVal);
-                        retVal = false;
-                        retVal = await brandServices.setCurrentBrandConfig();
-                    }
-    
-                    // if (retVal) {
-                    //    // logHelper.logDebug("index.aspx","Step 3 Return Value: " + retVal);
-                    //     retVal = false;
-                      
-                    // }
-    
-                    // if (retVal) {
-                    //     retVal = false;
-                    //     logHelper.logInfo("Step 4 Return Value: " + retVal);
-                    //     var dom = document.getElementById("current-date")
-                    //     dom.innerHtml = new Date();
-                    //     $("#loading-mask").hide();
-    
-                    //     logHelper.logInfo("before changing link");
-                    //     await brandServices.getSharePointUrlByKey("sitePage-RetailTechnology").then(async (url) => {
-                    //         var newUrl = url + "/index.aspx#reports/micros";
-                    //         logHelper.logInfo("after changing link" + url);
-                    //         brandServices.replaceLinkHref("posMicros", newUrl);
-                    //     });
-                    //     return true;
-    
-                    // }
 
-                    // if (retVal) {
-                    //     retVal = false;
-                    //     logHelper.logInfo("Step 5 Return Value: " + retVal);
-                     
 
-                    //     //Set Home Link Url
-                    //     await brandServices.getSharePointUrlByKey("subSitePath").then(async (url) => {
-                    //         var newUrl = url;
-                    //         logHelper.logInfo("after changing Home link" + url);
-                    //         brandServices.replaceLinkHref("currentHomeUrl", newUrl);
-                    //     });
-                    //     return true;
-                    // }
-    
-                }
-    
-            })();
-        })
-        });
-    
-    
-    </script>
+         require([
+
+
+             'app/brands/services/brandServices',
+             "app/brands/services/logHelper",
+             'dojo/when',
+             'app/brands/services/domServices'
+
+         ], function (brandServices, logHelper, when, domServices) {
+             //console.log("index.aspx - Waiting on IsBrandReady to get set " + new Date().toISOString() );
+             const expected = "True";
+             var actual = localStorage.getItem("IsBrandReady");
+             //console.log("index.aspx - Still waiting on IsBrandReady to get set " + new Date().toISOString() );
+             when((actual !== null && actual !== "null") && expected === actual, function () {
+                 //console.log("index.aspx - IsBrandReady is set " + new Date().toISOString() );
+                 //console.log("index.aspx - Expected: " + expected +  " " + new Date().toISOString() );
+                 //console.log("index.aspx - Actual: " + actual+  " " + new Date().toISOString());
+
+
+                 loadConfigFile: (async function () {
+
+                     let retVal = false;
+                     retVal = await brandServices.loadConfigFile();
+                     if (retVal) {
+                         // logHelper.logDebug("index.aspx","loadConfigFile: Config File Loaded");
+                         //logHelper.logDebug("index.aspx","Step 1 Return Value: " + retVal);
+                         retVal = false;
+                         retVal = await brandServices.startApp();
+
+                         if (retVal) {
+                             // logHelper.logDebug("index.aspx","Step 2 Return Value: " + retVal);
+                             retVal = false;
+                             retVal = await brandServices.setCurrentBrandConfig();
+                         }
+
+                         // if (retVal) {
+                         //    // logHelper.logDebug("index.aspx","Step 3 Return Value: " + retVal);
+                         //     retVal = false;
+
+                         // }
+
+                         // if (retVal) {
+                         //     retVal = false;
+                         //     logHelper.logInfo("Step 4 Return Value: " + retVal);
+                         //     var dom = document.getElementById("current-date")
+                         //     dom.innerHtml = new Date();
+                         //     $("#loading-mask").hide();
+
+                         //     logHelper.logInfo("before changing link");
+                         //     await brandServices.getSharePointUrlByKey("sitePage-RetailTechnology").then(async (url) => {
+                         //         var newUrl = url + "/index.aspx#reports/micros";
+                         //         logHelper.logInfo("after changing link" + url);
+                         //         brandServices.replaceLinkHref("posMicros", newUrl);
+                         //     });
+                         //     return true;
+
+                         // }
+
+                         // if (retVal) {
+                         //     retVal = false;
+                         //     logHelper.logInfo("Step 5 Return Value: " + retVal);
+
+
+                         //     //Set Home Link Url
+                         //     await brandServices.getSharePointUrlByKey("subSitePath").then(async (url) => {
+                         //         var newUrl = url;
+                         //         logHelper.logInfo("after changing Home link" + url);
+                         //         brandServices.replaceLinkHref("currentHomeUrl", newUrl);
+                         //     });
+                         //     return true;
+                         // }
+
+                     }
+
+                 })();
+             })
+         });
+
+
+     </script>
 
 </head>
 <body class="claro">
@@ -246,30 +246,30 @@
 </body>
 </html>
 <script type="text/javascript">  
-        ExecuteOrDelayUntilScriptLoaded(init,'sp.js');  
-        var currentUser;  
-        function init(){  
-            this.clientContext = new SP.ClientContext.get_current();  
-            this.oWeb = clientContext.get_web();  
-            currentUser = this.oWeb.get_currentUser();  
-            this.clientContext.load(currentUser);  
-            this.clientContext.executeQueryAsync(Function.createDelegate(this,this.onQuerySucceeded), Function.createDelegate(this,this.onQueryFailed));  
-			
-        }  
-          
-        function onQuerySucceeded() {  
-		var curUser = "Current User: " + currentUser.get_email();
-		localStorage.setItem("currentUser_userLoginName",currentUser.get_loginName());
-		localStorage.setItem("currentUser_userId",currentUser.get_id());
-		localStorage.setItem("currentUser_userTitle",currentUser.get_title());
-		localStorage.setItem("currentUser_userEmail",currentUser.get_email());
-         document.getElementById('currentUser').innerText = curUser;   
-            //document.getElementById('userId').innerHTML = currentUser.get_id();  
-            //document.getElementById('userTitle').innerHTML = currentUser.get_title();  
-            //document.getElementById('userEmail').innerHTML = currentUser.get_email();  
-        }  
-          
-        function onQueryFailed(sender, args) {  
-            alert('Request failed. \nError: ' + args.get_message() + '\nStackTrace: ' + args.get_stackTrace());  
-        }  
-    </script>
+    ExecuteOrDelayUntilScriptLoaded(init, 'sp.js');
+    var currentUser;
+    function init() {
+        this.clientContext = new SP.ClientContext.get_current();
+        this.oWeb = clientContext.get_web();
+        currentUser = this.oWeb.get_currentUser();
+        this.clientContext.load(currentUser);
+        this.clientContext.executeQueryAsync(Function.createDelegate(this, this.onQuerySucceeded), Function.createDelegate(this, this.onQueryFailed));
+
+    }
+
+    function onQuerySucceeded() {
+        var curUser = "Current User: " + currentUser.get_email();
+        localStorage.setItem("currentUser_userLoginName", currentUser.get_loginName());
+        localStorage.setItem("currentUser_userId", currentUser.get_id());
+        localStorage.setItem("currentUser_userTitle", currentUser.get_title());
+        localStorage.setItem("currentUser_userEmail", currentUser.get_email());
+        document.getElementById('currentUser').innerText = curUser;
+        //document.getElementById('userId').innerHTML = currentUser.get_id();  
+        //document.getElementById('userTitle').innerHTML = currentUser.get_title();  
+        //document.getElementById('userEmail').innerHTML = currentUser.get_email();  
+    }
+
+    function onQueryFailed(sender, args) {
+        alert('Request failed. \nError: ' + args.get_message() + '\nStackTrace: ' + args.get_stackTrace());
+    }  
+</script>

@@ -8,7 +8,15 @@ define(
         "dojo/dom-construct",
         "dojo/store/DataStore"
     ], function (constants, lang, query, logHelper, dom, domConstruct) {
+
+        //Overide consoleLogging Flag
+        //If overrideDebugForFile = false && consoleLogging == true, any logHelper.logDebug or logHelper.logInfo lines will output to the console
+        //If overrideDebugForFile = true && consoleLogging == true, any logHelper.logDebug or logHelper.logInfo lines will NOT output to the console
+        const overrideDebugForFile = false;
+
         return {
+
+
             //Start App
             startApp: (async function () {
                 const setBrandIdFn = this.setBrandId.bind(this);
@@ -22,7 +30,7 @@ define(
                     brandId = '380fb82e-9c79-4903-a65a-425f551a84b1'; //Default to Sonic
                 }
                 //Don't use logHelper yet, it hasn't been loaded
-                logHelper.logInfo("Start app for brandId: " + brandId);
+                logHelper.logDebug("brandServices.js", "Start app for brandId: " + brandId, overrideDebugForFile);
                 retVal = await setBrandIdFn(brandId);
 
                 return retVal;
@@ -37,25 +45,24 @@ define(
                 let retVal = false;
                 var url = "config.json";
                 var brandsUrl = "app/brands/brands.json";
-                console.log(`Try to fetch the config.json file from ${url}`);
+                //console.log(`brandservices.js - Try to fetch the config.json file from ${url}`);
                 await fetch(url)
                     .then((res) => res.json())
                     .then(async (json) => {
                         localStorage.clear();
                         //store the config.json 
                         localStorage.setItem(constants("LOCAL_STORAGE_APP_CONFIG"), JSON.stringify(json));
-                        
-                        console.log("config.json loaded")
+
 
                         var consoleLogging = (json.consoleLogging === 'true');
                         var siteCollectionUrl = json.siteCollectionUrl;
                         retVal = await setLoggingFlagFn(consoleLogging);
                         retVal = await setsiteCollectionUrlFn(siteCollectionUrl);
                         if (consoleLogging) {
-                            console.log("loadConfigFile: Verbose logging has been enabled");
+                            console.log("brandServices.js - loadConfigFile: Verbose logging has been enabled");
                         }
                         else {
-                            console.log("loadConfigFile: Verbose logging is disabled, no further logHelper events will display.")
+                            console.log("brandServices.js - loadConfigFile: Verbose logging is disabled, no further logHelper events will display.")
                         }
 
                         //localStorage.setItem(constants("LOCAL_STORAGE_CONSOLE_LOGGING"),consoleLogging)
@@ -64,7 +71,7 @@ define(
                             .then((brandRes) => brandRes.json())
                             .then(async (json) => {
                                 retVal = setAllBrandsFileFn(json).then(() => {
-                                    logHelper.logInfo("loadConfigFile: All Brands File cached");
+                                    // logHelper.logDebug("brandServices.js","loadConfigFile: All Brands File cached");
 
                                 });
 
@@ -72,20 +79,30 @@ define(
                         retVal = true;
                     })
                     .catch((err) => {
-                        logHelper.logInfo('loadConfigFile: File Load Error!', {
+                        logHelper.logDebugError("brandServices.js", 'loadConfigFile: File Load Error!', {
                             error: "Error fetching the config file.",
                             details: err,
                         });
                     });
 
                 return retVal;
-            }),            
+            }),
+
+
+            getSharePointBaseUrl: (function () {
+                var url = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_SHAREPOINT_BASE_URL"));
+                if (!url) {
+                    logHelper.logDebugError("Base Url not set");
+                    return false
+                }
+                return url;
+            }),
 
             //Setup Current Brand Configuration
             setCurrentBrandConfig: (async function () {
 
 
-                logHelper.logInfo("setCurrentBrandConfig: Setting up Brand Configuration");
+                logHelper.logDebug("brandServices.js", "setCurrentBrandConfig: Setting up Brand Configuration", overrideDebugForFile);
                 //Setup function bindings
                 const getAllBrandsFileFn = this.getAllBrandsFile.bind(this);
                 const getBrandIdFn = this.getBrandId.bind(this);
@@ -99,12 +116,12 @@ define(
                 await getBrandIdFn().then(async (val) => {
 
                     var brandId = val;
-                    logHelper.logInfo("setCurrentBrandConfig: Brand Id: " + brandId);
+                    logHelper.logDebug("brandServices.js", "setCurrentBrandConfig: Brand Id: " + brandId, overrideDebugForFile);
                     var allBrands = await getAllBrandsFileFn().then(async (json) => {
                         //Pull the allBrands.json from local storage and parse it
 
                         var allBrandsJson = json;//JSON.parse(json);
-                        logHelper.logInfo("AllBrandsJson: " + allBrandsJson);
+                        logHelper.logDebug("brandServices.js", "AllBrandsJson: " + allBrandsJson, overrideDebugForFile);
                         //query it by the brand id in the querystring
                         var queryText = `[?brandId='${brandId}']`;
 
@@ -137,8 +154,8 @@ define(
                         retVal = await setBrandBaseFolderFn(baseFolderPath);
                         retVal = await setBrandCssThemeFilePathFn(cssThemeFilePath);
                         retVal = await setCurrentBrandConfigSettingsFn();
-                        logHelper.logInfo("setCurrentBrandConfig: End of Setup Config");
-                        logHelper.logInfo("setCurrentBrandConfig: Next up, register the Brand's theme");
+                        logHelper.logDebug("brandServices.js", "setCurrentBrandConfig: End of Setup Config", overrideDebugForFile);
+                        logHelper.logDebug("brandServices.js", "setCurrentBrandConfig: Next up, register the Brand's theme", overrideDebugForFile);
                         return retVal;
                     });
                 })
@@ -162,26 +179,26 @@ define(
                         const getBrandConfigFileFn = this.getBrandConfigFile.bind(this);
 
                         const cachePageTitleFn = this.cachePageAndSiteTitle.bind(this);
-                        const setEmailDistributionDetailsFn = this.setEmailDistributionDetails.bind(this);
-                        const setQuoteDetailsFn = this.setQuoteDetails.bind(this);
+                        //const setEmailDistributionDetailsFn = this.setEmailDistributionDetails.bind(this);
+                        //const setQuoteDetailsFn = this.setQuoteDetails.bind(this);
                         const setSharePointUrlsFn = this.setSharePointUrls.bind(this);
                         const setHomeUrlFn = this.setHomeUrl.bind(this);
                         const getsiteCollectionUrlFn = this.getsiteCollectionUrl.bind(this);
                         const setBrandLogoFn = this.setBrandLogo.bind(this);
                         const setBrandInfoFn = this.setBrandInfo.bind(this);
-                       // const queryEmailDistributionListFn = this.queryEmailDistributionList.bind(this);
+                        // const queryEmailDistributionListFn = this.queryEmailDistributionList.bind(this);
 
 
                         var queryText = `[*]`
                         await getBrandConfigFilePathFn().then((value) => {
                             var url = value;
-                            logHelper.logInfo("setCurrentBrandConfigSettings: Url: " + url);
-                            logHelper.logInfo(`setCurrentBrandConfigSettings: Try to fetch the current brand's settings.json file from ${url}`);
+                            logHelper.logDebug("brandServices.js", "setCurrentBrandConfigSettings: Url: " + url, overrideDebugForFile);
+                            logHelper.logDebug("brandServices.js", `setCurrentBrandConfigSettings: Try to fetch the current brand's settings.json file from ${url}`, overrideDebugForFile);
                             fetch(url)
                                 .then((res) => res.json())
                                 .then(async (json) => {
                                     //store the config.json 
-                                    logHelper.logInfo("setCurrentBrandConfigSettings: Set the current Theme Config File to cache");
+                                    logHelper.logDebug("brandServices.js", "setCurrentBrandConfigSettings: Set the current Theme Config File to cache", overrideDebugForFile);
                                     //replace variables
 
 
@@ -201,14 +218,14 @@ define(
 
                                     //SharePoint Url array
                                     var SPUrls = item[5];
-                                    
+
                                     var stringified = JSON.stringify(SPUrls);
                                     //**NOTE**  json has to be parsed and stringified each time you do a replace or the next replace won't work
                                     //replace placeholders with actual values
                                     var rootUrl = await getsiteCollectionUrlFn();
                                     stringified = stringified.replace(/__siteCollectionUrl__/g, rootUrl);
                                     SPUrls = JSON.parse(stringified);
-                                     const varsubSitePath = SPUrls["subSitePath"];
+                                    const varsubSitePath = SPUrls["subSitePath"];
                                     stringified = stringified.replace(/__subSitePath__/g, varsubSitePath);
                                     logHelper.logInfo("Stringified: " + stringified);
                                     //Brand specific SharePoint Base Url; will be used to replace placeholders to build the some of the SharePoint Urls
@@ -217,12 +234,12 @@ define(
                                     const subSitePath = SPUrls["subSitePath"];
                                     var homepageUrl = SPUrls["homepageUrl"];
 
-                                    if (brandId != '380fb82e-9c79-4903-a65a-425f551a84b1'){
+                                    if (brandId != '380fb82e-9c79-4903-a65a-425f551a84b1') {
                                         homepageUrl = homepageUrl + homeUrl;
                                     }
 
                                     logHelper.logInfo("Homepage Url: " + homepageUrl);
-                                    
+
                                     stringified = JSON.stringify(SPUrls);
 
                                     //Brand specific Payment Survey Signoff Site Page Base Url; will be used to replace placeholders to build the Urls that leverage this site page
@@ -266,7 +283,7 @@ define(
                                     const sitePageRetailTechPaymentModProjectDates = SPUrls["sitePage-RetailTechnology-paymentModProjectDates"];
                                     const sitePageRetailTechStoreConfigurationSearch = SPUrls["sitePage-RetailTechnology-storeConfigurationSearch"];
 
-                                    
+
                                     //Quotes array
                                     //var quoteDetails = item[7];
 
@@ -276,7 +293,7 @@ define(
                                     var logoFilePath = logo["logo"].uri;
 
                                     var retVal = false;
-                                    logHelper.logInfo("Is it here");
+
                                     retVal = await cachePageTitleFn(pageTitle, siteTitle);
 
 
@@ -284,24 +301,24 @@ define(
 
                                     retVal = await setBrandLogoFn(logoFilePath, logoDescription);
                                     retVal = await setBrandInfoFn(companyInfo);
-                                    logHelper.logInfo("Before looping through sharePointUrls");
-                                    logHelper.logInfo(subSitePath);
+
+                                    logHelper.logDebug("brandServices.js", subSitePath, overrideDebugForFile);
 
                                     if (SPUrls) {
-                                        retVal = await setSharePointUrlsFn(subSitePath,homepageUrl, apipdfGenerator, formPOSSurvey, listCombinedSchedule, listConstructionCalls, listConstructionCallsDispForm,
+                                        retVal = await setSharePointUrlsFn(subSitePath, homepageUrl, apipdfGenerator, formPOSSurvey, listCombinedSchedule, listConstructionCalls, listConstructionCallsDispForm,
                                             listInstallQuoteGen, listLevel2010Orders, listPurchaseOrders, siteAssetsRenameListFileAttachments, sitePageDailyUpdates, sitePageMasterPortal, sitePagePaymentSignOff,
                                             sitePagePSOSurvey, sitePagePSOViewAll, sitePagePSOViewAll, sitePagePSOViewAllSurvey, sitePagePSOCheckin, sitePagePSODailyUpdate,
                                             sitePageProjectReviewPayMod, sitePageRetailTech, sitePageRetailTechSearch, sitePageRetailTechPaymentModProjectDates, sitePageRetailTechStoreConfigurationSearch)
                                             .then(async () => {
                                                 //Email array from SharePoint Online | EmailDistributionList                            
-                                   //var emailDistributionDetails = queryEmailDistributionListFn(brandId);
-                                    //retVal = await setEmailDistributionDetailsFn(emailDistributionDetails);
-                                    //retVal = await setQuoteDetailsFn(quoteDetails);
-                                    retVal = await registerBrandThemeFn();
+                                                //var emailDistributionDetails = queryEmailDistributionListFn(brandId);
+                                                //retVal = await setEmailDistributionDetailsFn(emailDistributionDetails);
+                                                //retVal = await setQuoteDetailsFn(quoteDetails);
+                                                retVal = await registerBrandThemeFn();
                                             });
                                         logHelper.logInfo("After setting SharePointUrls");
                                     }
-                                    
+
                                     logHelper.logInfo("It won't be ready until here");
                                     return retVal;
                                 })
@@ -325,7 +342,7 @@ define(
 
 
                 getBrandReadyFn().then(async (isReady) => {
-                    logHelper.logInfo("I am in registerBrandTheme, is the brand ready yet? " + isReady);
+                    // logHelper.logDebug("brandServices.js","I am in registerBrandTheme, is the brand ready yet? " + isReady,overrideDebugForFile);
                     let retVal = false;
                     retVal = await setPageTitleFn();
                     retVal = await setCompanyInfoFn();
@@ -344,7 +361,7 @@ define(
                 try {
 
                     localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_BRAND_CSS_THEME_FILE_PATH"), JSON.stringify(filePath));
-                    await logHelper.logInfo("setBrandCssThemeFilePath: Brand Css File Path set");
+                    await logHelper.logDebug("brandServices.js", "setBrandCssThemeFilePath: Brand Css File Path set", overrideDebugForFile);
 
                     return true;
                 } catch (error) {
@@ -357,7 +374,7 @@ define(
             getBrandCssThemeFilePath: (async function () {
                 var filePath = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_BRAND_CSS_THEME_FILE_PATH"));
                 if (!filePath) {
-                    logHelper.logError("getBrandCssThemeFilePath: Error locating the brand css theme file!");
+                    logHelper.logError("getBrandCssThemeFilePath: Error locating the brand css theme file!", overrideDebugForFile);
                     return null;
                 }
                 return filePath;
@@ -370,7 +387,7 @@ define(
                 try {
                     var filePath = 'app/brands/brands.json';
                     localStorage.setItem(constants("LOCAL_STORAGE_ALL_BRANDS_FILE_PATH"), filePath);
-                    await logHelper.logInfo("setAllBrandsFilePath: All Brands File Path set");
+                    await logHelper.logDebug("brandServices.js", "setAllBrandsFilePath: All Brands File Path set", overrideDebugForFile);
 
                     return true;
                 } catch (error) {
@@ -383,10 +400,10 @@ define(
             getAllBrandsFilePath: (async function () {
 
 
-                logHelper.logInfo("getAllBrandsFilePath: getAllBrandsFilePath");
+                logHelper.logDebug("brandServices.js", "getAllBrandsFilePath: getAllBrandsFilePath", overrideDebugForFile);
                 var configFilePath = localStorage.setItem(constants("LOCAL_STORAGE_ALL_BRANDS_FILE_PATH"));
                 if (!configFilePath) {
-                    logHelper.logError("getAllBrandsFilePath: Error locating the brands.json config file!");
+                    logHelper.logError("getAllBrandsFilePath: Error locating the brands.json config file!", overrideDebugForFile);
                     return null;
                 }
                 return configFilePath;
@@ -398,7 +415,7 @@ define(
             //Cache All Brands JSON File
             setAllBrandsFile: (async function (json) {
                 localStorage.setItem(constants("LOCAL_STORAGE_ALL_BRANDS"), JSON.stringify(json));
-                logHelper.logInfo("setAllBrandsFile: Brands.json loaded into cache");
+                logHelper.logDebug("brandServices.js", "setAllBrandsFile: Brands.json loaded into cache", overrideDebugForFile);
                 return true;
             }),
 
@@ -417,12 +434,12 @@ define(
                 localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_PAGE_TITLE"), pageTitle);
                 localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_SITE_TITLE"), siteTitle);
 
-                logHelper.logInfo("cachePageAndSiteTitle: Page Title has been cached");
+                logHelper.logDebug("brandServices.js", "cachePageAndSiteTitle: Page Title has been cached", overrideDebugForFile);
                 return true;
             }),
 
             getPageTitle: (async function () {
-                
+
                 var pageTitle = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_PAGE_TITLE"));
                 logHelper.logInfo("Get current page title: " + pageTitle);
                 if (!pageTitle) {
@@ -432,25 +449,241 @@ define(
                 return pageTitle;
             }),
 
-            //*****Site Title
-            getSiteTitle: (async function () {
-               
-                var siteTitle = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_SITE_TITLE"));
-                logHelper.logInfo("Get current site title: " + siteTitle);
-                if (!siteTitle) {
-                    logHelper.logError("getSiteTitle: Site Title not set");
-                    return false
+
+
+            //Query the Brand-EmailDistributionList asynchronously
+            queryEmailDistributionList: (function (brandId) {
+                const getSharePointUrlByKeyFn = this.getSharePointUrlByKey.bind(this);
+                const _brandId = brandId;
+
+                // Get all the Email Distribution data
+                let hostWebUrl = getSharePointUrlByKeyFn("hostWebUrl");
+
+                try {
+                    // resources are in URLs in the form:
+                    // web_url/_layouts/15/resource
+                    var scriptbase = hostWebUrl + "/_layouts/15/";
+                    // Load the js files and continue to the successHandler
+                    $.getScript(scriptbase + "SP.RequestExecutor.js", execCrossDomainRequest);
+                    function execCrossDomainRequest() {
+                        var executor = new SP.RequestExecutor(hostWebUrl);
+                        executor.executeAsync(
+                            {
+                                url:
+                                    hostWebUrl +
+                                    "/_api/web/lists/getbytitle('Brand - EmailDistributionList')/items",
+                                headers: { "Accept": "Application/json; odata=verbose" },
+                                method: "GET",
+                                success: successHandler,
+                                error: errorHandler
+                            }
+                        );
+                    }
+                    // Function to handle the success event.                    
+                    distributionList = [];
+                    function successHandler(data) {
+                        //Ran out of time but change this to use getBrandId
+                        var brandId = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_BRANDID"));
+
+                        logHelper.logDebug("brandServices.js", "EmailDistributionList data: " + JSON.stringify(data), true);
+                        var jsonObject = JSON.parse(data.body);
+
+                        var d = jsonObject.d.results;
+                        var results = jsonObject.d.results;
+                        row = {};
+                        for (var i = 0; i < results.length; i++) {
+
+                            if (results[i].field_0 == brandId) {
+                                var formType = results[i].Title;
+                                var brandId = results[i].field_0;
+                                var distributionType = results[i].field_2;
+                                var emailTo = results[i].field_3;
+                                var emailCC = results[i].field_4;
+                                var emailFrom = results[i]["EmailFrom"];
+                                var emailForPosition = results[i]["EmailForPosition"];
+                                row = {
+                                    "brandId": brandId,
+                                    "formType": formType,
+                                    "distributionType": distributionType,
+                                    "emails": {
+                                        "emailTo": emailTo,
+                                        "emailCC": emailCC,
+                                        "emailFrom": emailFrom,
+                                        "emailForPosition": emailForPosition
+                                    }
+                                };
+
+                                distributionList.push(row);
+                            }
+
+                        }
+
+                        //Add EmailDistributionList to localStorage
+
+                        localStorage.setItem(constants("LOCAL_STORAGE_BRAND_EMAIL_DISTRIBUTION_DETAILS"), JSON.stringify(distributionList));
+                        return JSON.stringify(distributionList);
+
+                        //})
+                    }
+
+                    // Function to handle the error event.
+                    function errorHandler(data, errorCode, errorMessage) {
+                        logHelper.logError("errorCode: " + errorCode);
+                        logHelper.logError("errorMessage: " + errorMessage);
+                    }
+
+
+                } catch (error) {
+                    logHelper.logDebug("brandServices.js", error, overrideDebugForFile);
+                    return false;
                 }
-                return siteTitle;
+
             }),
 
-           
+            //*****Site Title
+            setEmailDistributionDetails: (async function (details) {
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_EMAIL_DISTRIBUTION_DETAILS"), JSON.stringify(details));
+
+                logHelper.logDebug("brandServices.js", "setEmailDistributionDetails: Email Distribution Details have been cached", overrideDebugForFile);
+                return true;
+            }),
+
+            //Clean, working function returns array of object from Brand - EmailDistributionList
+            getEmailDistributionDetails: (function (formType, distributionType) {
+
+                var brandId = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_BRANDID"));
+                if (brandId) {
+                    var emailDistributionDetailsJson = null;
+                    //Get the full distribution list from local storage
+                    var emailDistributionDetails = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_EMAIL_DISTRIBUTION_DETAILS"));
+                    if (emailDistributionDetails) {
+                        const emailDistributionList = [];
+                        logHelper.logDebug("brandServices.js", "emailDistributionDetails: " + emailDistributionDetails, overrideDebugForFile)
+                        emailDistributionDetailsJson = JSON.parse(emailDistributionDetails);
+                        //Filter the full distribution list by the formType & distributionType
+                        var filteredJson = JSON.parse(emailDistributionDetails).filter((item) => {
+                            logHelper.logDebug("brandServices.js", "before filteredJson: " + item, overrideDebugForFile);
+                            if (item.formType.toLowerCase() === formType.toLowerCase() && item.distributionType.toLowerCase() === distributionType.toLowerCase()) {
+                                //Push the object to the emsilDistributionList array
+                                emailDistributionList.push(item);
+                                return;
+                            }
+                            return;
+                        });
+
+
+                        //Create the final array of object that will be returned
+                        const emailDetails = [];
+                        var emailTo = emailDistributionList[0]["emails"]["emailTo"];
+
+                        //If there is no emailTo address, this record isn't valid
+                        if (!emailTo) {
+                            logHelper.logError("logHelper: emailTo has not been cached");
+                            return false
+                        }
+
+                        //emailDetails.push(emailTo);
+                        var emailCC = emailDistributionList[0]["emails"]["emailCC"];
+                        if (!emailCC) {
+                            emailCC = "";
+                            logHelper.logError("getEmailDistributionDetails: emailCC has not been cached");
+                        }
+                        //emailDetails.push(emailCC);
+
+                        var emailFrom = emailDistributionList[0]["emails"]["emailFrom"];
+                        if (!emailFrom) {
+                            emailFrom = "";
+                            logHelper.logError("getEmailDistributionDetails: emailFrom has not been cached");
+                        }
+                        //emailDetails.push(emailFrom);
+
+
+                        var emailForPosition = emailDistributionList[0]["emails"]["emailForPosition"];
+                        if (!emailForPosition) {
+                            emailForPosition = "";
+                            logHelper.logError("getEmailDistributionDetails: emailForPosition has not been cached");
+                        }
+                        //emailDetails.push(emailForPosition);
+
+                        var jsonObject = {
+                            "emailTo": emailTo,
+                            "emailCC": emailCC,
+                            "emailFrom": emailFrom,
+                            "emailForPosition": emailForPosition
+                        };
+
+                        emailDetails.push(jsonObject);
+
+
+                        //return the object array
+                        return emailDetails;
+
+                    }
+
+                }
+                return null;
+            }
+            ),
+
+            //Cache Quote Details
+            setQuoteDetails: (async function (details) {
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_QUOTE_DETAILS"), JSON.stringify(details));
+
+                logHelper.logDebug("brandServices.js", "setQuoterDetails: Quote Details have been cached", overrideDebugForFile);
+                return true;
+            }),
+
+            getEmailDistributionDetailsAsync: (async function () {
+
+                var emailDistributionDetails = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_EMAIL_DISTRIBUTION_DETAILS"));
+                if (!emailDistributionDetails) {
+                    logHelper.logError("getEmailDistributionDetails: Email Distribution Details have not been cached");
+                    return false
+                }
+
+                return JSON.parse(emailDistributionDetails);
+            }),
+            getQuoteDetails: (async function () {
+
+                var quoteDetails = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_QUOTE_DETAILS"));
+                if (!quoteDetails) {
+                    logHelper.logError("getQuoteDetails: Quote Details have not been cached");
+                    return false
+                }
+
+                return JSON.parse(quoteDetails);
+            }),
+
+
+
+
+            getQuoteEmailDetails: (async function (distributionType) {
+                const getQuoteDetailsFn = this.getQuoteDetails.bind(this);
+                const quoteDetails = await getQuoteDetailsFn();
+                const emailDetails = [];
+                var queryText = `[?distributionType='${distributionType}']`
+                var item = dojox.json.query(queryText, quoteDetails);
+                var emailTo = item[0]["emails"]["emailTo"];
+
+                if (!emailTo) {
+                    logHelper.logError("getQuoteEmailDetails: emailTo has not been cached");
+                    return false
+                }
+                emailDetails.push(emailTo);
+                var emailCC = item[0]["emails"]["emailCC"];
+                if (!emailCC) {
+                    logHelper.logError("getQuoteEmailDetails: emailCC has not been cached");
+
+                }
+                emailDetails.push(emailCC);
+                return emailDistributionDetails;
+            }),
             //Cache Sharepoint URLs
-            setSharePointUrls: (async function ( baseUrl,homepageUrl, pdfApi, posSurvey, combSchedule, constrCalls, constrCalls2, quoteGen,
+            setSharePointUrls: (async function (baseUrl, homepageUrl, pdfApi, posSurvey, combSchedule, constrCalls, constrCalls2, quoteGen,
                 levelOrders, dailyUpdates, siteAssets, masterPortal, surveySignOff, survSignOff2, surveySignOff3, surveySignOff4,
                 surveySignOff5, surveySignOff6, projectReview, retailTech, retailTech2, retailTech3, retailTech4) {
                 //setting siteCollectionUrl in config.json
-                    //localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL"), siteCollectionUrl);
+                //localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL"), siteCollectionUrl);
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SUBSITE_PATH"), baseUrl);
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_HOMEPAGE_URL"), homepageUrl);
                 localStorage.setItem(constants("LOCAL_STORAGE_API_GENERATE_PDF"), pdfApi);
@@ -477,33 +710,52 @@ define(
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_RETAILTECHNOLOGY_PAYMENT_MOD_PROJECT_DATES"), retailTech3);
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITEPAGE_RETAILTECHNOLOGY_STORE_CONFIGURATION_SEARCH"), retailTech4);
 
-                logHelper.logInfo("setSharePointUrls: SharePointUrls have been cached");
+                logHelper.logDebug("brandServices.js", "setSharePointUrls: SharePointUrls have been cached", overrideDebugForFile);
                 return true;
             }),
 
-            getSharePointUrlByKey: (async function (key) {
+
+            //get the sharepoint url by key from localstorage
+            getSharePointUrlByKey: (function (key) {
                 if (!key) {
                     logHelper.logError("getSharePointUrlByKey: Invalid Constant Key!");
                     return false
                 }
-                logHelper.logInfo("getSharePointUrlByKey: Attempting to get key: " + key);
+                logHelper.logDebug("brandServices.js", "getSharePointUrlByKey: Attempting to get key: " + key, overrideDebugForFile);
                 var url = localStorage.getItem(key);
-                logHelper.logInfo("getSharePointUrlByKey: localStorage result: " + url);
+                logHelper.logDebug("brandServices.js", "getSharePointUrlByKey: localStorage result: " + url, overrideDebugForFile);
                 if (!url) {
                     logHelper.logError("getSharePointUrlByKey: SharePoint Url not cached");
                     return false
                 }
+                logHelper.logDebug("brandServices.js", "Returning SharePointUrl for " + key + " : " + url, overrideDebugForFile);
+                return url;
+            }),
+
+            getSharePointUrlByKeyAsync: (async function (key) {
+                if (!key) {
+                    logHelper.logError("getSharePointUrlByKeyAsync: Invalid Constant Key!");
+                    return false
+                }
+                logHelper.logDebug("brandServices.js", "getSharePointUrlByKeyAsync: Attempting to get key: " + key, overrideDebugForFile);
+                var url = localStorage.getItem(key);
+                logHelper.logDebug("brandServices.js", "getSharePointUrlByKeyAsync: localStorage result: " + url, overrideDebugForFile);
+                if (!url) {
+                    logHelper.logError("getSharePointUrlByKeyAsync: SharePoint Url not cached");
+                    return false
+                }
+                logHelper.logDebug("brandServices.js", "Returning SharePointUrl for " + key + " : " + url, overrideDebugForFile);
                 return url;
             }),
 
             //Cache Home URL
             setHomeUrl: (async function (url) {
                 localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_BASE_URL"), url);
-                logHelper.logInfo("setHomeUrl: BaseUrl has been cached");
+                logHelper.logDebug("brandServices.js", "setHomeUrl: BaseUrl has been cached", overrideDebugForFile);
                 return true;
             }),
 
-            getHomeUrl: (async function () {
+            getHometUrl: (async function () {
                 var url = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_BASE_URL"));
                 if (!url) {
                     logHelper.logError("Base Url not set");
@@ -536,11 +788,11 @@ define(
                 }
                 return url;
             }),
-            
+
             //Cache Logging Flag
             setLoggingFlag: (async function (flag) {
                 localStorage.setItem(constants("LOCAL_STORAGE_CONSOLE_LOGGING"), flag);
-                logHelper.logInfo("setLoggingFlag: Logging flag cached");
+                logHelper.logDebug("brandServices.js", "setLoggingFlag: Logging flag cached", overrideDebugForFile);
                 return true;
             }),
 
@@ -553,8 +805,8 @@ define(
                 return loggingFlag;
             }),
 
-             //Cache Host Url
-             setsiteCollectionUrl: (async function (siteCollectionUrl) {
+            //Cache Host Url
+            setsiteCollectionUrl: (async function (siteCollectionUrl) {
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL"), siteCollectionUrl);
                 logHelper.logInfo("setsiteCollectionUrl: Host Web Url cached");
                 return true;
@@ -573,7 +825,7 @@ define(
             setBrandId: (async function (brandId) {
                 localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_BRANDID"), brandId);
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_READY"), false);
-                logHelper.logInfo("setBrandId: BrandId: " + brandId + " has been cached");
+                logHelper.logDebug("brandServices.js", "setBrandId: BrandId: " + brandId + " has been cached", overrideDebugForFile);
                 return true;
             }),
 
@@ -599,7 +851,7 @@ define(
 
 
                 localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_BRAND_NAME"), brandNameToSet);
-                logHelper.logInfo("setBrandName: Brand Name: " + brandNameToSet + " has been cached");
+                logHelper.logDebug("brandServices.js", "setBrandName: Brand Name: " + brandNameToSet + " has been cached", overrideDebugForFile);
                 return true;
             }),
 
@@ -632,7 +884,7 @@ define(
                 localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_PHONE"), phoneNumber);
                 localStorage.setItem(constants("LOCAL_STORAGE_CURRENT_COPYRIGHT"), copyright);
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_READY"), true);
-                logHelper.logInfo("setBrandInfo: Brand Info cached");
+                logHelper.logDebug("brandServices.js", "setBrandInfo: Brand Info cached", overrideDebugForFile);
                 return true;
             }),
 
@@ -646,8 +898,8 @@ define(
                     "phone": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_PHONE")),
                     "copyright": localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COPYRIGHT"))
                 }];
-                logHelper.logInfo(brandInfo);
-              
+                logHelper.logDebug("brandServices.js", brandInfo, overrideDebugForFile);
+                // var legalName = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LEGAL_NAME"));
                 return brandInfo;
             }),
 
@@ -655,7 +907,7 @@ define(
             //Cache current brand config file path
             setBrandConfigFilePath: (async function (configFilePath) {
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_CONFIG_FILE_PATH"), configFilePath);
-                logHelper.logInfo(" setBrandConfigFilePath: Brand config file path set");
+                logHelper.logDebug("brandServices.js", " setBrandConfigFilePath: Brand config file path set", overrideDebugForFile);
                 return true;
             }),
 
@@ -672,7 +924,7 @@ define(
             //Cache current brand JSON config file
             setBrandConfigFile: (async function (configFile) {
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_CONFIG_FILE"), configFile);
-                logHelper.logInfo("setBrandConfigFile: Brand config.file loaded");
+                logHelper.logDebug("brandServices.js", "setBrandConfigFile: Brand config.file loaded", overrideDebugForFile);
                 return true;
             }),
             //Get the current brand config file
@@ -688,7 +940,7 @@ define(
             //Cache current brand base folder
             setBrandBaseFolder: (async function (folderPath) {
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_BASE_FOLDER"), JSON.stringify(folderPath));
-                logHelper.logInfo("setBrandBaseFolder: Brand base folder path set.");
+                logHelper.logDebug("brandServices.js", "setBrandBaseFolder: Brand base folder path set.", overrideDebugForFile);
                 return true;
             }),
 
@@ -705,7 +957,7 @@ define(
             //Cache images folder file path
             setBrandImagesFolder: (async function (folderPath) {
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_IMAGES_FOLDER"), JSON.stringify(folderPath));
-                logHelper.logInfo("setBrandImagesFolder: Brand images folder path set");
+                logHelper.logDebug("brandServices.js", "setBrandImagesFolder: Brand images folder path set", overrideDebugForFile);
                 return true;
             }),
             //Get the current brand images folder
@@ -728,7 +980,7 @@ define(
             //Get the current brand logo file path
             getBrandLogoFilePath: (async function () {
                 var logoFilePath = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO_FILE_PATH"));
-                logHelper.logInfo(logoFilePath);
+                logHelper.logDebug("brandServices.js", logoFilePath, overrideDebugForFile);
                 if (!logoFilePath) {
                     logHelper.logError("getBrandLogoFilePath: Logo File Path not set");
                     return false
@@ -739,7 +991,7 @@ define(
             //Get the current brand logo file path
             getBrandLogoDescription: (async function () {
                 var description = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO_DESCRIPTION"));
-                logHelper.logInfo(description);
+                logHelper.logDebug("brandServices.js", description, overrideDebugForFile);
                 if (!description) {
                     logHelper.logError("getBrandLogoDescription: Logo Description not set");
                     return false
@@ -747,14 +999,57 @@ define(
                 return description;
             }),
 
-          
+            getSiteTitle: (async function () {
+                var siteTitle = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_SITE_TITLE"));
+                logHelper.logInfo("Get current site title: " + siteTitle);
+                if (!siteTitle) {
+                    logHelper.logError("getSiteTitle: Site Title not set");
+                    return false
+                }
+                return siteTitle;
+            }),
             //Set the current brand page and site titles..... check the tab to verify it updated
+
+
+            setText: (async function (selector, text) {
+
+                logHelper.logDebug("brandServices.js", "Selector: " + selector + " - " + " Text: " + text, overrideDebugForFile);
+                const title = dom.byId(selector);
+                if (!title) {
+                    return false;
+                }
+                title.innerText = text;
+                return true;
+            }),
+
+            setImage: (async function (selector, sourceText, altText) {
+
+                logHelper.logDebug("brandServices.js", "Selector: " + selector + " - " + " Text: " + altText, overrideDebugForFile);
+                const div = dom.byId(selector);
+                if (!div) {
+                    return false;
+                }
+                div.src = sourceText;
+                div.alt = altText;
+                return true;
+            }),
+
+            replaceLinkHref: (async function (selector, newHref) {
+                logHelper.logDebug("brandServices.js", "Replace Link: Selector: " + selector + " , NewHRef: " + newHref, overrideDebugForFile);
+                const link = dom.byId(selector);
+                if (!link) {
+                    return false;
+                }
+                link.href = newHref;
+                logHelper.logDebug("brandServices.js", "Replace Link: Selector: " + selector + " , NewHRef: " + newHref);
+                return true;
+            }),
             setPageTitle: (async function () {
                 const getPageTitleFn = this.getPageTitle.bind(this);
 
 
                 let retVal = false;
-                logHelper.logInfo(`setPageTitle: Try to set the app title`);
+                logHelper.logDebug("brandServices.js", `setPageTitle: Try to set the app title`, overrideDebugForFile);
                 const setTextFn = this.setText.bind(this);
                 try {
                     getPageTitleFn().then(async (selector) => {
@@ -767,7 +1062,7 @@ define(
                     });
                     return retVal;
                 } catch (error) {
-                    logHelper.logInfo(error);
+                    logHelper.logDebug("brandServices.js", error, overrideDebugForFile);
                 }
 
             }),
@@ -784,8 +1079,8 @@ define(
 
                         links[i].setAttribute('href', newHref);
 
-                        logHelper.logInfo("href: " + href);
-                        logHelper.logInfo("newHref: " + newHref);
+                        logHelper.logDebug("brandServices.js", "href: " + href, overrideDebugForFile);
+                        logHelper.logDebug("brandServices.js", "newHref: " + newHref, overrideDebugForFile);
                     }
                 }
             }),
@@ -802,8 +1097,8 @@ define(
 
                         links[i].setAttribute('href', newHref);
 
-                        logHelper.logInfo("href: " + href);
-                        logHelper.logInfo("newHref: " + newHref);
+                        logHelper.logDebug("brandServices.js", "href: " + href, overrideDebugForFile);
+                        logHelper.logDebug("brandServices.js", "newHref: " + newHref, overrideDebugForFile);
                     }
                 }
             }),
@@ -867,10 +1162,10 @@ define(
                 const getBrandNameFn = this.getBrandName.bind(this);
                 const getBrandLogoFilePathFn = this.getBrandLogoFilePath.bind(this);
                 const getBrandLogoDescriptionFn = this.getBrandLogoDescription.bind(this);
-                const getSharePointUrlByKeyFn = this.getSharePointUrlByKey.bind(this);
+                const getSharePointUrlByKeyFn = this.getSharePointUrlByKeyAsync.bind(this);
                 const replaceLinkHrefFn = this.replaceLinkHref.bind(this);
                 let retVal = false;
-                logHelper.logInfo(`setCompanyInfo: Try to set the company header info`);
+                logHelper.logDebug("brandServices.js", `setCompanyInfo: Try to set the company header info`, overrideDebugForFile);
                 const setTextFn = this.setText.bind(this);
 
                 try {
@@ -890,8 +1185,8 @@ define(
                         shortNameSelector = constants("LOCAL_STORAGE_CURRENT_COMPANY_SHORT_NAME");
                         copyrightText = brandInfo[0].copyright;
                         copyrightSelector = constants("LOCAL_STORAGE_CURRENT_COPYRIGHT");
-                        logHelper.logInfo("Trying to retrieve the Brand Info");
-                        logHelper.logInfo(brandInfo[0].address);
+                        logHelper.logDebug("brandServices.js", "Trying to retrieve the Brand Info", overrideDebugForFile);
+                        logHelper.logDebug("brandServices.js", brandInfo[0].address, overrideDebugForFile);
                         //  var text = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_PAGE_TITLE"));
                         retVal = await setTextFn(addressSelector, addressText);
                         retVal = await setTextFn(cityStateSelector, cityStateText);
@@ -906,8 +1201,8 @@ define(
                             retVal = await setTextFn(brandNameSelector, brandNameText);
                         });
 
-                         //Set Home Link Url
-                         retVal = await getSharePointUrlByKeyFn("homepageUrl").then(async (url) => {
+                        //Set Home Link Url
+                        retVal = await getSharePointUrlByKeyFn("homepageUrl").then(async (url) => {
                             var newUrl = url;
                             logHelper.logInfo("after changing Home link" + url);
                             await replaceLinkHrefFn("currentHomeUrl", newUrl);
@@ -921,11 +1216,11 @@ define(
                                     logoDescription = respD;
                                 });
 
-                                logHelper.logInfo("Logo File Path: " + logoFilePath);
-                                logHelper.logInfo("Logo Description: " + logoDescription);
+                                logHelper.logDebug("brandServices.js", "Logo File Path: " + logoFilePath, overrideDebugForFile);
+                                logHelper.logDebug("brandServices.js", "Logo Description: " + logoDescription, overrideDebugForFile);
                                 //    // JSON.stringify(respC)
                                 //    var jObject = new JSONObject(respC);
-                                logHelper.logInfo(respC);
+                                logHelper.logDebug("brandServices.js", respC, overrideDebugForFile);
                                 const getBrandImagesFolderFn = this.getBrandImagesFolder.bind(this);
                                 const setImageFn = this.setImage.bind(this);
                                 const getBrandCssThemeFilePathFn = this.getBrandCssThemeFilePath.bind(this);
@@ -936,7 +1231,7 @@ define(
                                 const setCurrentTimeFn = this.setCurrentTime.bind(this);
                                 getBrandImagesFolderFn().then(async (fldr) => {
                                     imagesFolderPath = JSON.parse(fldr);
-                                    logHelper.logInfo("Images Folder Path: " + imagesFolderPath);
+                                    logHelper.logDebug("brandServices.js", "Images Folder Path: " + imagesFolderPath, overrideDebugForFile);
                                     var selector = constants("LOCAL_STORAGE_CURRENT_COMPANY_LOGO");
                                     var description = logoDescription;
                                     var logo = imagesFolderPath + logoFilePath;
@@ -949,311 +1244,131 @@ define(
                                     var divSelector = constants("LOCAL_STORAGE_CURRENT_BRAND_CSS_THEME_FILE");
                                     var whatChanged = await loadBrandStyleSheetFn(themeFilePath);
                                     await setCurrentTimeFn();
-                                    logHelper.logInfo("Link changed? " + whatChanged);
+                                    logHelper.logDebug("brandServices.js", "Link changed? " + whatChanged, overrideDebugForFile);
                                     return true;
                                 })
 
                             })
-      
+
                         return retVal;
                     })
                 }
                 catch (error) {
-                    logHelper.logInfo(error);
+                    logHelper.logDebug("brandServices.js", error, overrideDebugForFile);
                 }
 
             }),
 
-
-           
-
-
-            //******************************************************************************************** */
-            //UTILITY FUNCTIONS
-            
-            //Sets the innerText for an element;  The element MUST use the id attribute
-            setText: (async function (selector, text) {
-
-                logHelper.logInfo("Selector: " + selector + " - " + " Text: " + text);
-                const title = dom.byId(selector);
-                if (!title) {
-                    return false;
-                }
-                title.innerText = text;
-                return true;
-            }),
-
-            //Sets the image for an element;  The element MUST use the id attribute
-            setImage: (async function (selector, sourceText, altText) {
-
-                logHelper.logInfo("Selector: " + selector + " - " + " Text: " + altText);
-                const div = dom.byId(selector);
-                if (!div) {
-                    return false;
-                }
-                div.src = sourceText;
-                div.alt = altText;
-                return true;
-            }),
-
-            //Replaces the href attribute in a link;  The link MUST use the id attribute
-            replaceLinkHref: (async function (selector, newHref) {
-                logHelper.logInfo("Replace Link: Selector: " + selector + " , NewHRef: " + newHref);
-                const link = dom.byId(selector);
-                if (!link) {
-                    return false;
-                }
-                link.href = newHref;
-                logHelper.logInfo("Replace Link: Selector: " + selector + " , NewHRef: " + newHref);
-                return true;
-            }),
-//******************************************************************************************** */
-
-
-
-
-
-            // **************************************************************************************************************************
-            // The function below are now obsolete since we are using Power Automate to send emails
-            // They are being left here for posterity
-             //Obsolete - Emails are being queried in Power Automate
-             queryEmailDistributionList: (async function (brandId) {
-                const getSharePointUrlByKeyFn = this.getSharePointUrlByKey.bind(this);
-                const _brandId = brandId;
-                logHelper.logInfo("queryEmailDistributionList (JSON): Get all the Email Distribution data for brandId: " + brandId);
-
-                // Get all the Email Distribution data
-                await getSharePointUrlByKeyFn("siteCollectionUrl")
-                    .then((siteCollectionUrl) => {
-
-                        try {
-
-
-                            // resources are in URLs in the form:
-                            // web_url/_layouts/15/resource
-                            var scriptbase = siteCollectionUrl + "/_layouts/15/";
-                            // Load the js files and continue to the successHandler
-                            $.getScript(scriptbase + "SP.RequestExecutor.js", execCrossDomainRequest);
-                            function execCrossDomainRequest() {
-                                var executor = new SP.RequestExecutor(siteCollectionUrl);
-                                executor.executeAsync(
-                                    {
-                                        url:
-                                            siteCollectionUrl +
-                                            "/_api/web/lists/getbytitle('EmailDistributionList')/items",
-                                        headers: { "Accept": "Application/json; odata=verbose" },
-                                        method: "GET",
-                                        success: successHandler,
-                                        error: errorHandler
-                                    }
-                                );
-                            }
-                            // Function to handle the success event.                    
-                            distributionList = [];
-                            async function successHandler(data) {
-                                //Ran out of time but change this to use getBrandId
-                                var brandId = localStorage.getItem(constants("LOCAL_STORAGE_CURRENT_BRANDID"));
-                                // let brandId = '';
-                                // await getBrandIdFn().then(async (val) => {
-                
-                                //     brandId = val;
-                                // })
-                                //     .then(async () => {
-
-                               
-                                var jsonObject = JSON.parse(data.body);
-
-                                
-                                var d = jsonObject.d.results;
-                               
-
-                                var results = jsonObject.d.results;
-                                row = {};
-
-                                for (var i = 0; i < results.length; i++) {
-                                   
-                                    if (results[i].field_0 == brandId) {
-                                        var formType = results[i].Title;
-                                        var brandId = results[i].field_0;
-                                        var distributionType = results[i].field_2;
-                                        var emailTo = results[i].field_3;
-                                        var emailCC = results[i].field_4;
-                                        row = {
-                                            "brandId": brandId,
-                                            "formType": formType,
-                                            "distributionType": distributionType,
-                                            "emails": {
-                                                "emailTo": emailTo,
-                                                "emailCC": emailCC
-                                            }
-                                        };
-                                        
-                                        distributionList.push(row);
-                                    }
-
-                                }
-                                
-                                return distributionList;
-                            //})
-                            }
-
-                            // Function to handle the error event.
-                            function errorHandler(data, errorCode, errorMessage) {
-                                logHelper.logError("errorCode: " + errorCode);
-                                logHelper.logError("errorMessage: " + errorMessage);
-                            }
-
-
-                        } catch (error) {
-                            logHelper.logInfo(error);
-                            return false;
-                        }
-                    });
-            }),
-
-            //Cache Email Distribution Details
-            setEmailDistributionDetails: (async function (details) {
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_EMAIL_DISTRIBUTION_DETAILS"), JSON.stringify(details));
-
-                logHelper.logInfo("setEmailDistributionDetails: Email Distribution Details have been cached");
-                return true;
-            }),
-            getEmailDistributionDetails: (async function () {
-
-                var emailDistributionDetails = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_EMAIL_DISTRIBUTION_DETAILS"));
-                if (!emailDistributionDetails) {
-                    logHelper.logError("getEmailDistributionDetails: Email Distribution Details have not been cached");
-                    return false
-                }
-
-                return JSON.parse(emailDistributionDetails);
-            }),
-            //Get email distribution from SharePoint List by FormType and DistributionType (ex: "PurchaseOrder","default")
-            getEmailDistributionDetails: (async function (formType,distributionType) {
-                const emailDistributionDetailsFn = this.getEmailDistributionDetails.bind(this);
-                const emailDistributionDetails = await getEmailDistributionDetailsFn();
-                const emailDetails = [];
-                var queryText = `[?formType='${formType}&distributionType='${distributionType}']`
-                var item = dojox.json.query(queryText, emailDistributionDetails);
-                var emailTo = item[0]["emails"]["emailTo"];
-
-                if (!emailTo) {
-                    logHelper.logError("logHelper: emailTo has not been cached");
-                    return false
-                }
-                emailDetails.push(emailTo);
-                var emailCC = item[0]["emails"]["emailCC"];
-                if (!emailCC) {
-                    logHelper.logError("getEmailDistributionDetails: emailCC has not been cached");
-
-                }
-                emailDetails.push(emailCC);
-
-                var phone = item[0]["emails"]["phone"];
-
-                if (!phone) {
-                    logHelper.logError("logHelper: phone has not been cached");
-                    return false
-                }
-                emailDetails.push(phone);
-
-                var emailFrom = item[0]["emails"]["emailFrom"];
-
-                if (!emailFrom) {
-                    logHelper.logError("logHelper: emailFrom has not been cached");
-                    return false
-                }
-                emailDetails.push(emailFrom);
-                return emailDistributionDetails;
-            }),
-
-            //Get email distribution from SharePoint List by FormType, DistributionType, and UniqueIdentifier (ex: "Notification","ConstructionManager","TRAINER")
-            getEmailDistributionDetails: (async function (formType,distributionType, uniqueIdentifier) {
-                const emailDistributionDetailsFn = this.getEmailDistributionDetails.bind(this);
-                const emailDistributionDetails = await getEmailDistributionDetailsFn();
-                const emailDetails = [];
-                var queryText = `[?formType='${formType}&distributionType='${distributionType}&uniqueIdentifier='${uniqueIdentifier}']`
-                var item = dojox.json.query(queryText, emailDistributionDetails);
-                var emailTo = item[0]["emails"]["emailTo"];
-
-                if (!emailTo) {
-                    logHelper.logError("logHelper: emailTo has not been cached");
-                    return false
-                }
-                emailDetails.push(emailTo);
-                var emailCC = item[0]["emails"]["emailCC"];
-                if (!emailCC) {
-                    logHelper.logError("getEmailDistributionDetails: emailCC has not been cached");
-
-                }
-                emailDetails.push(emailCC);
-
-                var phone = item[0]["emails"]["phone"];
-
-                if (!phone) {
-                    logHelper.logError("logHelper: phone has not been cached");
-                    return false
-                }
-                emailDetails.push(phone);
-
-                var emailFrom = item[0]["emails"]["emailFrom"];
-
-                if (!emailFrom) {
-                    logHelper.logError("logHelper: emailFrom has not been cached");
-                    return false
-                }
-                emailDetails.push(emailFrom);
-                return emailDistributionDetails;
-            }),
-
-
-            //Cache Quote Details
-            setQuoteDetails: (async function (details) {
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_QUOTE_DETAILS"), JSON.stringify(details));
-
-                logHelper.logInfo("setQuoterDetails: Quote Details have been cached");
-                return true;
-            }),
-           
-            getQuoteDetails: (async function () {
-
-                var quoteDetails = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_QUOTE_DETAILS"));
-                if (!quoteDetails) {
-                    logHelper.logError("getQuoteDetails: Quote Details have not been cached");
-                    return false
-                }
-
-                return JSON.parse(quoteDetails);
-            }),
-            getQuoteEmailDetails: (async function (distributionType) {
-                const getQuoteDetailsFn = this.getQuoteDetails.bind(this);
-                const quoteDetails = await getQuoteDetailsFn();
-                const emailDetails = [];
-                var queryText = `[?distributionType='${distributionType}']`
-                var item = dojox.json.query(queryText, quoteDetails);
-                var emailTo = item[0]["emails"]["emailTo"];
-
-                if (!emailTo) {
-                    logHelper.logError("getQuoteEmailDetails: emailTo has not been cached");
-                    return false
-                }
-                emailDetails.push(emailTo);
-                var emailCC = item[0]["emails"]["emailCC"];
-                if (!emailCC) {
-                    logHelper.logError("getQuoteEmailDetails: emailCC has not been cached");
-
-                }
-                emailDetails.push(emailCC);
-                return emailDistributionDetails;
-            }),
 
             getReports: (async function (brandId) {
                 var url = "http://localhost:3000/BrandLinkMapping?BrandId=" + brandId;
                 var reports = store.query(url).then(async (res) => {
-                    logHelper.logInfo(res);
+                    logHelper.logDebug("brandServices.js", res, overrideDebugForFile);
                 });
-                logHelper.logInfo(reports);
+                logHelper.logDebug("brandServices.js", reports, overrideDebugForFile);
             }),
+
+            discardCircularRefs: (function (obj) {
+                document.querySelectorAll('iframe').forEach(iframe => iframe.remove());
+
+                let cache = [];
+                const globals = JSON.stringify(obj, (key, value) => {
+                    if (typeof value === 'object' && value !== null) {
+
+                        // Circular reference found, discard key
+                        if (cache.indexOf(value) !== -1) return;
+
+                        // Store value in our collection
+                        cache.push(value);
+                    }
+
+                    return value;
+                });
+
+                cache = null; // Enable garbage collection
+                console.log(globals);
+            })
+            ,
+            stringifyWithCircularRefs: (function (obj, space) {
+                const refs = new Map();
+                const parents = [];
+                const path = ["this"];
+
+                function clear() {
+                    refs.clear();
+                    parents.length = 0;
+                    path.length = 1;
+                }
+
+                try {
+                    parents.push(obj);
+                    return JSON.stringify(obj, checkCircular, space);
+                } finally {
+                    clear();
+                }
+
+
+                function updateParents(key, value) {
+                    var idx = parents.length - 1;
+                    var prev = parents[idx];
+                    if (prev[key] === value || idx === 0) {
+                        path.push(key);
+                        parents.push(value);
+                    } else {
+                        while (idx-- >= 0) {
+                            prev = parents[idx];
+                            if (prev[key] === value) {
+                                idx += 2;
+                                parents.length = idx;
+                                path.length = idx;
+                                --idx;
+                                parents[idx] = value;
+                                path[idx] = key;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                function checkCircular(key, value) {
+                    if (value != null) {
+                        if (typeof value === "object") {
+                            if (key) {
+                                logHelper.logDebug("brandServices.js", "Key: " + key, overrideDebugForFile);
+                                updateParents(key, value);
+                            }
+
+                            let other = refs.get(value);
+                            if (other) {
+                                return '[Circular Reference]' + other;
+                            } else {
+                                refs.set(value, path.join('.'));
+                            }
+                        }
+                    }
+
+                    logHelper.logDebug("brandServices.js", "Key: " + key + " | Value: " + value, overrideDebugForFile);
+                    return value;
+                }
+
+                // stringifyWithCircularRefs: (function(obj, space) {
+
+                //     function clear() {
+                //         refs.clear();
+                //         parents.length = 0;
+                //         path.length = 1;
+                //     }
+
+                //     try {
+                //         parents.push(obj);
+                //         return JSON.stringify(obj, checkCircular, space);
+                //     } finally {
+                //         clear();
+                //     }
+                // })
+            }
+            )
+
 
 
         }

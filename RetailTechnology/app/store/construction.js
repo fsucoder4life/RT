@@ -7,7 +7,7 @@ define(['app/store/combined','app/brands/services/brandServices','app/brands/ser
 	//console.log("construction.js before webUrl: " );
 	
      //var webUrl = brandServices.getsubSitePath();
-	 var webUrl = brandServices.getSharePointUrlByKey("subSitePath");
+	 var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
     $().SPServices.defaults.webURL = webUrl;
 	logHelper.logDebug("construction.js","webUrl: " +  webUrl);
     //$().SPServices.defaults.webURL = "/sites/SonicRTD";  // URL of the  target Web
@@ -163,7 +163,7 @@ define(['app/store/combined','app/brands/services/brandServices','app/brands/ser
     });
 
     constructionFields += "</ViewFields>";
-
+    logHelper.logDebug("construction.js", "viewFields: " + constructionFields);
     function loadData (options, callback) {
         //-------------------------------------------------------Report Build
         //Set construction to empty string if both queries are blank
@@ -249,6 +249,7 @@ define(['app/store/combined','app/brands/services/brandServices','app/brands/ser
                         });
 
                         data = combined;
+                        logHelper.logDebug('store/construction.js', "data: " + JSON.stringify(data));
                         complete();
                     }
                 });

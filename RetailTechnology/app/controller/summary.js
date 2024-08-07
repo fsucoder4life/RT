@@ -1,7 +1,7 @@
 define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues', 'app/store/notes', 'app/store/combined', 'app/rules/construction','app/brands/services/brandServices','app/brands/services/logHelper'], function (summary, construction, issueStore, noteStore, combined, constructionRules,brandServices,logHelper) {
 
 
-    var webUrl = brandServices.getSharePointUrlByKey("subSitePath");
+    var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
     $().SPServices.defaults.webURL = webUrl;
 
     function applyIssueEventListeners(view) {
@@ -1670,6 +1670,7 @@ var siteUrl2
 
     return {
         show: function (target, storeNumber, routeCheck) {
+            logHelper.logInfo("summary.js : target : " + JSON.stringify(target) + ", storeNumber: " + storeNumber + ", routeCheck: " + routeCheck);
             //Show summary
             summary.render({
                 storeNumber: storeNumber,

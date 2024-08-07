@@ -7,7 +7,7 @@ define(['app/store/issues', 'app/store/notes', 'app/store/sp-utility','app/brand
     //Point towards the sharepoint site
 	//console.log("combined.js before webUrl: ");
 	 //var webUrl = brandServices.getsubSitePath();
-    var webUrl = brandServices.getSharePointUrlByKey("subSitePath");
+    var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
      
     $().SPServices.defaults.webURL = webUrl;
 	logHelper.logDebug("combined.js","webUrl: " +  webUrl);

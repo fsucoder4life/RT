@@ -32,12 +32,12 @@ async function ApplyFilters() {
     if ($("input[name='orderdocsent']:checked").val() !== "ALL")
         orderdocsent = "/orderdocsent/" + $("input[name='orderdocsent']:checked").val();
 
-var webUrl = await brandServices.getSharePointUrlByKey("subSitePath");
+var webUrl = await brandServices.getSharePointUrlByKey("siteCollectionUrl");
     window.location.href = webUrl + "/index.aspx#reports/paymentmodprojectdates4" + itpm + startDate + endDate + sortByGoLiveDate + franchisee + sitesurveycompleted + orderdocsent;
     window.location.reload();
 }
 
-define(['app/view/reportPaymentmodprojectdates', 'app/store/combined', 'app/store/construction', 'app/store/combinedconstructionextend', 'app/rules/paymentmod','app/brand/services/brandServices'], function (report, combined, construction, combinedconstructionextend, paymentmodRules,brandServices) {
+define(['app/view/reportPaymentmodprojectdates', 'app/store/combined', 'app/store/construction', 'app/store/combinedconstructionextend', 'app/rules/paymentmod','app/brands/services/brandServices'], function (report, combined, construction, combinedconstructionextend, paymentmodRules,brandServices) {
     return {
         show: function (target, routeCheck, options) {
             var stores2 = [];

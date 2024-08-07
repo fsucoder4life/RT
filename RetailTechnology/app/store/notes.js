@@ -1,13 +1,13 @@
-define(['app/brands/services/brandServices'],async function(brandServices){
+define(['app/brands/services/brandServices', 'app/brands/services/logHelper'], function(brandServices,logHelper){
     //Setup
     //Turn Cross Origin Resource Sharing On to get sharepoint data from outside site
     $.support.cors = true;
     var listName = 'Project Notes';
 
     //Point towards the sharepoint site
-    var webUrl = await brandServices.getSharePointUrlByKey("subSitePath");
+    var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
     $().SPServices.defaults.webURL = webUrl;//  // URL of the target Web
-
+    logHelper.logDebug("issues.js", "webUrl: " + webUrl);
     //Request fields mapping from internal names
     var mapping = {
         ows_ID: {mappedName: "NoteId", objectType: "Text"},

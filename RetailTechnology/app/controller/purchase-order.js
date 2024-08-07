@@ -1,6 +1,6 @@
 define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'app/store/purchaseOrderItems', 'app/store/products', 'dojo/text!resources/style/main.css', 'dojo/text!resources/style/pure-min.css', 'app/store/combined', 'app/store/construction', 'app/utility/sp-utility', 'app/widget/widgetHelper', 'dojo/text!app/view/workflow/fabcon-purchase-order.html','app/brands/services/brandServices','app/brands/services/logHelper'],
   function (summary, purchaseOrderStore, purchaseOrderItemStore, products, mainCss, pureCss, combined, construction, spUtility, widgetHelper, emailTemplate,brandServices,logHelper) {
-      
+      logHelper.logInfo("purchase-order.js: Begin");
     //var purchaseOrderDetails = brandServices.getEmailDistributionDetails("purchaseOrder","default");
     const valEmailTo = "";
     const valEmailCC = "";
@@ -27,19 +27,19 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
       var siteUrl2
   var currentUser;
   function getCurrentUser(){
-    console.log("Inside getCurrentUser: ");
+    logHelper.logInfo("purchase-order.js: Inside getCurrentUser: ");
     var ctx= new SP.ClientContext.get_current();
-    console.log("Inside getCurrentUser: 2" + ctx);
+    logHelper.logInfo("purchase-order.js: Inside getCurrentUser: 2" + ctx);
     var web = ctx.get_web();
-    console.log("Inside getCurrentUser: 3 " + web);
+    logHelper.logInfo("purchase-order.js: Inside getCurrentUser: 3 " + web);
     currentUser = web.get_currentUser();
-    console.log("Current User: " + currentUser.UserName);
+    logHelper.logInfo("purchase-order.js: Current User: " + currentUser.UserName);
     // ctx.load(currentUser);
     // ctx.executeQueryAsync(onSuccess, onFailure);
     }
       function triggerWorkflow(store,workFlowType,hasAttachment,fileName) {
         try {
-            console.log("Inside triggerWorkFlow: " + workFlowType);
+            logHelper.logInfo("purchase-order.js: Inside triggerWorkFlow: " + workFlowType);
                 var siteUrl = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/";
                 getCurrentUser();
                 
@@ -66,7 +66,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
                      this.oListItem.set_item('AttachmentFileName',fileName);
                 }
                
-                console.log("Before updating the list:" + oList);
+               logHelper.logInfo("purchase-order.js: Before updating the list:" + oList);
                 oListItem.update();
             
                 clientContext.load(oListItem);
@@ -74,12 +74,12 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
         clientContext.executeQueryAsync(
             //Success callback
             () => {
-                console.log("Successfully created trigger request");                 
+                logHelper.logInfo("purchase-order.js: Successfully created trigger request");                 
                 alert("Workflow Trigger Created");
             },
             //Error callback
             (sender, args) => {
-                console.error("An error occured:", args.get_message());
+                logHelper.logError("purchase-order.js: An error occured:", args.get_message());
                 alert("Error creating trigger");
             }
             // Function.createDelegate(this, this.onQuerySucceeded), 
@@ -240,6 +240,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
       };
 
       self.buildPdf = async function (view, callback) {
+        logHelper.logInfo("purchase-order.js: Begin buildPdf");
         var pdfAPIUrl = await brandServices.getSharePointUrlByKey('api-pdfGenerator');
           //Make the date input plain html
           view.html.find('#po-delivery').closest('td').html(view.html.find('#po-delivery').val());
@@ -290,7 +291,9 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
       };
 
       self.sendUpdatedPurchaseOrder = function (store, purchaseOrder, msg, subject, to, cc, filePath, filename, callback) {
-          //Get the escaped body with no breaks
+        logHelper.logInfo("purchase-order.js: Begin sendUpdatedPurchaseOrder");  
+        //Get the escaped body with no breaks
+
           msg = spUtility.escapeXml(msg);
           subject = spUtility.escapeXml(subject);
           to = spUtility.escapeXml(to);
@@ -373,6 +376,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
       };
 
       self.show = function (target, options, routeCheck) {
+        logHelper.logInfo("purchase-order.js: Begin show by calling purchaseOrderStore.loadData");  
           //Get the purchase order
           purchaseOrderStore.loadData(function (purchaseOrders) {
               var po = purchaseOrders[0];
@@ -404,6 +408,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
       };
 
       self.sendUpdate = function (options) {
+        logHelper.logInfo("purchase-order.js: Begin sendUpdate");  
           //Options should contain a callback and purzchaseOrderId
           var callback = options.callback || function () { };
 
@@ -440,5 +445,6 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
               return true;
           });
       };
+      logHelper.logInfo("purchase-order.js: End");  
       return self;
   });

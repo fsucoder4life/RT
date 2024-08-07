@@ -1,10 +1,10 @@
-define(['app/brand/services/brandServices'],async function(brandServices){
+define(['app/brands/services/brandServices'],async function(brandServices){
     //Setup
     //Turn Cross Origin Resource Sharing On to get sharepoint data from outside site
     $.support.cors = true;
     var listName = 'Project Checklist';
 
-    let webUrl = await brandServices.getSharePointUrlByKey("subSitePath");
+    let webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
     //Point towards the sharepoint site
     $().SPServices.defaults.webURL = webUrl;  // URL of the target Web
 

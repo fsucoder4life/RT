@@ -1,4 +1,4 @@
-define(['app/view/project-review/report', 'app/rules/construction'], function (report, constructionRules) {
+define(['app/view/project-review/report', 'app/rules/construction', 'app/brands/services/logHelper'], function (report, constructionRules,logHelper) {
     return {
         show: function (target, routeCheck, options) {
             //Make sure options is an object
@@ -62,6 +62,7 @@ define(['app/view/project-review/report', 'app/rules/construction'], function (r
                 var keepers = [];
 
                 _.forEach(arr, function (store, index) {
+                    logHelper.logDebug('project-review2.js', "show/filter: " + JSON.stringify(store));
                     //Check to see if ITPM matches if passed, that signoffs haven't been submitted and the project status is not complete
                     var itpm = (typeof options.itpm === 'undefined' ? true : store.ProjectManager.toUpperCase().indexOf(options.itpm.toUpperCase()) !== -1),
                         notComplete = store.ProjectStatus.toUpperCase().indexOf('COMPLETE') === -1,

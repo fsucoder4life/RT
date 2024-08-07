@@ -17,7 +17,7 @@ define([
             options.callback = options.callback || function () { };
             options.dataStore = options.dataStore || construction;
             options.idField = options.idField || 'StoreNumber';
-            logHelper.logInfo("report.js render: " + options);
+            logHelper.logInfo("report.js render: " + JSON.stringify(options));
             //Turn the tableTemplate into a dom element
             var table = $($.parseHTML(tableTemplate));
 
