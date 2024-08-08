@@ -16,13 +16,15 @@ define(['app/view/report', 'app/rules/construction', 'app/email'], function (rep
                 CAMLRowLimit: 990,
                 listName: "Combined Schedule",
                 CAMLQuery: "<Query><Where><And><Geq><FieldRef Name='GO_x0020_LIVE_x0020_DATE' /><Value IncludeTimeValue='False' Type='DateTime'>2016-04-01T05:00:00.000Z</Value></Geq><Or><Eq><FieldRef Name='Project_x0020_Type' /><Value Type='Text'>New</Value></Eq><Or><Eq><FieldRef Name='Project_x0020_Type' /><Value Type='Text'>Remodel</Value></Eq><Or><Eq><FieldRef Name='Project_x0020_Type' /><Value Type='Text'>Relocation</Value></Eq><Eq><FieldRef Name='Project_x0020_Type' /><Value Type='Text'>Rebuild</Value></Eq></Or></Or></Or></And></Where><OrderBy><FieldRef Name='GO_x0020_LIVE_x0020_DATE' Ascending='False' /></OrderBy></Query>",
-                CAMLViewFields: "<ViewFields><FieldRef Name='Installation_x0020_Company' /><FieldRef Name='GO_x0020_LIVE_x0020_DATE' /><FieldRef Name='Title' /><FieldRef Name='POS_x0020_Selection' /><FieldRef Name='Project_x0020_Type' /><FieldRef Name='City' /><FieldRef Name='State_x0020_' /><FieldRef Name='POPS_x0020_Install_x0020_Date' /><FieldRef Name='Lead_x0020_Technician' /><FieldRef Name='POPS_x0020_Installer' /><FieldRef Name='IT_x0020_Project_x0020_Manager' /></ViewFields>",
+                CAMLViewFields: "<ViewFields><FieldRef Name='ID'/><FieldRef Name='Installation_x0020_Company' /><FieldRef Name='GO_x0020_LIVE_x0020_DATE' /><FieldRef Name='Title' /><FieldRef Name='POS_x0020_Selection' /><FieldRef Name='Project_x0020_Type' /><FieldRef Name='City' /><FieldRef Name='State_x0020_' /><FieldRef Name='POPS_x0020_Install_x0020_Date' /><FieldRef Name='Lead_x0020_Technician' /><FieldRef Name='POPS_x0020_Installer' /><FieldRef Name='IT_x0020_Project_x0020_Manager' /></ViewFields>",
                 async: false,
                 completefunc: function (xData, Status) {
 
                     $(xData.responseXML).SPFilterNode("z:row").each(function () {
 
                         var store = {};
+                        var storeId = $(this).attr("ows_ID");
+                        store.ID = storeId;
                         var storeNum = $(this).attr("ows_Title");
                         //storeNum = storeNum.substring(storeNum.indexOf(";#") + ";#".length);
                         store.StoreNumber = storeNum;
@@ -91,20 +93,20 @@ define(['app/view/report', 'app/rules/construction', 'app/email'], function (rep
                 operation: "GetListItems",
                 listName: "Construction_Calls",
                 CAMLQuery: CSquery,
-                CAMLViewFields: "<ViewFields><FieldRef Name='Store_x0020_Number' /><FieldRef Name='Installer_x0020_Arrival_x0020_Da' /><FieldRef Name='Project_x0020_Status' /><FieldRef Name='Test_x0020_Transaction_x0020_Sta' /><FieldRef Name='Install_x0020_Signoff_x0020_Stat' /><FieldRef Name='POS_x0020_Quote_x0020_Status' /><FieldRef Name='Installation_x0020_Status' /><FieldRef Name='Overnight_x0020_Install' /></ViewFields>",
+                CAMLViewFields: "<ViewFields><FieldRef Name='ID'/><FieldRef Name='Store_x0020_Number' /><FieldRef Name='Installer_x0020_Arrival_x0020_Da' /><FieldRef Name='Project_x0020_Status' /><FieldRef Name='Test_x0020_Transaction_x0020_Sta' /><FieldRef Name='Install_x0020_Signoff_x0020_Stat' /><FieldRef Name='POS_x0020_Quote_x0020_Status' /><FieldRef Name='Installation_x0020_Status' /><FieldRef Name='Overnight_x0020_Install' /></ViewFields>",
                 async: false,
                 completefunc: function (xData, Status) {
                     $(xData.responseXML).SPFilterNode("z:row").each(function () {
                         var storeNum = $(this).attr("ows_Store_x0020_Number");
                         storeNum = storeNum.substring(storeNum.indexOf(";#") + ";#".length);
-
-
+                        const rowId = extractRowId($(this).attr("ows_Store_x0020_Number"));
+                       // console.log("rowId: " + rowId + " | store Number: " + storeNum);                        
                         for (var i = 0; i < stores2.length; i++) {
                             //console.log("inside for: StoreNumber" + stores2[i].StoreNumber)
                             if (stores2[i].StoreNumber == storeNum) {
                                 //console.log("StoreNumber match found: " + stores2[i].StoreNumber + " - " + storeNum + " - " + $(this).attr("POS_x0020_Type"));
-                                
-
+                               
+                                stores2[i].CombinedId = rowId;
                                 stores2[i].InstallDate = $(this).attr("ows_Installer_x0020_Arrival_x0020_Da");
                                 if (!stores2[i].InstallDate)
                                     stores2[i].InstallDate = "";
@@ -140,6 +142,16 @@ define(['app/view/report', 'app/rules/construction', 'app/email'], function (rep
                     });
                 }
             });
+
+            function extractRowId(storeNumberString) {
+                // Find the position of the first occurrence of "'"
+                const start = storeNumberString.indexOf("'") + 1;
+                // Find the position of the first occurrence of ";#"
+                const end = storeNumberString.indexOf(";#");
+                // Extract the substring between the start and end positions
+                const rowId = storeNumberString.substring(start, end);
+                return rowId;
+            }
             function replaceAll(str, find, replace) {
                 return str.replace(new RegExp(find, 'g'), replace);
             }
