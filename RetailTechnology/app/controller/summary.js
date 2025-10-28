@@ -1,9 +1,9 @@
 define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues', 'app/store/notes', 'app/store/combined', 'app/rules/construction','app/brands/services/brandServices','app/brands/services/logHelper'], function (summary, construction, issueStore, noteStore, combined, constructionRules,brandServices,logHelper) {
 
 
-    var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
+    var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
     $().SPServices.defaults.webURL = webUrl;
-
+    const overrideDebugForFile = false;
     function applyIssueEventListeners(view) {
         var store = view.store;
         var promotionOrderDisplaySize = 55;
@@ -511,27 +511,17 @@ define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues'
         const formattedDate = date.toLocaleDateString();
         return `${year}${month}${day}${hours}${minutes}${seconds}`;
       }
-var siteUrl2
-      var currentUser;
-      function getCurrentUser(){
-         logHelper.logInfo("Inside getCurrentUser: ");
-        var ctx= new SP.ClientContext.get_current();
-         logHelper.logInfo("Inside getCurrentUser: 2" + ctx);
-        var web = ctx.get_web();
-         logHelper.logInfo("Inside getCurrentUser: 3 " + web);
-        currentUser = web.get_currentUser();
-         logHelper.logInfo("Current User: " + currentUser.UserName);
-        // ctx.load(currentUser);
-        // ctx.executeQueryAsync(onSuccess, onFailure);
-        }
+
     function triggerWorkflow(store,workFlowType,hasAttachment,fileName) {
+       
         try {
-            console.log("Inside triggerWorkFlow: " + workFlowType);
-                var siteUrl = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/";
-                getCurrentUser();
+            
+            logHelper.logDebug("controller/summary.js","Inside triggerWorkFlow: " + workFlowType,  overrideDebugForFile);
                 
-                console.log("siteUrl2: " + siteUrl2);
-                var clientContext = new SP.ClientContext(siteUrl);
+                var currentUser = localStorage.getItem("currentUser_userEmail");
+                prodWebUrl = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment";
+                logHelper.logDebug("controller/summary.js","webUrl: " + prodWebUrl);
+                var clientContext = new SP.ClientContext(prodWebUrl);
                 var oList = clientContext.get_web().get_lists().getByTitle('WorkFlowTriggerRequest');
                     
                 var itemCreateInfo = new SP.ListItemCreationInformation();
@@ -546,14 +536,14 @@ var siteUrl2
                 oListItem.set_item('Title', title);
                 oListItem.set_item('Store', store);
                 oListItem.set_item('WFType', workFlowType);
-                oListItem.set_item('RequestBy', currentUser.UserName);
+                oListItem.set_item('RequestBy', currentUser);
                 oListItem.set_item('DateRequested', new Date());
                 if (hasAttachment === true){
                      this.oListItem.set_item('HasAttachment',hasAttachment);
                      this.oListItem.set_item('AttachmentFileName',fileName);
                 }
                
-                console.log("Before updating the list:" + oList);
+                logHelper.logDebug("controller/summary.js","Before updating the list:" + oList,  overrideDebugForFile);
                 oListItem.update();
             
                 clientContext.load(oListItem);
@@ -561,13 +551,22 @@ var siteUrl2
         clientContext.executeQueryAsync(
             //Success callback
             () => {
-                console.log("Successfully created trigger request");                 
-                alert(`The ${workFlowType} workflow has been sent to the queue.`);
+                $(".modal").remove();
+                logHelper.logDebug("controller/summary.js","Successfully created trigger request",  overrideDebugForFile);        
+                let message = `The ${workFlowType} workflow request has been sent to the queue.`;         
+                alert(message);
+                //update.renderWorkflowUpdate(message);
+                
+               
             },
             //Error callback
             (sender, args) => {
-                console.error("An error occured:", args.get_message());
-                alert(`Error queueing the ${workFlowType} workflow, please try again.`);
+                logHelper.logError("An error occured:", args.get_message());
+                $(".modal").remove();
+                //alert(`Error queueing the ${workFlowType} workflow, please try again.`);
+                let message = `Error queueing the ${workFlowType} workflow, please try again.`;
+                alert(message);
+               // update.renderWorkflowUpdate(message);
             }
             // Function.createDelegate(this, this.onQuerySucceeded), 
             // Function.createDelegate(this, this.onQueryFailed)
@@ -584,7 +583,7 @@ var siteUrl2
         } catch (error) {
             return false;
         }
-        
+     
      
     }
     
@@ -599,15 +598,15 @@ var siteUrl2
             switch (view.Workflows.val()) {
                 
                 case 'audio-quote-request-workflow':
-                    console.log("Inside audio-quote-request-workflow:");
+                    logHelper.logDebug("controller/summary.js","Inside audio-quote-request-workflow:",  overrideDebugForFile);
                      triggerWorkflow(store.StoreNumber,"HMEAudioQuote",false, null);
                     break;
                 case 'promotion-order-workflow':
-                        console.log("Inside promotion-order-workflow:");
+                        logHelper.logDebug("controller/summary.js","Inside promotion-order-workflow:",  overrideDebugForFile);
                          triggerWorkflow(store.StoreNumber,"ProMotion",false, null);
                         break;
                 case 'hughes-request-workflow':
-					console.log("Inside hughes-request-workflow:");
+					logHelper.logDebug("controller/summary.js","Inside hughes-request-workflow:",  overrideDebugForFile);
 					 triggerWorkflow(store.StoreNumber,"ComcastRequest",false, null);
 					break;
                 case 'installer-quote-request':
@@ -800,7 +799,7 @@ var siteUrl2
                     break;
                
                 case 'submit-em-survey-workflow':
-                    console.log("Inside submit-em-survey-workflow:");
+                    logHelper.logDebug("controller/summary.js","Inside submit-em-survey-workflow:",  overrideDebugForFile);
                     require(['app/view/workflow/submit-em-survey'], function (quote) {
                             
                             //Show the upload form
@@ -955,7 +954,7 @@ var siteUrl2
                     });
                     break;
                 case 'hme-loop-request-workflow':
-                    console.log("Inside loop-request-workflow:");
+                    logHelper.logDebug("controller/summary.js","Inside loop-request-workflow:",  overrideDebugForFile);
                         triggerWorkflow(store.StoreNumber,"HMELoopRequest",false,null);
                     break;
                 case 'pos-data-order':
@@ -1048,17 +1047,17 @@ var siteUrl2
                     break;
                 
                 case 'updated-dates-workflow':
-                    console.log("Inside updated-dates-workflow:");
+                    logHelper.logDebug("controller/summary.js","Inside updated-dates-workflow:",  overrideDebugForFile);
                         triggerWorkflow(store.StoreNumber,"NotifyDateChange",false,null);
                     break;
                
                     case 'sonic-radio-order-workflow':
-                        logHelper.logInfo("Inside sonic-radio-order-workflow:");
+                        logHelper.logDebug("controller/summary.js","Inside sonic-radio-order-workflow:",  overrideDebugForFile);
                         triggerWorkflow(store.StoreNumber,"SonicRadio",false, null);
                     break;
                 
                 case 'servereps-setup-workflow':
-                     logHelper.logInfo("Inside servereps-setup-workflow:");
+                     logHelper.logDebug("controller/summary.js","Inside servereps-setup-workflow:",  overrideDebugForFile);
                     triggerWorkflow(store.StoreNumber,"ServerEPSSetup",false, null);
                     break;       
                 
@@ -1242,7 +1241,7 @@ var siteUrl2
                     });
                     break;
                     case 'fabcon-create-purchase-order-workflow':
-                         logHelper.logInfo("Inside fabcon-create-purchase-order-workflow:");
+                         logHelper.logDebug("controller/summary.js","Inside fabcon-create-purchase-order-workflow:",  overrideDebugForFile);
                         triggerWorkflow(store.StoreNumber,"FabconCPO",false, null);
                     break; 
                 case 'idtech-create-purchase-order':
@@ -1463,15 +1462,15 @@ var siteUrl2
                                                 quantity = parseFloat(eval(product.DefaultQuantityFieldSource));
                                                 store = store; //note - this is to ensure the store is available in the eval scope and doesn't get garbage collected
                                                 if (window.console)
-                                                    console.log("ADDED - fabcon-dtpops-create-purchase-order: " + product.Description);
+                                                    logHelper.logDebug("controller/summary.js","ADDED - fabcon-dtpops-create-purchase-order: " + product.Description,  overrideDebugForFile);
                                             } catch (e) {
                                                 quantity = 0;
                                                 if (window.console)
-                                                    console.log("NOT ADDED - fabcon-dtpops-create-purchase-order: " + product.Description);
+                                                    logHelper.logDebug("controller/summary.js","NOT ADDED - fabcon-dtpops-create-purchase-order: " + product.Description,  overrideDebugForFile);
                                             }
 
                                             if (window.console)
-                                                console.log("QTY fabcon-dtpops-create-purchase-order: " + product.Description + " QTY:" + quantity);
+                                                logHelper.logDebug("controller/summary.js","QTY fabcon-dtpops-create-purchase-order: " + product.Description + " QTY:" + quantity,  overrideDebugForFile);
                                         }
 
                                         //Create each line item
@@ -1586,7 +1585,7 @@ var siteUrl2
                 }
 
                 function uploadFile(file, fileName, next) {
-                     logHelper.logInfo(file + ", " + fileName + ", ");
+                     logHelper.logDebug("controller/summary.js",file + ", " + fileName + ", ",  overrideDebugForFile);
                     //Convert to Base 64
                     var reader = new FileReader();
                     reader.readAsDataURL(file);
@@ -1670,7 +1669,7 @@ var siteUrl2
 
     return {
         show: function (target, storeNumber, routeCheck) {
-            logHelper.logInfo("summary.js : target : " + JSON.stringify(target) + ", storeNumber: " + storeNumber + ", routeCheck: " + routeCheck);
+            logHelper.logDebug("controller/summary.js"," target : " + JSON.stringify(target) + ", storeNumber: " + storeNumber + ", routeCheck: " + routeCheck,  overrideDebugForFile);
             //Show summary
             summary.render({
                 storeNumber: storeNumber,

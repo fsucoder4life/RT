@@ -13,11 +13,11 @@
     "pageTitle": "Dunkin' Retail Technology - Development Projects",
     "siteTitle": "Dunkin' Retail Technology",
     "sharePointUrls": {
-        "siteCollectionUrl": "__siteCollectionUrl__",
+        "sharePointBaseUrl": "__siteCollectionUrl__",
         "subSitePath": "__siteCollectionUrl__/SitePages/RetailTechnologyProd",
         "homepageUrl":"__subSitePath__/index.aspx",
         "api-pdfGenerator": "https://api.html2pdfrocket.com/pdf",
-        "form-POSSurvey": "https://videoredirect.sonicdrivein.com/RetailTech/POSSurvey/?store=__store.StoreNumber__",
+        
         "list-CombinedSchedule": "__siteCollectionUrl__/Lists/Combined%20Schedule/DispForm.aspx?ID=__store.CombinedId__",
         "list-ConstructionCalls": "__siteCollectionUrl__/Lists/Construction%20Calls/",
         "list-ConstructionCalls-DispForm": "__list-ConstructionCalls__DispForm.aspx?ID=__store.ConstructionId__",
@@ -26,7 +26,7 @@
         "list-PurchaseOrders": "__siteCollectionUrl__/Lists/Purchase%20Order/AllItems.aspx?FilterField1=StoreNumber&FilterValue1=__store.StoreNumber__",
         "siteAssets-RenameListFileAttachments": "__siteCollectionUrl__/SiteAssets/RenameListFileAttachment.aspx",
         "sitePage-DailyUpdates": "__siteCollectionUrl__/DailyUpdates/index.aspx#__store.StoreNumber__/dailyupdate/gallery",
-        "sitePage-MasterPortal": "https://www.sonicpartnernet.com/public/master%20portal/store.aspx?store=__store.StoreNumber__",
+        
         "sitePage-PaymentSurveySignOff": "__siteCollectionUrl__/SitePages/PaymentSurveySignoff",
         "sitePage-PaymentSurveySignOff-survey": "__sitePage-PaymentSurveySignOff__/index.aspx#__store.StoreNumber__/survey",
         "sitePage-PaymentSurveySignOff-viewPhotosAllArea-surveyStart": "__sitePage-PaymentSurveySignOff__/ViewPhotosAllArea.html?store=__store.StoreNumber__&area=SurveyStart",

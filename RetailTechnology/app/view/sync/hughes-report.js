@@ -7,7 +7,7 @@ define([
         'dijit/registry',
         'app/brands/services/brandServices'
     ], async function (construction, template, TextBox, Button, report, registry,brandServices) {
-        var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
+        var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
         var combinedScheduleUrl = brandServices.getSharePointUrlByKey("list-CombinedSchedule");
         $().SPServices.defaults.webURL = webUrl;
         return {

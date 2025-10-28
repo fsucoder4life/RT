@@ -9,5 +9,5 @@
 		"favIcon": "favicon.ico"
 	},
 	"consoleLogging": "true",
-	"siteCollectionUrl":"https://irbpartners.sharepoint.com/sites/RetailTechnologyDev"
+	"sharePointBaseUrl":"https://irbpartners.sharepoint.com/sites/RetailTechnologyDev"
 }

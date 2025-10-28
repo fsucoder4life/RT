@@ -38,7 +38,7 @@ var siteUrl2
     function triggerWorkflow(store,workFlowType,hasAttachment,fileName) {
         try {
             console.log("Inside triggerWorkFlow: " + workFlowType);
-                var siteUrl = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/";
+                var siteUrl = "https://irbpartners.sharepoint.com/sites/RetailTechDeploymentDev/";
                 getCurrentUser();
                 
                 console.log("siteUrl2: " + siteUrl2);
@@ -335,7 +335,7 @@ function pdfUploadComplete(){
     //                 CC += "skalisek@avitprousa.com";
 
 
-    //             let baseUrl = await brandServices.getSharePointUrlByKey("siteCollectionUrl");
+    //             let baseUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
     //             //Show the quote
     //             form.render({
     //                 subject: 'Sonic #' + store.StoreNumber + ' Technology Installation Quote Request',

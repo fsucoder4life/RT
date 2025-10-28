@@ -5,7 +5,7 @@ define(['app/brands/services/brandServices', 'app/brands/services/logHelper'], f
     var listName = 'Project Notes';
 
     //Point towards the sharepoint site
-    var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
+    var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
     $().SPServices.defaults.webURL = webUrl;//  // URL of the target Web
     logHelper.logDebug("issues.js", "webUrl: " + webUrl);
     //Request fields mapping from internal names

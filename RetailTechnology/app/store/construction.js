@@ -7,7 +7,7 @@ define(['app/store/combined','app/brands/services/brandServices','app/brands/ser
 	//console.log("construction.js before webUrl: " );
 	
      //var webUrl = brandServices.getsubSitePath();
-	 var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
+	 var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
     $().SPServices.defaults.webURL = webUrl;
 	logHelper.logDebug("construction.js","webUrl: " +  webUrl);
     //$().SPServices.defaults.webURL = "/sites/SonicRTD";  // URL of the  target Web
@@ -128,7 +128,8 @@ define(['app/store/combined','app/brands/services/brandServices','app/brands/ser
         ows_OracleServer_x002d_First_x0020_D: { mappedName: 'OracleServerFirstDateScheduled', objectType: 'Text' },
         ows_OracleServer_x002d_Reason_x0020_: { mappedName: 'OracleServerReasonForScheduleChange', objectType: 'Text' },
         ows_OracleServer_x002d_RFC: { mappedName: 'OracleServerRFC', objectType: 'Text' },
-        ows_OracleServer_x002d_Opened_x0020_: { mappedName: 'OracleServerOpenedOnTime', objectType: 'Text' }
+        ows_OracleServer_x002d_Opened_x0020_: { mappedName: 'OracleServerOpenedOnTime', objectType: 'Text' },
+        ows_IT_x0020_Project_x0020_Manager: {mappedName: 'ProjectManager', objectType: 'Text'}
 
 
 

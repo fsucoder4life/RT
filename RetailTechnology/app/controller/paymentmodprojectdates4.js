@@ -32,7 +32,7 @@ async function ApplyFilters() {
     if ($("input[name='orderdocsent']:checked").val() !== "ALL")
         orderdocsent = "/orderdocsent/" + $("input[name='orderdocsent']:checked").val();
 
-var webUrl = await brandServices.getSharePointUrlByKey("siteCollectionUrl");
+var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
     window.location.href = webUrl + "/index.aspx#reports/paymentmodprojectdates4" + itpm + startDate + endDate + sortByGoLiveDate + franchisee + sitesurveycompleted + orderdocsent;
     window.location.reload();
 }

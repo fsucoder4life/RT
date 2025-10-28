@@ -4,7 +4,7 @@ define(['app/utility/sp-utility', 'app/brands/services/brandServices', 'app/bran
   var listName = 'Products';
   
   //Point towards the sharepoint site
-  var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
+  var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
   $().SPServices.defaults.webURL = webUrl + "/";//  // URL of the target Web
   logHelper.logDebug("products.js", "webUrl: " + webUrl);
   //Request fields mapping from internal names

@@ -7,7 +7,7 @@
     });
 }
     function triggerWorkflow(workFlowType) {
-        var url = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/"; // Replace placeholders
+        var url = "https://irbpartners.sharepoint.com/sites/RetailTechDeploymentDev/"; // Replace placeholders
                            
         var clientContext = new SP.ClientContext(url);
         var currentUser = getCurrentUser();
@@ -123,14 +123,14 @@
         <!--<div class="summary-box-label">Install Type:</div>  <input style="margin-bottom: 5px;" data-editable="HughesProjectType" class="summary-box-input" />-->
 
         <fieldset class="summary-box-connectivity-fieldset">
-            <legend>Backup</legend>
+            <legend>MES Delivery</legend>
             <input class="connectivity-status" placeholder="Status" data-editable="HughesVsatStatus" />
             <input class="connectivity-date" placeholder="Date" data-editable="HughesVsatDate">
             <input class="connectivity-date-type" placeholder="Type" data-editable="HughesVsatDateType">
         </fieldset>
 
         <fieldset class="summary-box-connectivity-fieldset">
-            <legend>Temp 4G</legend>
+            <legend>EAC Testing</legend>
             <input class="connectivity-status" placeholder="Status" data-editable="HughesTempStatus">
             <input class="connectivity-date" placeholder="Date" data-editable="HughesTempDate">
             <input class="connectivity-date-type" placeholder="Type" data-editable="HughesTempDateType">
@@ -730,7 +730,7 @@
         <!-- <option value="sonic-radio-order">Sonic Radio Order</option> -->
         <option value="sonic-radio-order-workflow">Sonic Radio Order</option>
         <option value="installer-quote-request">Installer Quote Request</option>
-        <option value="generate-pro-forma">Generate Summary</option>
+        <!-- <option value="generate-pro-forma">Generate Summary</option> -->
         <!-- <option value="updated-dates">Notify Date Changes</option> -->
         <option value="updated-dates-workflow">Notify Date Changes </option>
         <!-- <option value="hughes-request">Comcast Request</option> -->

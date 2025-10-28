@@ -27,7 +27,7 @@ define([
             LOCAL_STORAGE_CURRENT_SITE_TITLE: "applicationId",
             LOCAL_STORAGE_CURRENT_PAGE_TITLE: "CurrentAppTitle",
             LOCAL_STORAGE_CURRENT_BASE_URL: "BaseURL",
-            LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL: "siteCollectionUrl",
+            LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL: "sharePointBaseUrl",
             LOCAL_STORAGE_BRAND_SUBSITE_PATH: "subSitePath",
             LOCAL_STORAGE_BRAND_HOMEPAGE_URL: "homepageUrl",
             LOCAL_STORAGE_CURRENT_COPYRIGHT: "Copyright",

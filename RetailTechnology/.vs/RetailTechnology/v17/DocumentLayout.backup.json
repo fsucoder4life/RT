@@ -1,0 +1,524 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\construction.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\construction.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\controller\\project-review2.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\controller\\project-review2.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\view\\report.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\view\\report.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\view\\summary\\viewSummary.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\view\\summary\\viewSummary.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\user.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\user.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\updates.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\updates.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\purchaseOrderItems.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\purchaseOrderItems.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\products.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\products.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\fabConIDTechPurchaseOrderItems.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\fabConIDTechPurchaseOrderItems.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\combinedconstructionextend2.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\combinedconstructionextend2.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\combinedconstructionextend.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\combinedconstructionextend.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\checklist.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\checklist.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\combined.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\combined.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\notes.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\notes.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\issues.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\issues.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\purchaseOrders.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\purchaseOrders.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\view\\summary\\summary.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\view\\summary\\summary.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\purchaseOrders.js.bak||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\store\\purchaseOrders.js.bak||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\services\\apiServices.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\brands\\services\\apiServices.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\view\\sync\\hughes-report.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\view\\sync\\hughes-report.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\controller\\idtech-purchase-order.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\controller\\idtech-purchase-order.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\controller\\fabcon-id-tech-purchase-order.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\controller\\fabcon-id-tech-purchase-order.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\index.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:index.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\services\\brandServices.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\brands\\services\\brandServices.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\infrastructure\\models\\constants.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\brands\\infrastructure\\models\\constants.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\services\\test.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\brands\\services\\test.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\services\\brandServices_old.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\brands\\services\\brandServices_old.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\controller\\summary.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\controller\\summary.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\storeSearch.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:storeSearch.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitLabRepos\\retail-technology\\RetailTechnology\\storeSearch.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:storeSearch.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\clayton.gause\\AppData\\Local\\Temp\\1\\TFSTemp\\vctmp23384_470593.index.39b214ca.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "viewSummary.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\view\\summary\\viewSummary.js",
+              "RelativeDocumentMoniker": "app\\view\\summary\\viewSummary.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\view\\summary\\viewSummary.js",
+              "RelativeToolTip": "app\\view\\summary\\viewSummary.js",
+              "ViewState": "AQIAABUAAAAAAAAAAAAAAEMAAAACAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T17:18:18.625Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "project-review2.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\controller\\project-review2.js",
+              "RelativeDocumentMoniker": "app\\controller\\project-review2.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\controller\\project-review2.js",
+              "RelativeToolTip": "app\\controller\\project-review2.js",
+              "ViewState": "AQIAAAIAAAAAAAAAAAAQwEMAAAAjAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T16:41:05.346Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "user.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\user.js",
+              "RelativeDocumentMoniker": "app\\store\\user.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\user.js",
+              "RelativeToolTip": "app\\store\\user.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAABLAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T16:36:51.142Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "purchaseOrderItems.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\purchaseOrderItems.js",
+              "RelativeDocumentMoniker": "app\\store\\purchaseOrderItems.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\purchaseOrderItems.js",
+              "RelativeToolTip": "app\\store\\purchaseOrderItems.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAACWAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T16:35:57.128Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "construction.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\construction.js",
+              "RelativeDocumentMoniker": "app\\store\\construction.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\construction.js",
+              "RelativeToolTip": "app\\store\\construction.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T16:34:45.055Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "report.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\view\\report.js",
+              "RelativeDocumentMoniker": "app\\view\\report.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\view\\report.js",
+              "RelativeToolTip": "app\\view\\report.js",
+              "ViewState": "AQIAAAsAAAAAAAAAAAAxwBMAAABMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T17:21:49.68Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "products.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\products.js",
+              "RelativeDocumentMoniker": "app\\store\\products.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\products.js",
+              "RelativeToolTip": "app\\store\\products.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAACSAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T16:34:58.457Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "notes.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\notes.js",
+              "RelativeDocumentMoniker": "app\\store\\notes.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\notes.js",
+              "RelativeToolTip": "app\\store\\notes.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAA5AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T16:32:31.103Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "issues.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\issues.js",
+              "RelativeDocumentMoniker": "app\\store\\issues.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\issues.js",
+              "RelativeToolTip": "app\\store\\issues.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAABvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T16:31:19.702Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "purchaseOrders.js.bak",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\purchaseOrders.js.bak",
+              "RelativeDocumentMoniker": "app\\store\\purchaseOrders.js.bak",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\purchaseOrders.js.bak",
+              "RelativeToolTip": "app\\store\\purchaseOrders.js.bak",
+              "ViewState": "AQIAAD4BAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-08-02T02:26:45.095Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "apiServices.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\services\\apiServices.js",
+              "RelativeDocumentMoniker": "app\\brands\\services\\apiServices.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\services\\apiServices.js",
+              "RelativeToolTip": "app\\brands\\services\\apiServices.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T02:23:16.541Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "idtech-purchase-order.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\controller\\idtech-purchase-order.js",
+              "RelativeDocumentMoniker": "app\\controller\\idtech-purchase-order.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\controller\\idtech-purchase-order.js",
+              "RelativeToolTip": "app\\controller\\idtech-purchase-order.js",
+              "ViewState": "AQIAAIcAAAAAAAAAAAAAAJAAAAAhAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T02:18:36.857Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "hughes-report.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\view\\sync\\hughes-report.js",
+              "RelativeDocumentMoniker": "app\\view\\sync\\hughes-report.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\view\\sync\\hughes-report.js",
+              "RelativeToolTip": "app\\view\\sync\\hughes-report.js",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAqwAoAAAAvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T02:18:14.69Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "fabConIDTechPurchaseOrderItems.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\fabConIDTechPurchaseOrderItems.js",
+              "RelativeDocumentMoniker": "app\\store\\fabConIDTechPurchaseOrderItems.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\fabConIDTechPurchaseOrderItems.js",
+              "RelativeToolTip": "app\\store\\fabConIDTechPurchaseOrderItems.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAcAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T02:17:46.677Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "fabcon-id-tech-purchase-order.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\controller\\fabcon-id-tech-purchase-order.js",
+              "RelativeDocumentMoniker": "app\\controller\\fabcon-id-tech-purchase-order.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\controller\\fabcon-id-tech-purchase-order.js",
+              "RelativeToolTip": "app\\controller\\fabcon-id-tech-purchase-order.js",
+              "ViewState": "AQIAAKQAAAAAAAAAAAAAALAAAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T02:17:17.201Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "combinedconstructionextend2.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\combinedconstructionextend2.js",
+              "RelativeDocumentMoniker": "app\\store\\combinedconstructionextend2.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\combinedconstructionextend2.js",
+              "RelativeToolTip": "app\\store\\combinedconstructionextend2.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAeAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T02:17:02.542Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "combinedconstructionextend.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\combinedconstructionextend.js",
+              "RelativeDocumentMoniker": "app\\store\\combinedconstructionextend.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\combinedconstructionextend.js",
+              "RelativeToolTip": "app\\store\\combinedconstructionextend.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAeAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T02:16:54.255Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "purchaseOrders.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\purchaseOrders.js",
+              "RelativeDocumentMoniker": "app\\store\\purchaseOrders.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\purchaseOrders.js",
+              "RelativeToolTip": "app\\store\\purchaseOrders.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAB4AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T02:12:45.43Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "checklist.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\checklist.js",
+              "RelativeDocumentMoniker": "app\\store\\checklist.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\checklist.js",
+              "RelativeToolTip": "app\\store\\checklist.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAeAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T02:15:41.284Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "combined.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\combined.js",
+              "RelativeDocumentMoniker": "app\\store\\combined.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\combined.js",
+              "RelativeToolTip": "app\\store\\combined.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T02:08:22.266Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "updates.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\updates.js",
+              "RelativeDocumentMoniker": "app\\store\\updates.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\store\\updates.js",
+              "RelativeToolTip": "app\\store\\updates.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAABkAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T02:05:39.581Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "constants.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\infrastructure\\models\\constants.js",
+              "RelativeDocumentMoniker": "app\\brands\\infrastructure\\models\\constants.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\infrastructure\\models\\constants.js",
+              "RelativeToolTip": "app\\brands\\infrastructure\\models\\constants.js",
+              "ViewState": "AQIAABUAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-02T00:24:56.409Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "test.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\services\\test.js",
+              "RelativeDocumentMoniker": "app\\brands\\services\\test.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\services\\test.js",
+              "RelativeToolTip": "app\\brands\\services\\test.js",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAAAAAAAAAGAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-01T23:59:55.516Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "brandServices_old.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\services\\brandServices_old.js",
+              "RelativeDocumentMoniker": "app\\brands\\services\\brandServices_old.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\services\\brandServices_old.js",
+              "RelativeToolTip": "app\\brands\\services\\brandServices_old.js",
+              "ViewState": "AQIAAH4AAAAAAAAAAAAQwBMAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-01T23:34:39.164Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "brandServices.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\services\\brandServices.js",
+              "RelativeDocumentMoniker": "app\\brands\\services\\brandServices.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\brands\\services\\brandServices.js",
+              "RelativeToolTip": "app\\brands\\services\\brandServices.js",
+              "ViewState": "AQIAAAMEAAAAAAAAAAArwBMEAAA4AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-01T20:42:17.449Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "summary.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\view\\summary\\summary.js",
+              "RelativeDocumentMoniker": "app\\view\\summary\\summary.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\view\\summary\\summary.js",
+              "RelativeToolTip": "app\\view\\summary\\summary.js",
+              "ViewState": "AQIAAHQAAAAAAAAAAAAuwHsAAAAcAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-01T20:38:35.807Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "summary.js",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\controller\\summary.js",
+              "RelativeDocumentMoniker": "app\\controller\\summary.js",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\app\\controller\\summary.js",
+              "RelativeToolTip": "app\\controller\\summary.js",
+              "ViewState": "AQIAAH0GAAAAAAAAAAAAAIQGAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-01T18:54:35.421Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "index.aspx",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\index.aspx",
+              "RelativeDocumentMoniker": "index.aspx",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\index.aspx",
+              "RelativeToolTip": "index.aspx",
+              "LogicalView": "7651a703-06e5-11d1-8ebd-00a0c90f26ea",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000195|",
+              "WhenOpened": "2024-08-01T18:38:32.003Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "storeSearch.html",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\storeSearch.html",
+              "RelativeDocumentMoniker": "storeSearch.html",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\storeSearch.html",
+              "RelativeToolTip": "storeSearch.html",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2024-08-01T18:52:15.376Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "storeSearch.aspx",
+              "DocumentMoniker": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\storeSearch.aspx",
+              "RelativeDocumentMoniker": "storeSearch.aspx",
+              "ToolTip": "C:\\GitLabRepos\\retail-technology\\RetailTechnology\\storeSearch.aspx",
+              "RelativeToolTip": "storeSearch.aspx",
+              "LogicalView": "7651a703-06e5-11d1-8ebd-00a0c90f26ea",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000195|",
+              "WhenOpened": "2024-08-01T18:51:01.773Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "vctmp23384_470593.index.39b214ca.aspx",
+              "DocumentMoniker": "C:\\Users\\clayton.gause\\AppData\\Local\\Temp\\1\\TFSTemp\\vctmp23384_470593.index.39b214ca.aspx",
+              "RelativeDocumentMoniker": "..\\..\\..\\Users\\clayton.gause\\AppData\\Local\\Temp\\1\\TFSTemp\\vctmp23384_470593.index.39b214ca.aspx",
+              "ToolTip": "C:\\Users\\clayton.gause\\AppData\\Local\\Temp\\1\\TFSTemp\\vctmp23384_470593.index.39b214ca.aspx",
+              "RelativeToolTip": "..\\..\\..\\Users\\clayton.gause\\AppData\\Local\\Temp\\1\\TFSTemp\\vctmp23384_470593.index.39b214ca.aspx",
+              "LogicalView": "7651a703-06e5-11d1-8ebd-00a0c90f26ea",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000195|",
+              "WhenOpened": "2024-08-01T18:38:03.154Z"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -175,6 +175,7 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
 
       self.buildPdf = async function (view, callback) {
         var pdfAPIUrl = brandServices.getSharePointUrlByKey('api-pdfGenerator');
+        console.log("fabcon-id-tech-purchase-order.js | pdfAPIUrl: " + pdfAPIUrl)
           //Make the date input plain html
           view.html.find('#po-delivery').closest('td').html(view.html.find('#po-delivery').val());
 
@@ -229,12 +230,16 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
               reader.readAsDataURL(req.response);
           };
 
-          //Send request
-          req.open("POST", pdfAPIUrl);
-          req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-          req.responseType = "blob";
-          req.send("MarginLeft=1&MarginRight=1&MarginTop=1&MarginBottom=1&apikey=dca86da0-12d0-4620-a58b-eb7e1936df7c&value=" + encodeURIComponent(html));
+          var data = {
+            apiKey : 'dca86da0-12d0-4620-a58b-eb7e1936df7c',
+            html: JSON.stringify(html)
+          }
 
+          //Send request
+          req2.open("POST", pdfAPIUrl);
+          req2.setRequestHeader('Content-type', 'application/json');
+          req2.responseType = "blob";
+          req2.send(data);
 
 
 
@@ -291,11 +296,16 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
               reader.readAsDataURL(req2.response);
           };
 
+          var data = {
+            apiKey : 'dca86da0-12d0-4620-a58b-eb7e1936df7c',
+            html: JSON.stringify(html)
+          }
+
           //Send request
           req2.open("POST", pdfAPIUrl);
-          req2.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+          req2.setRequestHeader('Content-type', 'application/json');
           req2.responseType = "blob";
-          req2.send("MarginLeft=1&MarginRight=1&MarginTop=1&MarginBottom=1&apikey=dca86da0-12d0-4620-a58b-eb7e1936df7c&value=" + encodeURIComponent(html));
+          req2.send(data);
       };
 
       self.sendUpdatedPurchaseOrder = function (store, purchaseOrder, msg, subject, to, cc, filePath, filename, filePath2, filename2, callback) {

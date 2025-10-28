@@ -104,7 +104,7 @@ define([
 ], function (construction, combined, combinedconstructionextend, issues, notes, updateStore, constructionSummaryTemplate, conversionSummaryTemplate, OTISummaryTemplate, notesTemplate, issuesTemplate, renameTemplate, deleteTemplate, searchController, dropdown, datePicker, textfield, widgetHelper, router,
              DropDownButton, Button, Select, DropDownMenu, Dialog, uuid, registry, purchaseOrderStore, brandServices, logHelper) {
 
-    var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
+    var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
     logHelper.logInfo("view/summary.js | webUrl: " + webUrl);
     function typeCheck(options) {
         var query = new CamlBuilder().Where().TextField('Title').EqualTo(options.storeNumber);
@@ -3341,7 +3341,7 @@ define([
 
 
     function triggerWorkflow(workFlowType) {
-        var url = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/"; // Replace placeholders
+        var url = "https://irbpartners.sharepoint.com/sites/RetailTechDeploymentDev/"; // Replace placeholders
                            
         var clientContext = new SP.ClientContext(url);
         

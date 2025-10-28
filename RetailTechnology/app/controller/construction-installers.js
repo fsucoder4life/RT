@@ -105,7 +105,7 @@ define(['app/view/report', 'app/rules/construction', 'app/email'], function (rep
                             //console.log("inside for: StoreNumber" + stores2[i].StoreNumber)
                             if (stores2[i].StoreNumber == storeNum) {
                                 //console.log("StoreNumber match found: " + stores2[i].StoreNumber + " - " + storeNum + " - " + $(this).attr("POS_x0020_Type"));
-                               
+                                stores2[i].ConstructionId = $(this).attr("ows_ID");
                                 stores2[i].CombinedId = rowId;
                                 stores2[i].InstallDate = $(this).attr("ows_Installer_x0020_Arrival_x0020_Da");
                                 if (!stores2[i].InstallDate)

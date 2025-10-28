@@ -4,7 +4,7 @@ define(['app/brands/services/brandServices', 'app/brands/services/logHelper'], f
     $.support.cors = true;
 
     //Point towards the sharepoint site
-    var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
+    var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
     $().SPServices.defaults.webURL = webUrl;//  // URL of the target Web
     logHelper.logDebug("user.js", "webUrl: " + webUrl);
     function loadData () {

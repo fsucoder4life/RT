@@ -40,7 +40,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
       function triggerWorkflow(store,workFlowType,hasAttachment,fileName) {
         try {
             logHelper.logInfo("purchase-order.js: Inside triggerWorkFlow: " + workFlowType);
-                var siteUrl = "https://irbpartners.sharepoint.com/sites/RetailTechDeployment/";
+                var siteUrl = "https://irbpartners.sharepoint.com/sites/RetailTechDeploymentDev/";
                 getCurrentUser();
                 
                 console.log("siteUrl2: " + siteUrl2);

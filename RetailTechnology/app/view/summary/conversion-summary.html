@@ -1,4 +1,48 @@
-<div class="summary-row">Daniel_smith2@comcast.com; randy_gersten@comcast.com
+<script language="javascript">
+    function getCurrentUser()  {
+    //Load the user data
+    return $().SPServices.SPGetCurrentUser({
+        fieldNames: ["FirstName", "LastName", "UserName"],
+        debug: false
+    });
+}
+    function triggerWorkflow(workFlowType) {
+        var url = "https://irbpartners.sharepoint.com/sites/RetailTechDeploymentDev/"; // Replace placeholders
+                           
+        var clientContext = new SP.ClientContext(url);
+        var currentUser = getCurrentUser();
+
+        // var webContext = clientContext.get_web();  
+        //         currentUser = webContext.get_currentUser();
+        var oList = clientContext.get_web().get_lists().getByTitle('WorkFlowTriggerRequest');
+            console.log("After retrieving the list:" + oList);
+        var itemCreateInfo = new SP.ListItemCreationInformation();
+        this.oListItem = oList.addItem(itemCreateInfo);
+        oListItem.set_item('Title', 'HCMAudioQuote - Trigger');
+        oListItem.set_item('Store', '9999');
+        oListItem.set_item('WFType', workFlowType);
+        oListItem.set_item('RequestBy', currentUser.UserName);
+        oListItem.set_item('DateRequested', new Date());
+        console.log("Before updating the list:" + oList);
+        oListItem.update();
+    
+        clientContext.load(oListItem);
+        clientContext.executeQueryAsync(
+            Function.createDelegate(this, this.onQuerySucceeded), 
+            Function.createDelegate(this, this.onQueryFailed)
+        );
+    }
+    
+    function onQuerySucceeded() {
+        alert('Item created: ' + oListItem.get_id());
+    }
+    
+    function onQueryFailed(sender, args) {
+        alert('Request failed. ' + args.get_message() + 
+            '\n' + args.get_stackTrace());
+    }
+</script> 
+    <div class="summary-row">
     <div class="summary-box summary-box-side" style="min-height:490px;">
         <div class="summary-box-title">Store Contact</div>
         <div style="float: left;">#</div><div data-display="StoreNumber" id="store-number" style="width: 90%; float: left;"></div>
@@ -550,7 +594,7 @@
         <!-- <option value="sonic-radio-order">Sonic Radio Order</option> -->
         <option value="sonic-radio-order-workflow">Sonic Radio Order</option>
         <option value="installer-quote-request">Installer Quote Request</option>
-        <option value="generate-pro-forma">Generate Summary</option>
+        <!-- <option value="generate-pro-forma">Generate Summary</option> -->
         <!-- <option value="updated-dates">Notify Date Changes</option> -->
         <option value="updated-dates-workflow">Notify Date Changes </option>
         <!-- <option value="hughes-request">Comcast Request</option> -->

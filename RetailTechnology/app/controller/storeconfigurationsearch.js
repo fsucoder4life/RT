@@ -34,7 +34,7 @@ async function ApplyFilters() {
     //if ($("input[name='orderdocsent']:checked").val() !== "ALL")
     //    orderdocsent = "/orderdocsent/" + $("input[name='orderdocsent']:checked").val();
 
-    var webUrl = await brandServices.getSharePointUrlByKey("siteCollectionUrl");
+    var webUrl = await brandServices.getSharePointUrlByKey("sharePointBaseUrl");
     $().SPServices.defaults.webURL = webUrl;//
     window.location.href = webUrl + "/index.aspx#reports/storeconfigurationsearch" + type + stallRange + driveThru + POS + audio + dinein ;
     window.location.reload();

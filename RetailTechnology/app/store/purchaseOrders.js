@@ -4,7 +4,7 @@ define(['app/utility/sp-utility', 'dojo/number', 'app/brands/services/brandServi
         var listName = 'Purchase Order';
 
         //Point towards the sharepoint site
-        var webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
+        var webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
         logHelper.logDebug("purchaseOrders.js", "webUrl: " + webUrl);
         //Request fields mapping from internal names,
         var today = moment().format('M/D');

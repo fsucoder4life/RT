@@ -28,14 +28,14 @@ define(['app/view/report', 'app/rules/construction', 'app/email', 'app/widget/wi
                     return address + "<br/>" + store.City + ", " + store.State + " " + store.Zip
                 }},
                 {key: 'HughesNotes', title: 'Notes', minWidth: '200px', width: '200px', editable: true},
-                {key: 'HughesVsat', title: 'Backup', width: '150px', transform: function (status, store, stores, index) {
+                {key: 'HughesVsat', title: 'MES Delivery', width: '150px', transform: function (status, store, stores, index) {
                     var html = '<input data-editable="HughesVsatDate" style="' + topLeftStyle +'" />' +
                       '<input data-editable="HughesVsatDateType" style="' + topRightStyle +'" /><br/>' +
                       '<input data-editable="HughesVsatStatus" style="' + bottomStyle +'" />';
                     return html;
 
                 }},
-                {key: 'HughesTemp4G', title: 'Temp 4G', width: '150px', transform: function (status, store, stores, index) {
+                {key: 'HughesTemp4G', title: 'EAC Testing', width: '150px', transform: function (status, store, stores, index) {
                     var html = '<input data-editable="HughesTempDate" style="' + topLeftStyle +'" />' +
                       '<input data-editable="HughesTempDateType" style="' + topRightStyle +'" /><br/>' +
                       '<input data-editable="HughesTempStatus" style="' + bottomStyle +'" />';

@@ -20,6 +20,7 @@ define(
             //Start App
             startApp: (async function () {
                 const setBrandIdFn = this.setBrandId.bind(this);
+                const setUserFn = this.getCurrentUser.bind(this);
                 const params = new Proxy(new URLSearchParams(window.location.search), {
                     get: (searchParams, prop) => searchParams.get(prop),
                 });
@@ -31,10 +32,27 @@ define(
                 }
                 //Don't use logHelper yet, it hasn't been loaded
                 logHelper.logDebug("brandServices.js", "Start app for brandId: " + brandId, overrideDebugForFile);
+                await setUserFn();
                 retVal = await setBrandIdFn(brandId);
 
                 return retVal;
 
+            }),
+
+            getCurrentUser: (async function(){
+                var currentUser;
+                
+                    this.clientContext = new SP.ClientContext.get_current();
+                    this.oWeb = clientContext.get_web();
+                    currentUser = this.oWeb.get_currentUser();
+                    if (currentUser){
+                        var curUser = "Current User: " + currentUser.get_email();
+                            localStorage.setItem("currentUser_userLoginName", currentUser.get_loginName());
+                            localStorage.setItem("currentUser_userId", currentUser.get_id());
+                            localStorage.setItem("currentUser_userTitle", currentUser.get_title());
+                            localStorage.setItem("currentUser_userEmail", currentUser.get_email());
+                            localStorage.setItem("CurrentUser",currentUser);
+                    }  
             }),
 
             //Load Base config.json
@@ -55,9 +73,9 @@ define(
 
 
                         var consoleLogging = (json.consoleLogging === 'true');
-                        var siteCollectionUrl = json.siteCollectionUrl;
+                        var sharePointBaseUrl = json.sharePointBaseUrl;
                         retVal = await setLoggingFlagFn(consoleLogging);
-                        retVal = await setsiteCollectionUrlFn(siteCollectionUrl);
+                        retVal = await setsiteCollectionUrlFn(sharePointBaseUrl);
                         if (consoleLogging) {
                             console.log("brandServices.js - loadConfigFile: Verbose logging has been enabled");
                         }
@@ -229,7 +247,7 @@ define(
                                     stringified = stringified.replace(/__subSitePath__/g, varsubSitePath);
                                     logHelper.logInfo("Stringified: " + stringified);
                                     //Brand specific SharePoint Base Url; will be used to replace placeholders to build the some of the SharePoint Urls
-                                    //const siteCollectionUrl = SPUrls["siteCollectionUrl"];
+                                    //const sharePointBaseUrl = SPUrls["sharePointBaseUrl"];
                                     SPUrls = JSON.parse(stringified);
                                     const subSitePath = SPUrls["subSitePath"];
                                     var homepageUrl = SPUrls["homepageUrl"];
@@ -682,8 +700,8 @@ define(
             setSharePointUrls: (async function (baseUrl, homepageUrl, pdfApi, posSurvey, combSchedule, constrCalls, constrCalls2, quoteGen,
                 levelOrders, dailyUpdates, siteAssets, masterPortal, surveySignOff, survSignOff2, surveySignOff3, surveySignOff4,
                 surveySignOff5, surveySignOff6, projectReview, retailTech, retailTech2, retailTech3, retailTech4) {
-                //setting siteCollectionUrl in config.json
-                //localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL"), siteCollectionUrl);
+                //setting sharePointBaseUrl in config.json
+                //localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL"), sharePointBaseUrl);
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SUBSITE_PATH"), baseUrl);
                 localStorage.setItem(constants("LOCAL_STORAGE_BRAND_HOMEPAGE_URL"), homepageUrl);
                 localStorage.setItem(constants("LOCAL_STORAGE_API_GENERATE_PDF"), pdfApi);
@@ -806,19 +824,19 @@ define(
             }),
 
             //Cache Host Url
-            setsiteCollectionUrl: (async function (siteCollectionUrl) {
-                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL"), siteCollectionUrl);
+            setsiteCollectionUrl: (async function (sharePointBaseUrl) {
+                localStorage.setItem(constants("LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL"), sharePointBaseUrl);
                 logHelper.logInfo("setsiteCollectionUrl: Host Web Url cached");
                 return true;
             }),
 
             getsiteCollectionUrl: (async function () {
-                var siteCollectionUrl = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL"));
-                if (!siteCollectionUrl) {
+                var sharePointBaseUrl = localStorage.getItem(constants("LOCAL_STORAGE_BRAND_SITE_COLLECTION_URL"));
+                if (!sharePointBaseUrl) {
                     logHelper.logError("getsiteCollectionUrl: Host Web Url not set");
                     return null;
                 }
-                return siteCollectionUrl;
+                return sharePointBaseUrl;
             }),
 
             //Cache BrandId

@@ -30,7 +30,7 @@ define([
 ], function (construction, combined, combinedconstructionextend, issues, notes, updateStore, constructionSummaryTemplate, conversionSummaryTemplate, OTISummaryTemplate, notesTemplate, issuesTemplate, renameTemplate, deleteTemplate, searchController, dropdown, datePicker, textfield, widgetHelper, router,
              DropDownButton, Button, Select, DropDownMenu, Dialog, uuid, registry, purchaseOrderStore, brandServices) {
                
-                const webUrl = brandServices.getSharePointUrlByKey("siteCollectionUrl");
+                const webUrl = brandServices.getSharePointUrlByKey("sharePointBaseUrl");
                 const masterPortalUrl = brandServices.getSharePointUrlByKey("sitePage-MasterPortal");
                 $().SPServices.defaults.webURL = webUrl;
                 var storeCombinedId = 0;

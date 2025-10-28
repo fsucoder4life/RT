@@ -48,7 +48,7 @@ define([
                 addItemSelect.append('<option value="0">Add Item</option>');
                 _.each(me.products, function (product) {
                     if (_.findIndex(me.purchaseOrderItems, { ProductId: product.ProductId }) === -1) {
-                        addItemSelect.append('<option value="' + product.ProductId + '">' + product.Description + '</option>');
+                        addItemSelect.append('<option value="' + product.ProductId + '">' + product.Vendor + " - "+ product.Description + '</option>');
                     }
                 });
             };

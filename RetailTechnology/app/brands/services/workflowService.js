@@ -31,7 +31,7 @@ return {
         try {
       console.log('Inside triggerWorkFlow: ' + workFlowType)
       var siteUrl =
-        'https://irbpartners.sharepoint.com/sites/RetailTechDeployment/';
+        'https://irbpartners.sharepoint.com/sites/RetailTechDeploymentDev/';
       const currentUser = 'clayton.gause@inspirebrands.com';
 
       var clientContext = new SP.ClientContext(siteUrl)

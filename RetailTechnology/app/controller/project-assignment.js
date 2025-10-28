@@ -1,4 +1,4 @@
-define(['app/view/project-assignment/project-assignment', 'app/store/combined', 'app/store/construction', "dojo/hash", "dojo/number", 'app/rules/construction'], function (view, combined, construction, hash, dNumber, constructionRules) {
+define(['app/view/project-assignment/project-assignment', 'app/store/combined', 'app/store/construction', "dojo/hash", "dojo/number", 'app/rules/construction','app/brands/services/logHelper'], function (view, combined, construction, hash, dNumber, constructionRules,logHelper) {
     return {
         show: function (target, routeCheck, options) {
             //Pull a list of projects and calculate the workload for each PM
@@ -19,7 +19,7 @@ define(['app/view/project-assignment/project-assignment', 'app/store/combined', 
             query =  "<Query>" + query.ToString() + "</Query>";
 
             construction.loadData({combinedQuery: query}, function (stores) {
-                var katigan = 0, bryant = 0, stephen = 0, russ = 0, barrett = 0, jason = 0, matt = 0, lauren = 0, dylan = 0, unassigned = 0, liz = 0, laurenActive = 0, dylanActive = 0, katiganActive = 0, bryantActive = 0, russActive = 0, stephenActive = 0, barrettActive = 0, jasonActive = 0, lizActive = 0, mattActive = 0, unassignedActive = 0, active = 0;
+                var katigan = 0, bryant = 0, stephen = 0, russ = 0, bailey = 0, jason = 0, matt = 0, lauren = 0, dylan = 0, unassigned = 0, liz = 0, laurenActive = 0, dylanActive = 0, katiganActive = 0, bryantActive = 0, russActive = 0, stephenActive = 0, baileyActive = 0, jasonActive = 0, lizActive = 0, mattActive = 0, unassignedActive = 0, active = 0;
                 _.forEach(stores, function (store, index) {
                     
                     //if (store.ProjectManager.toUpperCase().indexOf('STEPHEN') === 0) {
@@ -28,10 +28,10 @@ define(['app/view/project-assignment/project-assignment', 'app/store/combined', 
                     //}
 
                     //console.log("PM: " + store.ProjectManager.ToString());
-
-                    if (store.ProjectManager.toUpperCase().indexOf('BARRETT') === 0) {
-                        barrett++;
-                        if (store.ProjectStatus !== 'NOC') barrettActive++;
+                    logHelper.logDebug('project-assignment.js','Store: ' + store.StoreNumber + " | ProjectStatus: " + store.ProjectStatus + " | ProjectManager: " + store.ProjectManager);
+                    if (store.ProjectManager.toUpperCase().indexOf('BAILEY') > -1) {
+                        bailey++;
+                        if (store.ProjectStatus !== 'NOC') baileyActive++;
                     } else if (store.ProjectManager.toUpperCase().indexOf('ELIZABETH') === 0) {
                         liz++;
                         if (store.ProjectStatus !== 'NOC') lizActive++;
@@ -63,13 +63,13 @@ define(['app/view/project-assignment/project-assignment', 'app/store/combined', 
                 });
                 //workload.push({ ProjectManager: 'Stephen Tremaine', Workload: stephen, Active: stephenActive });
                 
-                workload.push({ProjectManager: 'Barrett Seal', Workload: barrett, Active: barrettActive});
+                workload.push({ProjectManager: 'Paige Bailey', Workload: bailey, Active: baileyActive});
                 //workload.push({ProjectManager: 'Liz Sannes', Workload: liz, Active: lizActive});
                 
                 workload.push({ ProjectManager: 'Emily Boatright', Workload: jason, Active: jasonActive });
                 workload.push({ ProjectManager: 'Josh Rice', Workload: bryant, Active: bryantActive });
                 //workload.push({ ProjectManager: 'Russell Katigan', Workload: katigan, Active: katiganActive });
-                workload.push({ ProjectManager: 'Kaitlyn Childers', Workload: lauren, Active: laurenActive });
+               // workload.push({ ProjectManager: 'Kaitlyn Childers', Workload: lauren, Active: laurenActive });
                 workload.push({ ProjectManager: 'Dylan Gehlbach', Workload: dylan, Active: dylanActive });
                 workload.push({ProjectManager: 'Unassigned', Workload: unassigned, Active: unassignedActive});
                 workload.push({ProjectManager: '<b>Total:</b>', Workload: '<b>' + stores.length + '</b>', Active: '<b>' + active + '</b>'});
