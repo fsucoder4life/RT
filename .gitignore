@@ -1,6 +1,7 @@
 node_modules
 SPGo.json
 .git/
+**/.vs/
 RetailTechnology/index_ctg.aspx
 RetailTechnology/index5.aspx
 RetailTechnology/.vs/slnx.sqlite
