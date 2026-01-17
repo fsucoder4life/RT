@@ -58,7 +58,7 @@ define(['app/view/report', 'app/store/purchaseOrders', 'app/store/combined', 'ap
                       var total = parseFloat(purchaseOrderStore.getTotal(po)) + parseFloat(po.ActualTaxCost === '' ? 0 : po.ActualTaxCost) + parseFloat(po.ActualShippingCost === '' ? 0 : po.ActualShippingCost);
                       return dNumber.format(total.toString(), {places: 2, locale: 'en-us'});
                     }},
-                    {key: 'FabConTotal', title: 'FabCon<br/>Total', editable: true, transform: function (value, po, pos, i) {
+                    {key: 'ISCTotal', title: 'ISC<br/>Total', editable: true, transform: function (value, po, pos, i) {
                       return dNumber.format(value, {places: 2, locale: 'en-us'});
                     }},
                     {key: 'IdTechTotal', title: 'ID Tech<br/>Total', editable: true, transform: function (value, po, pos, i) {
@@ -308,7 +308,7 @@ define(['app/view/report', 'app/store/purchaseOrders', 'app/store/combined', 'ap
                     },
                     afterChange: function (view, key, value, po, revertBackground, response) {
                       //Format if it's a number field
-                      if (key === 'ActualTaxCost' || key === 'ActualShippingCost' || key === 'FabConTotal' || key === 'IdTechTotal') {
+                      if (key === 'ActualTaxCost' || key === 'ActualShippingCost' || key === 'ISCTotal' || key === 'IdTechTotal') {
                         //Find the changed element
                         var el = view.el.find('#store-' + po.PurchaseOrderId + '-' + key);
                         el.html(dNumber.format(el.html().replace(/\,/g, ''), {places: 2, locale: 'en-us'}));

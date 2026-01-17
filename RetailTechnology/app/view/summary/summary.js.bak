@@ -1788,15 +1788,15 @@ define([
                 console.log("POS - Total Cost - Addition Error:" + err.message);
             }
 
-            //FabCon - Total Cost:
+            //ISC - Total Cost:
             try {
-                var FabConCostTotal = Big(currReplace(store.FABCONCost))
+                var ISCCostTotal = Big(currReplace(store.FABCONCost))
                     .plus(Big(currReplace(store.IDTECHCost)));
-                summary.find('#FabConTotalCost').text(formatMoney(FabConCostTotal));
-                store.FabConTotalCost = FabConCostTotal;
+                summary.find('#ISCTotalCost').text(formatMoney(ISCCostTotal));
+                store.ISCTotalCost = ISCCostTotal;
             }
             catch (err) {
-                console.log("FabCon - Total Cost - Addition Error:" + err.message);
+                console.log("ISC - Total Cost - Addition Error:" + err.message);
             }
 
             //Store Configuration - Total Cost:

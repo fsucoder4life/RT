@@ -26,7 +26,7 @@ define(['app/view/report'], function (report) {
             ];
 
             //Define report title
-            var title = 'FabCon - Historical';
+            var title = 'ISC - Historical';
 
             //Define sorting
             var sort = {

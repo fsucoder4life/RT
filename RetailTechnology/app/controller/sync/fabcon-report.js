@@ -95,7 +95,7 @@ define(['app/view/sync/fabcon-report', 'app/view/report', 'app/store/combined', 
                         compareStore.ProjectType = store.ProjectType;
                         //If it exists, check to see if any dates/quantities are mismatchd
                         if (moment(compareStore.PopsDeliveryDate, 'YYYY-MM-DD').diff(moment(store.PopsDeliveryDate), 'days') !== 0) {
-                            store.FabConDeliveryDate = compareStore.PopsDeliveryDate;
+                            store.ISCDeliveryDate = compareStore.PopsDeliveryDate;
                             diff.delivery.push(store);
                         }
                         //Stalls

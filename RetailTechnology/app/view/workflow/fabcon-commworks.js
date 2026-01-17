@@ -19,7 +19,7 @@ define([
                     t = $(popsTemplate);
                     //Create input boxes for the to/from/cc/subject fields
                     me.subject = new TextBox({
-                        value: "Store #" + store.StoreNumber + " - " + store.City + " " + store.State + " - FabCon/CommWorks POPS Purchase Order Initiation",
+                        value: "Store #" + store.StoreNumber + " - " + store.City + " " + store.State + " - ISC/CommWorks POPS Purchase Order Initiation",
                         style: "width: 100%"
                     }, $(t).find('#subject')[0]);
     
@@ -33,7 +33,7 @@ define([
                     t = $(dtBaseTemplate);
                     //Create input boxes for the to/from/cc/subject fields
                     me.subject = new TextBox({
-                        value: "Store #" + store.StoreNumber + " - " + store.City + " " + store.State + " - FabCon/CommWorks DT Base Kit Order Initiation",
+                        value: "Store #" + store.StoreNumber + " - " + store.City + " " + store.State + " - ISC/CommWorks DT Base Kit Order Initiation",
                         style: "width: 100%"
                     }, $(t).find('#subject')[0]);
     

@@ -31,7 +31,7 @@ require(['app/store/products', 'app/store/purchaseOrders', 'app/store/purchaseOr
                 ShippingCity: store.City,
                 ShippingState: store.State,
                 DeliveryDate: store.PopsDeliveryDate,
-                PoType: 'FabCon'
+                PoType: 'ISC'
             }, function (po) {
                 //Recalculate total stalls in case it's been updated since the request
                 store.TotalStalls = (store.StallCount !== '' ? parseInt(store.StallCount) : 0) + (store.PatioCount !== '' ? parseInt(store.PatioCount) : 0);

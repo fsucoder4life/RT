@@ -61,7 +61,7 @@ This project is intended as a more intuitive and specialized access mechanism to
 ###Tools
  * Development Report Synchronization
  * Hughes Report Synchronization
- * FabCon Report Synchronization
+ * ISC Report Synchronization
  * Summary Estimate Generator - Generate multiple summary estimates by uploading a list of store numbers and POS amounts
 
 ###Store Summary View

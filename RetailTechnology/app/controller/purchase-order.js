@@ -106,7 +106,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
           // emailTo: 'Stephen.Tremaine@sonicdrivein.com; ',
           // emailCc: 'Stephen.Tremaine@sonicdrivein.com; ',
           buildSubject: function (po) {
-              return po.ShippingCity + ', ' + po.ShippingState + ' #' + po.StoreNumber + ' - FabCon Purchase Order';
+              return po.ShippingCity + ', ' + po.ShippingState + ' #' + po.StoreNumber + ' - ISC Purchase Order';
           },
           buildBody: function (po, store) {
               var lastDocument = _.last(po.Documents);
@@ -196,7 +196,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
             //                   cc: self.emailCc,
             //                   body: self.buildBody(view.purchaseOrder, store),
             //                   button: 'Send Purchase Order',
-            //                   title: 'FabCon Purchase Order',
+            //                   title: 'ISC Purchase Order',
             //                   callback: function (mailView) {
             //                       //Grab the most current document
             //                       var lastDocument = _.last(view.purchaseOrder.Documents);
@@ -211,7 +211,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
             //                           mailView.submit.setDisabled(true);
 
             //                           self.sendUpdatedPurchaseOrder(stores[0], purchaseOrder, mailView.message.getData(), mailView.subject.getValue(), mailView.to.getValue(), mailView.cc.getValue(), lastDocument.FilePath, lastDocument.FileName, function () {
-            //                               if (purchaseOrder.PoType === 'FabCon - DT POPS') {
+            //                               if (purchaseOrder.PoType === 'ISC - DT POPS') {
             //                                   construction.changeValue('DtPopsBaseStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
             //                                       //Hide the view & go back to the summary 
             //                                       mailView.dialog.hide();
@@ -317,7 +317,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
                             filePath2 = $node.text(),
                             arrString = filePath2.split("/"),
                             fileName2 = arrString[arrString.length - 1];
-                          if (fileName2.indexOf("FabCon Credit Packet") > -1) {
+                          if (fileName2.indexOf("ISC Credit Packet") > -1) {
 
                               fabconCreditPacketFilename = spUtility.escapeXml(fileName2);
                               fabconCreditPacketFileURL = spUtility.escapeXml(filePath2);
@@ -422,8 +422,8 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
                       //IDTech
                       if (view.purchaseOrder.PoType)
                           if (view.purchaseOrder.PoType.indexOf('IDTech') > -1) {
-                              bodyTemp = bodyTemp.replace("FabCon", "IDTech");
-                              subjectTemp = subjectTemp.replace("FabCon", "IDTech");
+                              bodyTemp = bodyTemp.replace("ISC", "IDTech");
+                              subjectTemp = subjectTemp.replace("ISC", "IDTech");
                               self.emailTo = 'justin.ning@idtechproducts.com; sandy.lee@itsco.net; Victoria.chan@itsco.net; grace.jin@idtechproducts.com; ';
                               self.emailCc = 'nsti@sonicdrivein.com; Charles.Cease@sonicdrivein.com; spadmin@sonicdrivein.com; ';
 

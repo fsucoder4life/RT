@@ -17,7 +17,7 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
           // emailTo: 'Stephen.Tremaine@sonicdrivein.com; ',
           // emailCc: 'Stephen.Tremaine@sonicdrivein.com; ',
           buildSubject: function (po) {
-              return po.ShippingCity + ', ' + po.ShippingState + ' #' + po.StoreNumber + ' - FabCon/ID Tech Purchase Order';
+              return po.ShippingCity + ', ' + po.ShippingState + ' #' + po.StoreNumber + ' - ISC/ID Tech Purchase Order';
           },
           buildBody: function (po, store) {
               var lastDocument = _.last(po.Documents);
@@ -100,7 +100,7 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
                               cc: self.emailCc,
                               body: self.buildBody(view.purchaseOrder, store),
                               button: 'Send Purchase Order',
-                              title: 'FabCon/ID Tech Purchase Order',
+                              title: 'ISC/ID Tech Purchase Order',
                               callback: function (mailView) {
                                   //Grab the most current document
                                   
@@ -112,10 +112,10 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
                                       if (view.purchaseOrder.Documents[i].FileName.indexOf("ID Tech") > -1)
                                           IDTechDocuments.push(view.purchaseOrder.Documents[i]);
 
-                                  var FabConDocuments = [];
+                                  var ISCDocuments = [];
                                   for (var i = 0; i < view.purchaseOrder.Documents.length; i++)
-                                      if (view.purchaseOrder.Documents[i].FileName.indexOf("FabCon") > -1)
-                                          FabConDocuments.push(view.purchaseOrder.Documents[i]);
+                                      if (view.purchaseOrder.Documents[i].FileName.indexOf("ISC") > -1)
+                                          ISCDocuments.push(view.purchaseOrder.Documents[i]);
                                   
                                   function compare(a, b) {
                                       if (a.version < b.version) {
@@ -127,16 +127,16 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
                                       return 0;
                                   }
 
-                                  FabConDocuments.sort(compare);
+                                  ISCDocuments.sort(compare);
                                   IDTechDocuments.sort(compare);
 
-                                  var lastFabConDocument = _.last(FabConDocuments);
+                                  var lastISCDocument = _.last(ISCDocuments);
                                   var lastIDTechDocument = _.last(IDTechDocuments);
 
                                   
                                   
                                   //Add a link to the attachment
-                                  $('span[widgetid="submit-button"]').after("Attachment: <a href='" + encodeURI(lastFabConDocument.FilePath) + "'>" + lastFabConDocument.FileName + "</a> - <a href='" + encodeURI(lastIDTechDocument.FilePath) + "'>" + lastIDTechDocument.FileName + "</a>");
+                                  $('span[widgetid="submit-button"]').after("Attachment: <a href='" + encodeURI(lastISCDocument.FilePath) + "'>" + lastISCDocument.FileName + "</a> - <a href='" + encodeURI(lastIDTechDocument.FilePath) + "'>" + lastIDTechDocument.FileName + "</a>");
 
 
                                   //Add event handler for click
@@ -144,8 +144,8 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
                                       //Disable the button
                                       mailView.submit.setDisabled(true);
 
-                                      self.sendUpdatedPurchaseOrder(stores[0], purchaseOrder, mailView.message.getData(), mailView.subject.getValue(), mailView.to.getValue(), mailView.cc.getValue(), lastFabConDocument.FilePath, lastFabConDocument.FileName, lastIDTechDocument.FilePath, lastIDTechDocument.FileName, function () {
-                                          if (purchaseOrder.PoType === 'FabCon - DT POPS') {
+                                      self.sendUpdatedPurchaseOrder(stores[0], purchaseOrder, mailView.message.getData(), mailView.subject.getValue(), mailView.to.getValue(), mailView.cc.getValue(), lastISCDocument.FilePath, lastISCDocument.FileName, lastIDTechDocument.FilePath, lastIDTechDocument.FileName, function () {
+                                          if (purchaseOrder.PoType === 'ISC - DT POPS') {
                                               construction.changeValue('DtPopsBaseStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
                                                   //Hide the view & go back to the summary 
                                                   mailView.dialog.hide();
@@ -216,7 +216,7 @@ define(['app/view/purchase-order/fabcon-id-tech-purchase-order', 'app/store/purc
                   //Save resulting base 64 string to sharepoint
                   purchaseOrderStore.getDocuments(view.purchaseOrder, function (purchaseOrder) {
                       //Build filename
-                      fileName = "FabCon Purchase Order - " + view.purchaseOrder.PurchaseOrderId;
+                      fileName = "ISC Purchase Order - " + view.purchaseOrder.PurchaseOrderId;
                       if (purchaseOrder.Documents.length > 0) {
                           fileName += '- revision ' + (view.purchaseOrder.Documents.length);
                       }

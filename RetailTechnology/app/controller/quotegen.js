@@ -396,7 +396,7 @@ function pdfUploadComplete(){
     //                         return;
 
     //                         //self.sendUpdatedPurchaseOrder(purchaseOrder, mailView.message.getData(), mailView.subject.getValue(), mailView.to.getValue(), mailView.cc.getValue(), lastDocument.FilePath, lastDocument.FileName, function () {
-    //                         //    if (purchaseOrder.PoType === 'FabCon - DT POPS') {
+    //                         //    if (purchaseOrder.PoType === 'ISC - DT POPS') {
     //                         //        construction.changeValue('DtPopsBaseStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
     //                         //            //Hide the view & go back to the summary
     //                         //            mailView.dialog.hide();

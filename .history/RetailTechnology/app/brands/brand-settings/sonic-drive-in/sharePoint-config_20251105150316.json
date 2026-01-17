@@ -1,0 +1,88 @@
+{
+    "name": "Sonic Drive-In Corporate",
+    "companyInfo": {
+        "copyright": "",
+        "companyLegalName": "",
+        "companyShortName": "Sonic",
+        "companyStreetAddress": "300 Johnny Bench Drive",
+        "companyCityState": "Oklahoma City, OK",
+        "companyZipCode": "73104",
+        "companyPhone": "405-272-1670"
+    },
+    "homeUrl": "",   
+    "pageTitle": "Retail Technology - Development",
+    "siteTitle": "Sonic Retail Technology",
+    "sharePointUrls": {
+        "sharePointBaseUrl": "__siteCollectionUrl__",
+        "subSitePath": "__siteCollectionUrl__/SitePages/RetailTechnologyProd",
+        "homepageUrl":"__subSitePath__/index.aspx",
+        
+        "api-pdfGenerator": "https://260eccd49cf7e5b9b601f8691bec6c.00.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a56b3f7fff0c4aaba45871abf8d69d5a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=jJLm9JF3znMMl2XBwzeIM5nPTalde-LhdveCUvykMX8",        
+        "list-CombinedSchedule": "__siteCollectionUrl__/Lists/Combined%20Schedule/DispForm.aspx?ID=__store.CombinedId__",
+        "list-ConstructionCalls": "__siteCollectionUrl__/Lists/Construction%20Calls/",
+        "list-ConstructionCalls-DispForm": "__list-ConstructionCalls__DispForm.aspx?ID=__store.ConstructionId__",
+        "list-InstallQuoteGen": "__siteCollectionUrl__/Lists/InstallQuoteGen/1_.000",
+        "list-Level2010Orders": "__siteCollectionUrl__/Lists/Level%2010%20Orders/__id.000__",
+        "list-PurchaseOrders": "__siteCollectionUrl__/Lists/Purchase%20Order/AllItems.aspx?FilterField1=StoreNumber&FilterValue1=__store.StoreNumber__",
+        "siteAssets-RenameListFileAttachments": "__siteCollectionUrl__/SiteAssets/RenameListFileAttachment.aspx",
+        "sitePage-DailyUpdates": "__siteCollectionUrl__/DailyUpdates/index.aspx#__store.StoreNumber__/dailyupdate/gallery",
+        
+        "sitePage-PaymentSurveySignOff": "__siteCollectionUrl__/SitePages/PaymentSurveySignoff",
+        "sitePage-PaymentSurveySignOff-survey": "__sitePage-PaymentSurveySignOff__/index.aspx#__store.StoreNumber__/survey",
+        "sitePage-PaymentSurveySignOff-viewPhotosAllArea-surveyStart": "__sitePage-PaymentSurveySignOff__/ViewPhotosAllArea.html?store=__store.StoreNumber__&area=SurveyStart",
+        "sitePage-PaymentSurveySignOff-viewPhotosAllArea": "__sitePage-PaymentSurveySignOff__/ViewPhotosAllArea.html?store=__store.StoreNumber__&area=Signoff&area2=HardwareInstallation&area3=HardwareRemoval&area4=NetworkConnectivity&area5=PaymentTerminal",
+        "sitePage-PaymentSurveySignOff-checkin": "__sitePage-PaymentSurveySignOff__/index.aspx#__store.StoreNumber__/checkin",
+        "sitePage-PaymentSurveySignOff-dailyUpdate": "__sitePage-PaymentSurveySignOff__/index.aspx#__store.StoreNumber__/dailyupdate",
+        "sitePage-ProjectReviewPaymod": "__siteCollectionUrl__#project-review-paymod__itpm____startDate____endDate____sortByGoLiveDate____franchisee____sitesurveycompleted____orderdocsent__",
+        "sitePage-RetailTechnology": "__siteCollectionUrl__/index.aspx",
+        "sitePage-RetailTechnology-search": "__sitePage-RetailTechnology__#search/{searchTerms}",
+        "sitePage-RetailTechnology-paymentModProjectDates": "__sitePage-RetailTechnology__#reports/paymentmodprojectdates__itpm____startDate____endDate____sortByGoLiveDate____franchisee____sitesurveycompleted____orderdocsent__",
+        "sitePage-RetailTechnology-storeConfigurationSearch": "__sitePage-RetailTechnology__#reports/storeconfigurationsearch__type____stallRange____driveThru____POS____audio____dinein__"
+    },
+   
+    "hyperlinks": {
+        "store": [],
+        "checklist": [
+            {
+                "title": "",
+                "name": "",
+                "url": ""
+            }
+        ],
+        "pos": [
+            {
+                "title": "Oracle - Construction",
+                "name": "Oracle - Construction",
+                "url": "__sitePage-RetailTechnology__#index"
+            },
+            {
+                "title": "Oracle - Conversion",
+                "name": "Oracle - Conversion",
+                "url": "__sitePage-RetailTechnology__#reports/micros-conversions"
+            }
+        ],
+        "franchiseeOwnedPOS": [
+            {
+                "title": "Oracle/Micros",
+                "name": "Oracle/Micros",
+                "url": "__sitePage-RetailTechnology__#reports/micros-conversions"
+            },
+            {
+                "title": "Oracle - Conversion",
+                "name": "Oracle - Conversion",
+                "url": "__sitePage-RetailTechnology__#reports/micros-conversions"
+            },
+            {
+                "title": "Undecided/Other/None",
+                "name": "Undecided/Other/None",
+                "url": "__sitePage-RetailTechnology__#reports/micros-conversions"
+            }
+        ]
+    },
+    "images": {
+        "logo": {
+            "uri": "Sonic-Logo.png",
+            "description": "Sonic Logo"
+        }
+    }
+}

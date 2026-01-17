@@ -599,7 +599,7 @@ define(["dojo/router", 'dojo/text!app/view/loading-mask.html', 'dojo/domReady!',
         });
     });
 
-    //Sync Routing - FabCon Report
+    //Sync Routing - ISC Report
     router.register("sync/fabcon-report", function (evt) {
         //Google Analytics Stuff
         ga('set', 'page', evt.newPath);

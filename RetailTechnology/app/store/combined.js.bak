@@ -56,7 +56,7 @@ define(['app/store/issues', 'app/store/notes', 'app/store/sp-utility','app/brand
         ows_Site_x0020_Surveys_x0020_POPS: { mappedName: 'SiteSurvey', objectType: 'Text', type: 'date' },
         ows_Site_x0020_Survey_x0020_Timefram: { mappedName: 'SiteSurveyTimeframe', objectType: 'Text', type: 'select', options: ['Morning', 'Afternoon', 'Evening'] },
         ows_Light_x0020_Box_x0020_Replacemen: { mappedName: 'LightBox', objectType: 'Text', type: 'date' },
-        ows_IT_x0020_Project_x0020_Manager: { mappedName: 'ProjectManager', objectType: 'Text', type: 'select', options: ['Paige Bailey', 'Josh Rice', 'Kaitlyn Childers', 'Dylan Gehlbach', 'Emily Boatright'] },
+        ows_IT_x0020_Project_x0020_Manager: { mappedName: 'ProjectManager', objectType: 'Text', type: 'select', options: ['Brittany Palmer', 'Josh Rice', 'Kaitlyn Childers', 'Dylan Gehlbach', 'Emily Boatright'] },
         ows_Primary_x0020_Contact: { mappedName: 'PrimaryContact', objectType: 'Text' },
         ows_Primary_x0020_Contact_x0020_Phon: { mappedName: 'PrimaryPhone', objectType: 'Text' },
         ows_Primary_x0020_Contact_x0020_Emai: { mappedName: 'PrimaryEmail', objectType: 'Text' },
@@ -149,7 +149,7 @@ define(['app/store/issues', 'app/store/notes', 'app/store/sp-utility','app/brand
         ows_StoreConfigurationCost: { mappedName: 'StoreConfigurationCost', objectType: 'Text' },
 
         ows_IDTECHCost: { mappedName: 'IDTECHCost', objectType: 'Text' },
-        ows_FabConTotalCost: { mappedName: 'FabConTotalCost', objectType: 'Text' },
+        ows_ISCTotalCost: { mappedName: 'ISCTotalCost', objectType: 'Text' },
 
         ows_OracleCEMicros1: { mappedName: 'OracleCEMicros1', objectType: 'Text', type: 'number' },
         ows_OracleCEMicros2: { mappedName: 'OracleCEMicros2', objectType: 'Text', type: 'number' },

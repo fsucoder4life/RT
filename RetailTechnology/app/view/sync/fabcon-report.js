@@ -92,7 +92,7 @@ define([
                         {key: 'City', title: 'City'},
                         {key: 'State', title: 'State'},
                         {key: 'PopsDeliveryDate', title: 'Sonic', transform: 'date'},
-                        {key: 'FabConDeliveryDate', title: 'FabCon', transform: 'date'},
+                        {key: 'ISCDeliveryDate', title: 'ISC', transform: 'date'},
                         {key: 'StoreNumber', title: 'Details', transform: function (value, row, data, index) {
                             return "<a href='#summary/" + value + "'>more</a>"
                         }}

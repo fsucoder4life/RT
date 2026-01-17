@@ -9,15 +9,15 @@
 define(['app/store/purchaseOrders'], function (purchaseOrderStore) {
     var rules = [
       {
-        field: 'FabConTotal',
+        field: 'ISCTotal',
         category: 'PurchaseOrder',
         test: function (po) {
-          //Check to see if the FabCon Total equals the expected total
+          //Check to see if the ISC Total equals the expected total
           if (po.ActualTaxCost === '' || po.ActualShippingCost === '') {
             return {severity: 2, description: 'Warning: Need Tax/Shipping costs to confirm total'}
           } else {
             var expectedTotal = parseFloat(purchaseOrderStore.getTotal(po)) + parseFloat(po.ActualTaxCost === '' ? 0 : po.ActualTaxCost) + parseFloat(po.ActualShippingCost === '' ? 0 : po.ActualShippingCost);
-            if (expectedTotal.toString() !== po.FabConTotal) {
+            if (expectedTotal.toString() !== po.ISCTotal) {
               return {severity: 3, description: 'Critical: Expected total does not match invoiced total'};
             } else {
               return {severity: 0, description: ''};

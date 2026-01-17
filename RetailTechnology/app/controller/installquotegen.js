@@ -6,7 +6,7 @@ define(['app/view/installquotegen/installquotegen', 'app/store/purchaseOrders', 
           // emailTo: 'Stephen.Tremaine@sonicdrivein.com; ',
           // emailCc: 'Stephen.Tremaine@sonicdrivein.com; ',
           buildSubject: function (po) {
-              return po.ShippingCity + ', ' + po.ShippingState + ' #' + po.StoreNumber + ' - FabCon Purchase Order';
+              return po.ShippingCity + ', ' + po.ShippingState + ' #' + po.StoreNumber + ' - ISC Purchase Order';
           },
           buildBody: function (po, store) {
               var lastDocument = _.last(po.Documents);
@@ -67,7 +67,7 @@ define(['app/view/installquotegen/installquotegen', 'app/store/purchaseOrders', 
                                       mailView.submit.setDisabled(true);
                                       return;
                                       self.sendUpdatedPurchaseOrder(purchaseOrder, mailView.message.getData(), mailView.subject.getValue(), mailView.to.getValue(), mailView.cc.getValue(), lastDocument.FilePath, lastDocument.FileName, function () {
-                                          if (purchaseOrder.PoType === 'FabCon - DT POPS') {
+                                          if (purchaseOrder.PoType === 'ISC - DT POPS') {
                                               construction.changeValue('DtPopsBaseStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
                                                   //Hide the view & go back to the summary
                                                   mailView.dialog.hide();

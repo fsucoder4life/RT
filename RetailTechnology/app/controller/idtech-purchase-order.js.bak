@@ -113,7 +113,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
                   mailView.submit.setDisabled(true);
                   
                   self.sendUpdatedPurchaseOrder(stores[0], purchaseOrder, mailView.message.getData(), mailView.subject.getValue(), mailView.to.getValue(), mailView.cc.getValue(), lastDocument.FilePath, lastDocument.FileName, function () {
-                    if (purchaseOrder.PoType === 'FabCon - DT POPS') {
+                    if (purchaseOrder.PoType === 'ISC - DT POPS') {
                       construction.changeValue('DtPopsBaseStatus', 'PO Issued ' + moment().format('M/D'), store, function () {
                         //Hide the view & go back to the summary 
                         mailView.dialog.hide();
@@ -210,7 +210,7 @@ define(['app/view/purchase-order/purchase-order', 'app/store/purchaseOrders', 'a
                         filePath2 = $node.text(),
                         arrString = filePath2.split("/"),
                         fileName2 = arrString[arrString.length - 1];
-                      if (fileName2.indexOf("FabCon Credit Packet") > -1) {
+                      if (fileName2.indexOf("ISC Credit Packet") > -1) {
                           
                           fabconCreditPacketFilename = spUtility.escapeXml(fileName2);
                           fabconCreditPacketFileURL = spUtility.escapeXml(filePath2);

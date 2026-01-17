@@ -1078,7 +1078,7 @@ define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues'
                         //        combined.getDocuments(store, function (store) {
                         //            var exists = false;
                         //            _.each(store.CombinedDocuments, function (document, i) {
-                        //                if (document.FileName.indexOf('FabCon Credit Packet.') !== -1) {
+                        //                if (document.FileName.indexOf('ISC Credit Packet.') !== -1) {
                         //                    exists = true;
                         //                    //Delete the file before uploading a new one
                         //                    combined.deleteDocument(store.CombinedId, document.FilePath, uploadFile);
@@ -1102,7 +1102,7 @@ define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues'
                         //                var extension = file.name.substr(file.name.lastIndexOf('.') + 1);
 
                         //                //Upload the base 64 file
-                        //                combined.uploadDocument(store, b64, store.StoreNumber + ' - FabCon Credit Packet.' + extension, function () {
+                        //                combined.uploadDocument(store, b64, store.StoreNumber + ' - ISC Credit Packet.' + extension, function () {
                         //                    //Go to the normal view
                         //                    showStatusForm();
                         //                    upload.UploadButton.attr('disabled', true);
@@ -1154,7 +1154,7 @@ define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues'
                                     ShippingCity: store.City,
                                     ShippingState: store.State,
                                     DeliveryDate: store.PopsDeliveryDate,
-                                    PoType: 'FabCon'
+                                    PoType: 'ISC'
                                 }, function (po) {
                                     //Recalculate total stalls in case it's been updated since the request
                                     store.TotalStalls = (store.StallCount !== '' ? parseInt(store.StallCount) : 0) + (store.PatioCount !== '' ? parseInt(store.PatioCount) : 0);
@@ -1261,7 +1261,7 @@ define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues'
                         //        combined.getDocuments(store, function (store) {
                         //            var exists = false;
                         //            _.each(store.CombinedDocuments, function (document, i) {
-                        //                if (document.FileName.indexOf('FabCon Credit Packet.') !== -1) {
+                        //                if (document.FileName.indexOf('ISC Credit Packet.') !== -1) {
                         //                    exists = true;
                         //                    //Delete the file before uploading a new one
                         //                    combined.deleteDocument(store.CombinedId, document.FilePath, uploadFile);
@@ -1285,7 +1285,7 @@ define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues'
                         //                var extension = file.name.substr(file.name.lastIndexOf('.') + 1);
 
                         //                //Upload the base 64 file
-                        //                combined.uploadDocument(store, b64, store.StoreNumber + ' - FabCon Credit Packet.' + extension, function () {
+                        //                combined.uploadDocument(store, b64, store.StoreNumber + ' - ISC Credit Packet.' + extension, function () {
                         //                    //Go to the normal view
                         //                    showStatusForm();
                         //                    upload.UploadButton.attr('disabled', true);
@@ -1442,7 +1442,7 @@ define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues'
                                 ShippingCity: store.City,
                                 ShippingState: store.State,
                                 DeliveryDate: store.DtPopsBaseDeliveryDate,
-                                PoType: 'FabCon - DT POPS'
+                                PoType: 'ISC - DT POPS'
                             }, function (po) {
                                 //Add a line item for each fabcon part
                                 var requestCount = 0;

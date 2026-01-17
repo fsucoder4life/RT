@@ -30,7 +30,7 @@ define(['app/view/proforma/proforma', 'app/store/construction', 'app/store/combi
             PowerOverEthernet: 42.71,       //2 of these
             MaterialHandling: 65.89
         },
-        FabCon: {
+        ISC: {
             MenuBoard: 710.34,         //formerly 642, adding $17 per Charles Cease 7/14
             AluminumMenuBoard: 738.25,   //Per Jason 10/11/2017 - only aluminum POPS for all future construction orders
             //Per charles - 8/4/2015, total fabcon price = 693.34 + 17 = 710.34, UPDATING ABOVE, ZEROING OUT BELOW and no longer using.  Leaving for historical record
@@ -227,15 +227,15 @@ define(['app/view/proforma/proforma', 'app/store/construction', 'app/store/combi
                     }
 
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: 'POPS - Housing, Lighting, Speaker/Mic, & Button',
-                        //Price: (store.ProjectType === "POS Conversion" && store.PopsType !== "Aluminum" ? constants.FabCon.MenuBoard : constants.FabCon.AluminumMenuBoard),
+                        //Price: (store.ProjectType === "POS Conversion" && store.PopsType !== "Aluminum" ? constants.ISC.MenuBoard : constants.ISC.AluminumMenuBoard),
                         Price: 1219,
                         Quantity: store.TotalStalls,
                         Taxable: true
                     });
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: 'Wall Mount Flat POPS Assembly',
                         Price: 2749,
                         Quantity: store.FlatCount,
@@ -243,15 +243,15 @@ define(['app/view/proforma/proforma', 'app/store/construction', 'app/store/combi
                     });
 
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: 'POPS - Paint Pen (Yellow & Black)',
-                        Price: constants.FabCon.PaintPen,
+                        Price: constants.ISC.PaintPen,
                         Quantity: 2,
                         Taxable: true
                     });
 
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: 'Wireless Access Points & Antennas',
                         //Price: (4 * constants.Wireless.Antenna) + (2 * (constants.Wireless.AccessPoint + constants.Wireless.AccessPointWarranty + constants.Wireless.PowerOverEthernet)) + constants.Wireless.MaterialHandling,
                         Price: 1605.74,
@@ -270,9 +270,9 @@ define(['app/view/proforma/proforma', 'app/store/construction', 'app/store/combi
                         Taxable: true
                     });
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: 'Drive-Thru POPS - Housing, Lighting, Speaker/Mic',
-                        Price: constants.FabCon.DtPopsEnclosure,
+                        Price: constants.ISC.DtPopsEnclosure,
                         Quantity: store.DtPopsQuantity,
                         Taxable: true
                     });
@@ -289,16 +289,16 @@ define(['app/view/proforma/proforma', 'app/store/construction', 'app/store/combi
                         Taxable: true
                     });
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: 'Drive-Thru POPS - Housing, Lighting, Speaker/Mic',
-                        Price: constants.FabCon.DtPopsEnclosure,
+                        Price: constants.ISC.DtPopsEnclosure,
                         Quantity: store.DtPopsQuantity,
                         Taxable: true
                     });
                     /*items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: 'Drive-Thru POPS - Mounting Base Kit',
-                        Price: constants.FabCon.DtPopsBase,
+                        Price: constants.ISC.DtPopsBase,
                         Quantity: store.DtPopsQuantity,
                         Taxable: true
                     });*/
@@ -325,7 +325,7 @@ define(['app/view/proforma/proforma', 'app/store/construction', 'app/store/combi
 
                 if (store.ProjectType !== 'POS Conversion' && parseInt(store.DtMenuBoardsQuantity) > 0) {
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: 'Drive-Thru Digital Menu Display w/ LED Light Box',
                         Price: 1687.90,
                         Quantity: store.DtMenuBoardsQuantity,
@@ -335,7 +335,7 @@ define(['app/view/proforma/proforma', 'app/store/construction', 'app/store/combi
 
                 if (store.ExtensionBrackets > 0) {
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: 'Patio Extension Bracket',
                         Price: constants.ExtensionPrice,
                         Quantity: store.ExtensionBrackets,
@@ -345,7 +345,7 @@ define(['app/view/proforma/proforma', 'app/store/construction', 'app/store/combi
 
                 if (store.CChannelBrackets > 0) {
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: 'POPS Mounting Bracket',
                         Price: constants.BracketPrice,
                         Quantity: store.CChannelBrackets,
@@ -495,26 +495,26 @@ define(['app/view/proforma/proforma', 'app/store/construction', 'app/store/combi
                 var PaysDTEnclosureDesc = 'Drive-Thru PAYS Enclosure';
                 if (store.PaysType === 'VP6800') {
                     Pays45EnclosureDesc = '45 Degree Payment Enclosure';
-                    constants.FabCon.Pays45Enclosure = 47.75;
+                    constants.ISC.Pays45Enclosure = 47.75;
                     Pays90EnclosureDesc = '90 Degree Payment Enclosure';
-                    constants.FabCon.Pays90Enclosure = 59.79;
+                    constants.ISC.Pays90Enclosure = 59.79;
                     PaysDTEnclosureDesc = 'Drive Thru Payment Enclosure';
-                    constants.FabCon.PaysDtEnclosure = 250.88;
+                    constants.ISC.PaysDtEnclosure = 250.88;
                 }
                 if (store.PaysEnclosureIndoor > 0) {
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: Pays45EnclosureDesc,
-                        Price: constants.FabCon.Pays45Enclosure,
+                        Price: constants.ISC.Pays45Enclosure,
                         Quantity: store.PaysEnclosureIndoor,
                         Taxable: true
                     });
                 }
                 if (store.PaysEnclosureOutdoor > 0) {
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: Pays90EnclosureDesc,
-                        Price: constants.FabCon.Pays90Enclosure,
+                        Price: constants.ISC.Pays90Enclosure,
                         Quantity: store.PaysEnclosureOutdoor,
                         Taxable: true
                     });
@@ -522,7 +522,7 @@ define(['app/view/proforma/proforma', 'app/store/construction', 'app/store/combi
                 if (store.PaysType === 'VP6800' && store.DegreeSunShield > 0) {
 
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: '15 Degree Sun Shield',
                         Price: 18.75,
                         Quantity: store.DegreeSunShield,
@@ -533,9 +533,9 @@ define(['app/view/proforma/proforma', 'app/store/construction', 'app/store/combi
                 }
                 if (store.PaysEnclosureDriveThru > 0) {
                     items.push({
-                        ProductCode: 'FabCon',
+                        ProductCode: 'ISC',
                         Description: PaysDTEnclosureDesc,
-                        Price: constants.FabCon.PaysDtEnclosure,
+                        Price: constants.ISC.PaysDtEnclosure,
                         Quantity: store.PaysEnclosureDriveThru,
                         Taxable: true
                     });

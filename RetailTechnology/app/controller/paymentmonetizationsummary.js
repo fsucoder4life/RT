@@ -30,7 +30,7 @@ define(['app/view/paymentmonetizationsummary/paymentmonetizationsummary', 'app/s
             PowerOverEthernet: 42.71,       //2 of these
             MaterialHandling: 65.89
         },
-        FabCon: {
+        ISC: {
             MenuBoard: 710.34,         //formerly 642, adding $17 per Charles Cease 7/14
             AluminumMenuBoard: 738.25,   //Per Jason 10/11/2017 - only aluminum POPS for all future construction orders
             //Per charles - 8/4/2015, total fabcon price = 693.34 + 17 = 710.34, UPDATING ABOVE, ZEROING OUT BELOW and no longer using.  Leaving for historical record
