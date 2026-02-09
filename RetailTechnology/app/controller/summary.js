@@ -593,18 +593,169 @@ define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues'
     function afterRender(view) {
         var store = view.store;
 		var overrideDebugForFile = false;
+
+        var statusFormConfig = {
+            createPurchaseOrder: {
+                poTitle: 'Create Purchase Order',
+                poType: 'ISC',
+                loadProducts: true,
+                vendorMatches: ['FABCON']
+            },
+            createPromotionOrder: {
+                poTitle: 'Create Promotion Order',
+                poType: 'ProMotion',
+                loadProducts: true,
+                vendorMatches: ['PROMOTION']
+            },
+            hmeAudioQuote: {
+                poTitle: 'HME Audio Quote',
+                poType: 'HMEAudioQuote',
+                loadProducts: false,
+                defaults: {
+                    Notes: 'HME Audio Quote Request'
+                }
+            },
+            sonicRadioOrder: {
+                poTitle: 'Sonic Radio Order',
+                poType: 'SonicRadio',
+                loadProducts: false,
+                defaults: {
+                    Notes: 'Sonic Radio Order Request'
+                }
+            }
+        };
+
+        function showStatusForm(formType) {
+            var config = statusFormConfig[formType];
+            if (!config) {
+                return;
+            }
+
+            require(['app/store/products', 'app/store/purchaseOrders', 'app/store/purchaseOrderItems'], function (productStore, purchaseOrderStore, purchaseOrderItemStore) {
+                var mask = $('<div>Creating ' + config.poTitle + '</div>');
+                mask.modal({
+                    escapeClose: false,
+                    clickClose: false,
+                    showClose: false
+                });
+
+                function createOrder(products) {
+                    var purchaseOrderDefaults = {
+                        StoreNumber: store.CombinedId + ';#' + store.StoreNumber,
+                        BillingName: store.PrimaryContact,
+                        BillingAddress: store.AddressBillTo,
+                        BillingPhone: store.PrimaryPhone,
+                        BillingEmail: store.PrimaryEmail,
+                        BillingZip: store.ZipBillTo,
+                        BillingCity: store.CityBillTo,
+                        BillingState: store.StateBillTo,
+                        Franchisee: store.FranchiseGroup,
+                        ShippingName: store.PrimaryContact,
+                        ShippingAddress: store.Address,
+                        ShippingZip: store.Zip,
+                        ShippingCity: store.City,
+                        ShippingState: store.State,
+                        DeliveryDate: store.PopsDeliveryDate,
+                        PoType: config.poType
+                    };
+
+                    if (config.defaults) {
+                        _.assign(purchaseOrderDefaults, config.defaults);
+                    }
+
+                    purchaseOrderStore.create(purchaseOrderDefaults, function (po) {
+                        if (!config.loadProducts || products.length === 0) {
+                            $.modal.close();
+                            mask.remove();
+                            location.hash = '#purchase-order/' + po.PurchaseOrderId;
+                            return;
+                        }
+
+                        store.TotalStalls = (store.StallCount !== '' ? parseInt(store.StallCount) : 0) + (store.PatioCount !== '' ? parseInt(store.PatioCount) : 0);
+                        store.TotalStalls = store.TotalStalls.toString();
+
+                        var filteredProducts = _.filter(products, function (product) {
+                            if (!product.Vendor) {
+                                return false;
+                            }
+
+                            var vendor = product.Vendor.toUpperCase();
+                            return _.some(config.vendorMatches || [], function (match) {
+                                return vendor.indexOf(match) !== -1;
+                            });
+                        });
+
+                        var requestCount = 0;
+                        _.each(filteredProducts, function (product) {
+                            var quantity = 0;
+                            try {
+                                quantity = parseFloat(eval(product.DefaultQuantityFieldSource));
+                                store = store;
+                            } catch (e) {
+                                quantity = 0;
+                            }
+
+                            if (quantity > 0) {
+                                requestCount++;
+                                purchaseOrderItemStore.create({
+                                    ProductId: product.ProductId + ';#' + product.ProductId,
+                                    PurchaseOrderId: po.PurchaseOrderId + ';#' + po.PurchaseOrderId,
+                                    Description: product.Description,
+                                    Price: product.Price,
+                                    PartNumber: product.PartNumber,
+                                    Quantity: quantity,
+                                    Vendor: product.Vendor
+                                }, complete);
+                            }
+                        });
+
+                        var originalCount = requestCount;
+                        mask.html('Creating PO Line Items - (0/' + requestCount + ') Complete');
+                        if (requestCount === 0) { complete(); }
+
+                        function complete() {
+                            requestCount--;
+                            mask.html('Creating PO Line Items - (' + (originalCount - requestCount) + '/' + originalCount + ') Complete');
+                            if (requestCount <= 0) {
+                                $.modal.close();
+                                mask.remove();
+                                location.hash = '#purchase-order/' + po.PurchaseOrderId;
+                            }
+                        }
+                    });
+                }
+
+                if (!config.loadProducts) {
+                    createOrder([]);
+                    return;
+                }
+
+                productStore.loadData(function (products) {
+                    createOrder(products);
+                });
+            });
+        }
+
         //Create workflow actions
         view.Workflows.on('change', function (e) {
             switch (view.Workflows.val()) {
                 
+                case 'audio-quote-request':
+                    logHelper.logDebug("controller/summary.js","Inside audio quote status form:",  overrideDebugForFile);
+                    showStatusForm('hmeAudioQuote');
+                    break;
                 case 'audio-quote-request-workflow':
                     logHelper.logDebug("controller/summary.js","Inside audio-quote-request-workflow:",  overrideDebugForFile);
-                     triggerWorkflow(store.StoreNumber,"HMEAudioQuote",false, null);
+                    triggerWorkflow(store.StoreNumber,"HMEAudioQuote",false, null);
+                    break;
+                case 'promotion-order':
+                    logHelper.logDebug("controller/summary.js","Inside promotion order status form:",  overrideDebugForFile);
+                    showStatusForm('createPromotionOrder');
                     break;
                 case 'promotion-order-workflow':
-                        logHelper.logDebug("controller/summary.js","Inside promotion-order-workflow:",  overrideDebugForFile);
-                         triggerWorkflow(store.StoreNumber,"ProMotion",false, null);
-                        break;
+                    logHelper.logDebug("controller/summary.js","Inside promotion-order-workflow:",  overrideDebugForFile);
+                    triggerWorkflow(store.StoreNumber,"ProMotion",false, null);
+                    break;
                 case 'hughes-request-workflow':
 					logHelper.logDebug("controller/summary.js","Inside hughes-request-workflow:",  overrideDebugForFile);
 					 triggerWorkflow(store.StoreNumber,"ComcastRequest",false, null);
@@ -1051,196 +1202,24 @@ define(['app/view/summary/summary', 'app/store/construction', 'app/store/issues'
                         triggerWorkflow(store.StoreNumber,"NotifyDateChange",false,null);
                     break;
                
-                    case 'sonic-radio-order-workflow':
-                        logHelper.logDebug("controller/summary.js","Inside sonic-radio-order-workflow:",  overrideDebugForFile);
-                        triggerWorkflow(store.StoreNumber,"SonicRadio",false, null);
+                case 'sonic-radio-order':
+                    logHelper.logDebug("controller/summary.js","Inside sonic radio status form:",  overrideDebugForFile);
+                    showStatusForm('sonicRadioOrder');
+                    break;
+                case 'sonic-radio-order-workflow':
+                    logHelper.logDebug("controller/summary.js","Inside sonic-radio-order-workflow:",  overrideDebugForFile);
+                    triggerWorkflow(store.StoreNumber,"SonicRadio",false, null);
                     break;
                 
                 case 'servereps-setup-workflow':
                      logHelper.logDebug("controller/summary.js","Inside servereps-setup-workflow:",  overrideDebugForFile);
                     triggerWorkflow(store.StoreNumber,"ServerEPSSetup",false, null);
                     break;       
-                
                 case 'fabcon-create-purchase-order':
-                    require(['app/store/products', 'app/store/purchaseOrders', 'app/store/purchaseOrderItems', 'app/view/workflow/fabcon-create-purchase-order'], function (productStore, purchaseOrderStore, purchaseOrderItemStore, quote) {
-
-
-                        ////Show the upload form
-                        //var upload = quote.renderFileUpload({ store: store });
-
-                        ////Start file upload if changed to a file/user selects file
-                        //upload.Upload.change(function (e) {
-                        //    if (this.files.length > 0) {
-                        //        //Disable the button
-                        //        upload.UploadLabel.attr('disabled', true);
-                        //        upload.UploadLabel.html('Uploading...');
-                        //        //First make sure there aren't pre-existing uploaded files
-                        //        combined.getDocuments(store, function (store) {
-                        //            var exists = false;
-                        //            _.each(store.CombinedDocuments, function (document, i) {
-                        //                if (document.FileName.indexOf('ISC Credit Packet.') !== -1) {
-                        //                    exists = true;
-                        //                    //Delete the file before uploading a new one
-                        //                    combined.deleteDocument(store.CombinedId, document.FilePath, uploadFile);
-                        //                }
-                        //            });
-
-                        //            if (!exists) {
-                        //                uploadFile();
-                        //            }
-                        //        });
-
-                        //        //Then upload the new file after deleting old/confirm doesn't exist
-                        //        function uploadFile() {
-                        //            //Convert to Base 64
-                        //            var file = upload.Upload[0].files[0];
-                        //            var reader = new FileReader();
-                        //            reader.readAsDataURL(file);
-                        //            reader.onload = function () {
-                        //                var n = reader.result.indexOf(";base64,") + 8;
-                        //                var b64 = reader.result.substring(n);
-                        //                var extension = file.name.substr(file.name.lastIndexOf('.') + 1);
-
-                        //                //Upload the base 64 file
-                        //                combined.uploadDocument(store, b64, store.StoreNumber + ' - ISC Credit Packet.' + extension, function () {
-                        //                    //Go to the normal view
-                        //                    showStatusForm();
-                        //                    upload.UploadButton.attr('disabled', true);
-                        //                    upload.SendWithout.attr('disabled', true);
-                        //                });
-                        //            };
-                        //            reader.onerror = function (error) {
-                        //                alert('Error Uploading File during base 64 conversion!')
-                        //            };
-                        //        }
-                        //    } else {
-                        //        upload.UploadButton.attr('disabled', true);
-                        //    }
-                        //});
-
-                        ////Send Without
-                        //upload.SendWithout.click(function (e) {
-                        //    //Show the normal email form
-                        //    showStatusForm();
-                        //    upload.UploadButton.attr('disabled', true);
-                        //    upload.SendWithout.attr('disabled', true);
-                        //});
-
-                        showStatusForm();
-
-                        function showStatusForm ()
-                        {
-
-                            productStore.loadData(function (products) {
-                                var mask = $('<div>Creating Purchase Order</div>');
-                                mask.modal({
-                                    escapeClose: false,
-                                    clickClose: false,
-                                    showClose: false
-                                });
-                                //Create the new purchase order with data from retail tech as defaults
-                                purchaseOrderStore.create({
-                                    StoreNumber: store.CombinedId + ';#' + store.StoreNumber,
-                                    BillingName: store.PrimaryContact,
-                                    BillingAddress: store.AddressBillTo,
-                                    BillingPhone: store.PrimaryPhone,
-                                    BillingEmail: store.PrimaryEmail,
-                                    BillingZip: store.ZipBillTo,
-                                    BillingCity: store.CityBillTo,
-                                    BillingState: store.StateBillTo,
-                                    ShippingName: store.PrimaryContact,
-                                    ShippingAddress: store.Address,
-                                    ShippingZip: store.Zip,
-                                    ShippingCity: store.City,
-                                    ShippingState: store.State,
-                                    DeliveryDate: store.PopsDeliveryDate,
-                                    PoType: 'ISC'
-                                }, function (po) {
-                                    //Recalculate total stalls in case it's been updated since the request
-                                    store.TotalStalls = (store.StallCount !== '' ? parseInt(store.StallCount) : 0) + (store.PatioCount !== '' ? parseInt(store.PatioCount) : 0);
-                                    store.TotalStalls = store.TotalStalls.toString();
-
-                                    //Add a line item for each fabcon part
-                                    var requestCount = 0;
-
-                                    $().SPServices({
-                                        operation: "GetListItems",
-                                        listName: "Construction_Calls",
-                                        CAMLViewFields: "<ViewFields><FieldRef Name='PAYS_x0020_Type' /></ViewFields>",
-                                        CAMLQuery: "<Query><Where><Eq><FieldRef Name='Store_x0020_Number' /><Value Type='Text'>" + store.StoreNumber + "</Value></Eq></Where></Query>",
-                                        CAMLRowLimit: 1,
-                                        async: false,
-                                        completefunc: function (xData, Status) {
-                                            $(xData.responseXML).SPFilterNode("z:row").each(function () {
-
-                                                store.PaysType = $(this).attr("ows_PAYS_x0020_Type");
-                                                
-
-                                            });
-                                        }
-                                    });
-                                    
-                                    _.each(products, function (product) {
-
-                                        if (store.PaysType === 'VP6800')
-                                        {
-                                            if (product.PartNumber === 'FC-65060D X' || product.PartNumber === 'FC-6506 X2' || product.PartNumber === 'FC-6548')
-                                                return;
-                                            
-                                        }
-                                        
-                                        if (product.Vendor.toUpperCase().indexOf('FABCON') !== -1 && product.PartNumber.indexOf('FC-6632P-300') === -1) {
-                                            //Determine quantity
-
-                                            //shows 5 products in dropdown - but should show 13
-
-
-                                            var quantity = 0;
-
-                                            try {
-                                                quantity = parseFloat(eval(product.DefaultQuantityFieldSource));
-                                                store = store; //note - this is to ensure the store is available in the eval scope and doesn't get garbage collected
-
-                                            } catch (e) {
-                                                quantity = 0;
-                                            }
-
-                                            //Create each line item
-                                            if (quantity > 0) {
-                                                requestCount++;
-                                                purchaseOrderItemStore.create({
-                                                    ProductId: product.ProductId + ';#' + product.ProductId,
-                                                    PurchaseOrderId: po.PurchaseOrderId + ';#' + po.PurchaseOrderId,
-                                                    Description: product.Description,
-                                                    Price: product.Price,
-                                                    PartNumber: product.PartNumber,
-                                                    Quantity: quantity,
-                                                    Vendor: product.Vendor
-                                                }, complete);
-                                            }
-                                        }
-                                    });
-
-                                    var originalCount = requestCount;
-                                    mask.html('Creating PO Line Items - (0/' + requestCount + ') Complete');
-                                    if (requestCount === 0) { complete(); }
-
-                                    function complete() {
-                                        requestCount--;
-                                        mask.html('Creating PO Line Items - (' + (originalCount - requestCount) + '/' + originalCount + ') Complete');
-                                        if (requestCount <= 0) {
-                                            $.modal.close();
-                                            mask.remove();
-                                            location.hash = '#purchase-order/' + po.PurchaseOrderId;
-                                        }
-                                    }
-                                });
-                            });
-                        }
-
-                    });
+                    logHelper.logDebug("controller/summary.js","Inside fabcon-create-purchase-order:",  overrideDebugForFile);
+                    showStatusForm('createPurchaseOrder');
                     break;
-                    case 'fabcon-create-purchase-order-workflow':
+                case 'fabcon-create-purchase-order-workflow':
                          logHelper.logDebug("controller/summary.js","Inside fabcon-create-purchase-order-workflow:",  overrideDebugForFile);
                         triggerWorkflow(store.StoreNumber,"FabconCPO",false, null);
                     break; 
