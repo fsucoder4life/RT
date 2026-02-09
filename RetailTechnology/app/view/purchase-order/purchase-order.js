@@ -11,7 +11,8 @@ define([
             //Set the date
             $('#current-date').html(moment().format('dddd, MMMM Do YYYY - h:mm A'));
             //Set the title
-            $('#sub-title').html('Purchase Order Editor - PO #' + options.purchaseOrder.PurchaseOrderId);
+            var poTitle = options.purchaseOrder.PoTitle || options.purchaseOrder.PoType || 'Purchase Order';
+            $('#sub-title').html(poTitle + ' - PO #' + options.purchaseOrder.PurchaseOrderId);
 
             var template = $(editorTemplate),
               me = {
@@ -20,6 +21,27 @@ define([
                   products: options.products,
                   html: template
               };
+
+
+            function renderFormTypeBody(poType) {
+                var body = template.find('#po-form-type-body');
+                body.empty();
+
+                var type = (poType || '').toUpperCase();
+                if (type.indexOf('HMEAUDIOQUOTE') > -1) {
+                    body.html('<table id="po-form-type-fields"><tr><td><h3>HME Audio Quote Details</h3></td></tr><tr><td data-editable="Notes"></td></tr></table>');
+                    return;
+                }
+
+                if (type.indexOf('SONICRADIO') > -1) {
+                    body.html('<table id="po-form-type-fields"><tr><td><h3>Sonic Radio Order Details</h3></td></tr><tr><td data-editable="Notes"></td></tr></table>');
+                    return;
+                }
+
+                if (type.indexOf('PROMOTION') > -1) {
+                    body.html('<table id="po-form-type-fields"><tr><td><h3>Promotion Order Details</h3></td></tr><tr><td data-editable="Notes"></td></tr></table>');
+                }
+            }
 
             me.updateTotal = function () {
                 var total = Big('0');
@@ -38,8 +60,12 @@ define([
             };
             me.updateTotal();
 
+            renderFormTypeBody(me.purchaseOrder.PoType);
+
             //Activate editable/data-display fields
             widgetHelper.activate(template, me.purchaseOrder, undefined, undefined, purchaseOrderStore);
+
+            template.find('#po-title').text(poTitle);
 
             //Add products to the drop down
             var addItemSelect = template.find('#po-add-item');
@@ -54,13 +80,16 @@ define([
             };
             me.updateProductList();
 
+            var hideItemEditing = (me.purchaseOrder.PoType || '').toUpperCase().indexOf('HMEAUDIOQUOTE') > -1 || (me.purchaseOrder.PoType || '').toUpperCase().indexOf('SONICRADIO') > -1;
+            if (hideItemEditing) {
+                template.find('#po-add-item').hide();
+                template.find('#po-items').hide();
+            }
+
             //Add change handler for the select
             addItemSelect.on('change', function () {
                 if ($(this).val() !== 0 && typeof me.onAddItemClick === 'function') {
-                    var productId = $(this).val(),
-                      option = $(this).find('option[value=' + productId + ']'),
-                      select = $(this);
-
+                    var productId = $(this).val();
                     var product = _.find(me.products, { ProductId: productId });
 
                     me.onAddItemClick(product);
